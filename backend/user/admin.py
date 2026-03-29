@@ -10,7 +10,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'first_name', 'last_name', 'location', 'gender')
+    list_display = ('id', 'user', 'first_name', 'last_name', 'additional_info__birth_date', 'location', 'gender')
     search_fields = ('user__username', 'first_name', 'last_name', 'location')
     list_filter = ('gender', 'looking_for')
 

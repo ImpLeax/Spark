@@ -64,8 +64,6 @@ class Info(models.Model):
     """Class of infrequently used information. (Optimization)."""
 
     birth_date = models.DateField(
-        null=True,
-        blank=True,
         verbose_name='Birthday',
         db_index=True
     )
