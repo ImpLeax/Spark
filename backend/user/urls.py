@@ -14,4 +14,10 @@ urlpatterns = [
     path('profile/', views.UserProfileView.as_view(), name='profile'),
     path('genders/', views.GenderListView.as_view(), name='gender_list'),
     path('interests/', views.InterestListView.as_view(), name='interests_list'),
+    path('intentions/', views.IntentionsListView.as_view(), name='intention_list'),
+
+    path('profile/gallery/', views.GalleryManageView.as_view(), name='gallery_manage'),
+    path('profile/gallery/<int:pk>/', views.GalleryDeleteView.as_view(), name='gallery_delete'),
+    path('profile/avatar/', views.AvatarView.as_view(), name='profile_avatar')
+
 ]

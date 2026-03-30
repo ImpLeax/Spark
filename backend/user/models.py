@@ -9,6 +9,13 @@ username_validator = RegexValidator(
     message="Username must start with a letter, be 3–20 characters long, can include letters, numbers, and underscores, and cannot contain double underscores (__)."
 )
 
+#Additional functions for creating a photo path
+def user_avatar_path(instance, filename):
+    return f"users/user_{instance.id}/avatar/{filename}"
+
+def user_photo_path(instance, filename):
+    return f"users/user_{instance.profile.id}/photos/{filename}"
+
 
 class CustomUserManager(BaseUserManager):
     """A custom class manager for working with User.objects."""
@@ -103,8 +110,13 @@ class Gender(models.Model):
 class Photo(models.Model):
     """Model class for the photo list."""
 
+    profile = models.ForeignKey(
+        to='Profile',
+        on_delete=models.CASCADE,
+        related_name='gallery'
+    )
     photo = models.ImageField(
-        upload_to='photos/'
+        upload_to=user_photo_path
     )
 
 class Interest(models.Model):
@@ -112,6 +124,17 @@ class Interest(models.Model):
 
     name = models.CharField(
         max_length=100,
+        unique=True
+    )
+
+    def __str__(self):
+        return self.name
+
+class RelationshipIntention(models.Model):
+    """The class of relationship intention models."""
+
+    name = models.CharField(
+        max_length=255,
         unique=True
     )
 
@@ -150,8 +173,9 @@ class Profile(models.Model):
     gender = models.ForeignKey(
         to=Gender,
         on_delete=models.PROTECT,
-        related_name='gender',
+        related_name='profiles_as_gender',
     )
+
     location = models.CharField(
         max_length=255,
         db_index=True,
@@ -160,16 +184,19 @@ class Profile(models.Model):
     looking_for = models.ForeignKey(
         to=Gender,
         on_delete=models.PROTECT,
-        related_name='looking_for'
+        related_name='profiles_looking_for'
+    )
+
+    intention = models.ForeignKey(
+        to=RelationshipIntention,
+        on_delete=models.PROTECT,
+        related_name='profiles'
     )
 
     avatar = models.ImageField(
-        upload_to='avatars/'
-    )
-    photos = models.ForeignKey(
-        to=Photo,
-        on_delete=models.SET_NULL,
-        null=True
+        upload_to=user_avatar_path,
+        null=True,
+        blank=True
     )
 
 class ProfileInterest(models.Model):

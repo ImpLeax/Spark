@@ -13,7 +13,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.core.mail import send_mail
 from django.conf import settings
 
-from .models import Profile, Info, Gender, Interest, ProfileInterest
+from .models import Profile, Info, Gender, Interest, ProfileInterest, RelationshipIntention, Photo
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -46,6 +46,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         write_only=True,
         source='looking_for_obj'
     )
+    intention = serializers.PrimaryKeyRelatedField(
+        queryset=RelationshipIntention.objects.all(),
+        write_only=True,
+        source='intention_obj'
+    )
 
     birth_date = serializers.DateField(write_only=True)
 
@@ -56,12 +61,24 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         error_messages={'min_length': 'Please select at least 2 interests.'}
     )
 
+    photos = serializers.ListField(
+        child=serializers.ImageField(allow_empty_file=False),
+        write_only=True,
+        min_length=2,
+        max_length=4,
+        error_messages={
+            'min_length': 'Please upload at least 2 photos.',
+            'max_length': 'You can upload up to 4 photos.',
+        }
+    )
+
     class Meta:
         model = get_user_model()
         fields = [
             'username', 'email', 'password', 'first_name',
             'last_name', 'surname', 'location', 'gender',
-            'looking_for', 'birth_date', 'interests'
+            'looking_for', 'intention', 'birth_date', 'interests',
+            'photos'
         ]
 
     def validate_password(self, value):
@@ -89,12 +106,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         User = get_user_model()
 
+        photos = validated_data.pop('photos')
+
         first_name = validated_data.pop('first_name')
         last_name = validated_data.pop('last_name')
         surname = validated_data.pop('surname')
         location = validated_data.pop('location')
         gender = validated_data.pop('gender_obj')
         looking_for = validated_data.pop('looking_for_obj')
+        intention = validated_data.pop('intention_obj')
 
         birth_date = validated_data.pop('birth_date')
         interests_list = validated_data.pop('interests')
@@ -113,12 +133,18 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             surname=surname,
             location=location,
             gender=gender,
-            looking_for=looking_for
+            looking_for=looking_for,
+            intention=intention
         )
 
         ProfileInterest.objects.bulk_create([
             ProfileInterest(profile=profile, interest=interest)
             for interest in interests_list
+        ])
+
+        Photo.objects.bulk_create([
+            Photo(profile=profile, photo=image)
+            for image in photos
         ])
 
         #The email account activation process
@@ -167,6 +193,14 @@ class InfoSerializer(serializers.ModelSerializer):
         fields = ['birth_date', 'height', 'weight', 'bio', 'education']
 
 
+class IntentionSerializer(serializers.ModelSerializer):
+    """The serializer class for intentions."""
+
+    class Meta:
+        model = RelationshipIntention
+        fields = ['id', 'name']
+
+
 class ProfileReadSerializer(serializers.ModelSerializer):
     """The serializer class for the user profile."""
 
@@ -174,14 +208,15 @@ class ProfileReadSerializer(serializers.ModelSerializer):
 
     gender = serializers.StringRelatedField()
     looking_for = serializers.StringRelatedField()
+    intention = IntentionSerializer(read_only=True)
 
     interests = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
         fields = [
-            'id', 'first_name', 'last_name', 'surname',
-            'location', 'gender', 'looking_for',
+            'id', 'avatar', 'first_name', 'last_name', 'surname',
+            'location', 'gender', 'looking_for', 'intention',
             'avatar', 'additional_info', 'interests'
         ]
 
@@ -201,3 +236,65 @@ class InterestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Interest
         fields = ['id', 'name']
+
+
+class PhotoSerializer(serializers.ModelSerializer):
+    """The serializer class for user photos."""
+
+    class Meta:
+        model = Photo
+        fields = ['id', 'photo']
+
+
+class GalleryAddSerializer(serializers.Serializer):
+    """A serializer for uploading photos to the gallery"""
+
+    photos = serializers.ListField(
+        child=serializers.ImageField(allow_empty_file=False),
+        write_only=True
+    )
+
+    def validate_photos(self, value):
+        profile = self.context['request'].user.profile
+        current_count = profile.gallery.count()
+        new_count = len(value)
+
+        if current_count + new_count > 4:
+            allowed_to_add = 4 - current_count
+            raise DjangoValidationError(
+                f"Limit of 4 photos. You already have {current_count}. "
+                f"You can add up to {allowed_to_add}."
+            )
+        return value
+
+    def create(self, validated_data):
+        profile = self.context['request'].user.profile
+        photos_data = validated_data.pop('photos')
+
+        new_photos = Photo.objects.bulk_create([
+            Photo(profile=profile, photo=image)
+            for image in photos_data
+        ])
+
+        return new_photos
+
+class AvatarUploadSerializer(serializers.Serializer):
+    """The serializer class for upload user avatar."""
+
+    avatar = serializers.ImageField(
+        allow_empty_file=False,
+        write_only=True
+    )
+
+    def create(self, validated_data):
+        profile = self.context['request'].user.profile
+
+        avatar = validated_data.pop('avatar')
+
+        if profile.avatar:
+            profile.avatar.delete(save=False)
+
+        profile.avatar = avatar
+        profile.save()
+
+        return profile
