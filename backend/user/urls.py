@@ -18,6 +18,8 @@ urlpatterns = [
 
     path('profile/gallery/', views.GalleryManageView.as_view(), name='gallery_manage'),
     path('profile/gallery/<int:pk>/', views.GalleryDeleteView.as_view(), name='gallery_delete'),
-    path('profile/avatar/', views.AvatarView.as_view(), name='profile_avatar')
+    path('profile/avatar/', views.AvatarView.as_view(), name='profile_avatar'),
+    path('profile/settings/', views.SettingsManageView.as_view(), name='search_settings'),
+    path('profile/interests/', views.UpdateInterestsView.as_view(), name='interests_update'),
 
 ]

@@ -14,9 +14,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import (
     CustomTokenObtainPairSerializer, ProfileReadSerializer,
     GenderSerializer, InterestSerializer, IntentionSerializer,
-    PhotoSerializer, AvatarUploadSerializer, GalleryAddSerializer
+    PhotoSerializer, AvatarUploadSerializer, GalleryAddSerializer,
+    SettingsSerializer, ProfileUpdateSerializer, ProfileInterestsUpdateSerializer
 )
-from .models import Gender, Interest, RelationshipIntention, Photo
+from .models import Gender, Interest, RelationshipIntention, Photo, Setting
 
 
 class RegisterView(generics.CreateAPIView):
@@ -61,12 +62,15 @@ class VerifyEmailView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-
-class UserProfileView(generics.RetrieveAPIView):
+class UserProfileView(generics.RetrieveUpdateAPIView):
     """View class for a user profile."""
 
-    serializer_class = ProfileReadSerializer
     permission_classes = (IsAuthenticated, )
+
+    def get_serializer_class(self):
+        if self.request.method in ['PUT', 'PATCH']:
+            return ProfileUpdateSerializer
+        return ProfileReadSerializer
 
     def get_object(self):
         return self.request.user.profile
@@ -96,6 +100,26 @@ class InterestListView(generics.ListAPIView):
     serializer_class = InterestSerializer
     permission_classes = (AllowAny, )
     pagination_class = StandardResultsSetPagination
+
+
+class UpdateInterestsView(generics.UpdateAPIView):
+    """The view class for update list of interests."""
+
+    serializer_class = ProfileInterestsUpdateSerializer
+
+    def get_object(self):
+        return self.request.user.profile
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        full_profile = ProfileReadSerializer(instance)
+        return Response(full_profile.data)
+
 
 class IntentionsListView(generics.ListAPIView):
     """The view class for the list of intentions."""
@@ -194,3 +218,12 @@ class AvatarView(APIView):
                 {'error': "You don't have an avatar set."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+class SettingsManageView(generics.RetrieveUpdateAPIView):
+    """A view class for viewing and changing a user's search settings."""
+
+    serializer_class = SettingsSerializer
+    permission_classes = (IsAuthenticated, )
+
+    def get_object(self):
+        return self.request.user.profile.settings

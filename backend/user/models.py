@@ -1,4 +1,8 @@
+from tabnanny import check
+
 from django.db import models
+from django.db.models import Q, CheckConstraint
+from django.contrib.postgres.fields import IntegerRangeField
 from django.contrib.gis.db.models import PointField
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import RegexValidator
@@ -70,6 +74,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Info(models.Model):
     """Class of infrequently used information. (Optimization)."""
+
+    profile = models.OneToOneField(
+        to='Profile',
+        on_delete=models.CASCADE,
+        related_name='additional_info'
+    )
 
     birth_date = models.DateField(
         verbose_name='Birthday',
@@ -145,10 +155,6 @@ class RelationshipIntention(models.Model):
 class Profile(models.Model):
     """Profile model class"""
 
-    additional_info = models.OneToOneField(
-        to=Info,
-        on_delete=models.CASCADE,
-    )
     user = models.OneToOneField(
         to=User,
         on_delete=models.CASCADE,
@@ -206,7 +212,7 @@ class ProfileInterest(models.Model):
 
     profile = models.ForeignKey(
         to=Profile,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     interest = models.ForeignKey(
         to=Interest,
@@ -215,3 +221,34 @@ class ProfileInterest(models.Model):
 
     class Meta:
         unique_together = ('profile', 'interest')
+
+class Setting(models.Model):
+    """Model class for the user's settings."""
+
+    profile = models.OneToOneField(
+        to=Profile,
+        on_delete=models.CASCADE,
+        related_name='settings'
+    )
+
+    search_distance = models.PositiveIntegerField(
+        default=50,
+        verbose_name='Search Distance (km)'
+    )
+
+    age_range = IntegerRangeField(
+        default= (18, 51),
+        verbose_name='Age Range',
+    )
+
+    class Meta:
+        constraints = [
+            CheckConstraint(
+                condition=Q(age_range__contained_by=(18, 101)),
+                name='check_valid_age_range'
+            )
+        ]
+
+    def __str__(self):
+        name = getattr(self.profile, 'first_name', 'User')
+        return f"Search settings for {self.profile.first_name}"

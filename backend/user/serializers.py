@@ -2,6 +2,7 @@ from datetime import date
 from django.utils.encoding import force_bytes
 from rest_framework import serializers
 from django.db import transaction
+from django.contrib.gis.geos import Point
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -12,8 +13,9 @@ from django.contrib.auth.tokens import  default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.core.mail import send_mail
 from django.conf import settings
+from psycopg2.extras import NumericRange
 
-from .models import Profile, Info, Gender, Interest, ProfileInterest, RelationshipIntention, Photo
+from .models import Profile, Info, Gender, Interest, ProfileInterest, RelationshipIntention, Photo, Setting
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -33,7 +35,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     surname = serializers.CharField(
         write_only=True
     )
-    location = serializers.CharField(
+    longitude = serializers.FloatField(
+        write_only=True
+    )
+    latitude = serializers.FloatField(
         write_only=True
     )
     gender = serializers.PrimaryKeyRelatedField(
@@ -58,7 +63,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         child=serializers.PrimaryKeyRelatedField(queryset=Interest.objects.all()),
         write_only=True,
         min_length=2,
-        error_messages={'min_length': 'Please select at least 2 interests.'}
+        max_length=100,
+        error_messages={
+            'min_length': 'Please select at least 2 interests.',
+            'max_length': 'You have selected the maximum number of interests (100).'
+        }
     )
 
     photos = serializers.ListField(
@@ -76,7 +85,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = [
             'username', 'email', 'password', 'first_name',
-            'last_name', 'surname', 'location', 'gender',
+            'last_name', 'surname', 'longitude', 'latitude', 'gender',
             'looking_for', 'intention', 'birth_date', 'interests',
             'photos'
         ]
@@ -102,6 +111,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         return value
 
+    def validate_interests(self, value):
+        if len(value) != len(set(value)):
+            raise serializers.ValidationError("The list of interests contains duplicates.")
+
+        return value
+
     @transaction.atomic
     def create(self, validated_data):
         User = get_user_model()
@@ -111,7 +126,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         first_name = validated_data.pop('first_name')
         last_name = validated_data.pop('last_name')
         surname = validated_data.pop('surname')
-        location = validated_data.pop('location')
+        longitude = validated_data.pop('longitude')
+        latitude = validated_data.pop('latitude')
         gender = validated_data.pop('gender_obj')
         looking_for = validated_data.pop('looking_for_obj')
         intention = validated_data.pop('intention_obj')
@@ -119,15 +135,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         birth_date = validated_data.pop('birth_date')
         interests_list = validated_data.pop('interests')
 
+        location = Point(x=longitude, y=latitude, srid=4326)
         user = User.objects.create_user(**validated_data)
-
-        info = Info.objects.create(
-            birth_date=birth_date
-        )
 
         profile = Profile.objects.create(
             user=user,
-            additional_info=info,
             first_name=first_name,
             last_name=last_name,
             surname=surname,
@@ -135,6 +147,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             gender=gender,
             looking_for=looking_for,
             intention=intention
+        )
+
+        info = Info.objects.create(
+            profile=profile,
+            birth_date=birth_date
+        )
+
+        Setting.objects.create(
+            profile=profile
         )
 
         ProfileInterest.objects.bulk_create([
@@ -190,7 +211,7 @@ class InfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Info
-        fields = ['birth_date', 'height', 'weight', 'bio', 'education']
+        fields = ['profile', 'birth_date', 'height', 'weight', 'bio', 'education']
 
 
 class IntentionSerializer(serializers.ModelSerializer):
@@ -202,7 +223,7 @@ class IntentionSerializer(serializers.ModelSerializer):
 
 
 class ProfileReadSerializer(serializers.ModelSerializer):
-    """The serializer class for the user profile."""
+    """The serializer class for view the user profile."""
 
     additional_info = InfoSerializer(read_only=True)
 
@@ -221,7 +242,66 @@ class ProfileReadSerializer(serializers.ModelSerializer):
         ]
 
     def get_interests(self, obj):
-        return [pi.interest.name for pi in obj.profileinterest_set.all()]
+        return [{'id': pi.interest.id, 'name': pi.interest.name} for pi in obj.profileinterest_set.all()]
+
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    """The serializer class for modify the user profile."""
+
+    latitude = serializers.FloatField(write_only=True, required=False)
+    longitude = serializers.FloatField(write_only=True, required=False)
+
+    gender_id = serializers.PrimaryKeyRelatedField(
+        queryset=Gender.objects.all(), source='gender', required=False
+    )
+    looking_for_id = serializers.PrimaryKeyRelatedField(
+        queryset=Gender.objects.all(), source='looking_for', required=False
+    )
+    intention_id = serializers.PrimaryKeyRelatedField(
+        queryset=RelationshipIntention.objects.all(), source='intention', required=False
+    )
+
+    height = serializers.IntegerField(required=False, min_value=100, max_value=250, allow_null=True)
+    weight = serializers.IntegerField(required=False, min_value=30, max_value=300, allow_null=True)
+    bio = serializers.CharField(required=False, max_length=500, allow_blank=True, allow_null=True)
+    education = serializers.CharField(required=False, max_length=100, allow_blank=True, allow_null=True)
+
+    class Meta:
+        model = Profile
+        fields = [
+            'first_name', 'last_name', 'surname',
+            'latitude', 'longitude',
+            'gender_id', 'looking_for_id', 'intention_id',
+            'height', 'weight', 'bio', 'education'
+        ]
+
+    def update(self, instance, validated_data):
+        latitude = validated_data.pop('latitude', None)
+        longitude = validated_data.pop('longitude', None)
+
+        if latitude is not None and longitude is not None:
+            instance.location = Point(x=longitude, y=latitude, srid=4326)
+
+        try:
+            info_obj = instance.additional_info
+        except instance.__class__.additional_info.RelatedObjectDoesNotExist:
+            raise serializers.ValidationError(
+                {"profile": "Critical error: The profile is corrupted; the date of birth is missing."}
+            )
+
+        info_fields = ['height', 'weight', 'bio', 'education']
+        info_updated = False
+
+        for field in info_fields:
+            if field in validated_data:
+                setattr(info_obj, field, validated_data.pop(field))
+                info_updated = True
+
+        if info_updated:
+            info_obj.save()
+
+        return super().update(instance, validated_data)
+
 
 class GenderSerializer(serializers.ModelSerializer):
     """The serializer class for genders."""
@@ -236,6 +316,38 @@ class InterestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Interest
         fields = ['id', 'name']
+
+class ProfileInterestsUpdateSerializer(serializers.Serializer):
+    """The serializer class for update and delete interests."""
+
+    interest_ids = serializers.ListField(
+        child=serializers.PrimaryKeyRelatedField(queryset=Interest.objects.all()),
+        min_length=2,
+        max_length=100,
+        error_messages={
+            'min_length': 'Select at least 2 interests.',
+            'max_length': 'You can select up to 100 interests.'
+        }
+    )
+
+    def validate_interest_ids(self, value):
+        if len(value) != len(set(value)):
+            raise serializers.ValidationError("The list of interests contains duplicates.")
+        return value
+
+    def update(self, instance, validated_data):
+        interests = validated_data.get('interest_ids', [])
+
+        ProfileInterest.objects.filter(profile=instance).delete()
+
+        new_links = [
+            ProfileInterest(profile=instance, interest=interest)
+            for interest in interests
+        ]
+
+        ProfileInterest.objects.bulk_create(new_links)
+
+        return instance
 
 
 class PhotoSerializer(serializers.ModelSerializer):
@@ -298,3 +410,54 @@ class AvatarUploadSerializer(serializers.Serializer):
         profile.save()
 
         return profile
+
+
+class SettingsSerializer(serializers.ModelSerializer):
+    """The serializer class for user search settings."""
+
+    min_age = serializers.IntegerField(
+        min_value=18,
+        max_value=100,
+        write_only=True,
+        required=False
+    )
+    max_age = serializers.IntegerField(
+        min_value=18,
+        max_value=100,
+        write_only=True,
+        required=False
+    )
+
+    age_range = serializers.SerializerMethodField(
+        read_only=True
+    )
+
+    class Meta:
+        model = Setting
+        fields = ['search_distance', 'age_range', 'min_age', 'max_age']
+
+    def get_age_range(self, obj):
+        return {
+            "min": obj.age_range.lower,
+            "max": obj.age_range.upper - 1 if obj.age_range.upper else 100
+        }
+
+    def update(self, instance, validated_data):
+        min_age = validated_data.pop('min_age', None)
+        max_age = validated_data.pop('max_age', None)
+
+        if min_age is not None or max_age is not None:
+            current_min = instance.age_range.lower
+            current_max = instance.age_range.upper - 1
+
+            new_min = min_age if min_age is not None else current_min
+            new_max = max_age if max_age is not None else current_max
+
+            if new_min > new_max:
+                raise serializers.ValidationError({
+                    'min_age': 'The minimum age cannot be greater than the maximum age.'
+                })
+
+            instance.age_range = NumericRange(new_min, new_max + 1)
+
+        return super().update(instance, validated_data)
