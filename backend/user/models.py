@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.gis.db.models import PointField
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import RegexValidator
 from django.utils import timezone
@@ -176,10 +177,11 @@ class Profile(models.Model):
         related_name='profiles_as_gender',
     )
 
-    location = models.CharField(
-        max_length=255,
-        db_index=True,
-        verbose_name='Location',
+    location = PointField(
+        geography=True,
+        blank=True,
+        null=True,
+        verbose_name="Location"
     )
     looking_for = models.ForeignKey(
         to=Gender,
