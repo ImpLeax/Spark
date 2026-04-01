@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import User, Profile, Info, Gender, Photo, Interest, ProfileInterest, Setting
+from .models import (
+    User, Profile, Info, Gender, Photo,
+    Interest, ProfileInterest, Setting, RelationshipIntention
+)
 
 
 @admin.register(User)
@@ -21,4 +24,5 @@ admin.site.register(Photo)
 admin.site.register(Interest)
 admin.site.register(ProfileInterest)
 admin.site.register(Setting)
+admin.site.register(RelationshipIntention)
 

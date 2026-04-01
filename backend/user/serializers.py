@@ -188,6 +188,33 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         return user
 
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """The Serializer class for changing user's password."""
+
+    old_password = serializers.CharField(required=True, write_only=True)
+
+    new_password = serializers.CharField(
+        required=True,
+        write_only=True,
+        validators=[validate_password]
+    )
+    new_password_confirm = serializers.CharField(required=True, write_only=True)
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+
+        if not user.check_password(value):
+            raise serializers.ValidationError("The old password was entered incorrectly.")
+        return value
+
+    def validate(self, attrs):
+        if attrs['new_password'] != attrs['new_password_confirm']:
+            raise serializers.ValidationError(
+                {"new_password_confirm": "The new passwords do not match."}
+            )
+        return attrs
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """A modified serializer class for logging in via a JWT token."""
 
@@ -461,3 +488,16 @@ class SettingsSerializer(serializers.ModelSerializer):
             instance.age_range = NumericRange(new_min, new_max + 1)
 
         return super().update(instance, validated_data)
+
+class AccountDeleteSerializer(serializers.Serializer):
+    password = serializers.CharField(
+        write_only=True,
+        required=True
+    )
+
+    def validate_password(self, value):
+        user = self.context['request'].user
+
+        if not user.check_password(value):
+            raise serializers.ValidationError("Incorrect password. Deletion canceled.")
+        return value

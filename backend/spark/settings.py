@@ -51,6 +51,9 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'django.contrib.postgres',
     'user.apps.UserConfig',
+
+    #It should be at the end of the list.
+    'django_cleanup.apps.CleanupConfig'
 ]
 
 MIDDLEWARE = [

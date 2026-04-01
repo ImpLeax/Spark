@@ -29,10 +29,11 @@ Creates a new User, Profile, and Gallery. Validates age (18+) and requires 2-4 p
   last_name: "Name"
   surname: "Name"
   birth_date: "2000-01-01"
-  location: "Kyiv"
-  gender_id: 1
-  looking_for_id: 2
-  intention_id: 1
+  longitude: 50.4501
+  latitude: 30.5234
+  gender: 1
+  looking_for: 2
+  intention: 1
   interests: 1     // append multiple times for multiple interests
   interests: 2
   photos: [file1]  // input type="file", min: 2, max: 4
@@ -69,6 +70,36 @@ Invalidates the user's refresh token so it can no longer be used. The frontend s
 * **Request Body (JSON):** `{"refresh": "<your_current_refresh_token>"}`
 * **Success Response (205 Reset Content / 200 OK):** `{"message": "Successfully logged out."}`
 
+### 4.6. Change Password
+Allows an authenticated user to change their password.
+* **URL:** `user/password/change/`
+* **Method:** `PUT`
+* **Auth Required:** **Yes**
+* **Request Body (JSON):** 
+* ```json
+  {
+      "old_password": "CurrentPassword123!",
+      "new_password": "NewStrongPassword456!",
+      "new_password_confirm": "NewStrongPassword456!"
+  }
+  ```
+* **Success Response (200 OK):** `{"message": "Your password has been successfully changed."}`
+> **Important for Frontend:** After receiving a `200 OK`, the frontend **MUST** call the Logout endpoint (to blacklist the old refresh token), clear local storage, and redirect the user to the login screen to re-authenticate with the new password.
+
+### 4.7. Delete Account
+Permanently deletes the user's account and all associated data (profile, photos, settings). Requires password confirmation.
+* **URL:** `user/delete/`
+* **Method:** `DELETE`
+* **Auth Required:** **Yes**
+* **Request Body (JSON):** 
+* ```json
+  {
+      "password": "MySecretPassword123!"
+  }
+  ```  
+* **Success Response (204 No Content):** Returns an empty body or `{"message": "Your account and all associated data have been successfully deleted."}`
+> Frontend should clear local storage and redirect to the signup/login screen.
+
 ---
 
 ## Profile Management
@@ -82,14 +113,35 @@ Retrieves full profile info of the currently authenticated user.
   ```json
   {
       "id": 1,
+      "avatar": null,
       "first_name": "Name",
-      "location": "Kyiv",
-      "gender": "Male",
-      "looking_for": "Female",
-      "intention": "Serious relationships",
-      "avatar": "http://.../media/users/user_1/avatar/pic.jpg",
-      "additional_info": { "birth_date": "2000-01-01", "bio": "" },
-      "interests": ["Sport", "Music"]
+      "last_name": "Name",
+      "surname": "Name",
+      "location": "SRID=4326;POINT (30.5234 50.4501)",
+      "gender": "male",
+      "looking_for": "female",
+      "intention": {
+          "id": 1,
+          "name": "A long-lasting, strong relationship."
+      },
+      "additional_info": {
+          "profile": 1,
+          "birth_date": "2000-01-01",
+          "height": "",
+          "weight": "",
+          "bio": "",
+          "education": ""
+      },
+      "interests": [
+          {
+              "id": 1,
+              "name": "Gym"
+          },
+          {
+              "id": 2,
+              "name": "Programming"
+          }
+      ]
   }
   ```
   

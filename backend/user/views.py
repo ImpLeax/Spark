@@ -16,7 +16,8 @@ from .serializers import (
     CustomTokenObtainPairSerializer, ProfileReadSerializer,
     GenderSerializer, InterestSerializer, IntentionSerializer,
     PhotoSerializer, AvatarUploadSerializer, GalleryAddSerializer,
-    SettingsSerializer, ProfileUpdateSerializer, ProfileInterestsUpdateSerializer
+    SettingsSerializer, ProfileUpdateSerializer, ProfileInterestsUpdateSerializer,
+    AccountDeleteSerializer, ChangePasswordSerializer
 )
 from .models import Gender, Interest, RelationshipIntention, Photo, Setting
 
@@ -58,6 +59,45 @@ class LogoutAPIView(APIView):
                 {'error': 'Invalid token.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+class AccountDeleteView(generics.GenericAPIView):
+    """A view class for delete user's account."""
+
+    permission_classes = (IsAuthenticated, )
+    serializer_class = AccountDeleteSerializer
+
+    def delete(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+
+        user.delete()
+
+        return Response(
+            {"message": "Your account and all associated data have been successfully deleted."},
+            status=status.HTTP_204_NO_CONTENT
+        )
+
+
+class ChangePasswordView(generics.GenericAPIView):
+    """The view class for changing user's password."""
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = ChangePasswordSerializer
+
+    def put(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+
+        return Response(
+            {"message": "Your password has been successfully changed."},
+            status=status.HTTP_200_OK
+        )
 
 
 class VerifyEmailView(APIView):

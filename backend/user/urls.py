@@ -9,6 +9,8 @@ urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='register'),
     path('login/', views.CustomTokenObtainPairView.as_view(), name='login'),
     path('logout/', views.LogoutAPIView.as_view(), name='logout'),
+    path('delete/', views.AccountDeleteView.as_view(), name='account_delete'),
+    path('password/change/', views.ChangePasswordView.as_view(), name='password_change'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('activate/<uidb64>/<token>/', views.VerifyEmailView.as_view(), name="activate"),
 
@@ -22,5 +24,6 @@ urlpatterns = [
     path('profile/avatar/', views.AvatarView.as_view(), name='profile_avatar'),
     path('profile/settings/', views.SettingsManageView.as_view(), name='search_settings'),
     path('profile/interests/', views.UpdateInterestsView.as_view(), name='interests_update'),
+
 
 ]
