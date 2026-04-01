@@ -34,6 +34,8 @@ ALLOWED_HOSTS = ['*']
 
 INTERNAL_IPS = ["127.0.0.1"]
 
+#TURN IT OFF DURING THE DEPLOYMENT!!!
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'django.contrib.gis',
     'django.contrib.postgres',
+    'corsheaders',
     'user.apps.UserConfig',
 
     #It should be at the end of the list.
@@ -58,6 +61,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
