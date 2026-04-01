@@ -18,7 +18,7 @@ services:
     build: .
     container_name: spark_app_backend
     restart: always
-    command: sh -c "uv run manage.py migrate && uv run manage.py makemigrations  && uv run manage.py runserver 0.0.0.0:8000"
+    command: sh -c "uv run manage.py makemigrations && uv run manage.py migrate && (uv run python manage.py createsuperuser --noinput || true) && uv run manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
     depends_on:
@@ -29,6 +29,9 @@ services:
       - POSTGRES_PASSWORD=12344321
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@spark.com
+      - DJANGO_SUPERUSER_PASSWORD=ADmin1234.
 
 volumes:
   postgres_data:
