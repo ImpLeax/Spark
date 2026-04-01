@@ -11,6 +11,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.tokens import  default_token_generator
 
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import (
     CustomTokenObtainPairSerializer, ProfileReadSerializer,
     GenderSerializer, InterestSerializer, IntentionSerializer,
@@ -33,6 +34,30 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     """A modified view class for user login."""
 
     serializer_class = CustomTokenObtainPairSerializer
+
+
+class LogoutAPIView(APIView):
+    """A view class for user logout."""
+
+    permission_classes = (IsAuthenticated, )
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get('refresh')
+            token = RefreshToken(refresh_token)
+
+            token.blacklist()
+
+            return Response(
+                {'message': 'Successful logout.'},
+                status=status.HTTP_205_RESET_CONTENT
+            )
+
+        except Exception as e:
+            return Response(
+                {'error': 'Invalid token.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class VerifyEmailView(APIView):

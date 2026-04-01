@@ -61,6 +61,14 @@ Activates the user's account via email link.
 * **Request Body (JSON):** `{"refresh": "<your_current_refresh_token>"}`
 * **Success Response (200 OK):** Returns NEW `access` and NEW `refresh` tokens.
 
+### 4.5. Logout (Blacklist Token)
+Invalidates the user's refresh token so it can no longer be used. The frontend should also clear tokens from local storage.
+* **URL:** `user/logout/`
+* **Method:** `POST`
+* **Auth Required:** **Yes**
+* **Request Body (JSON):** `{"refresh": "<your_current_refresh_token>"}`
+* **Success Response (205 Reset Content / 200 OK):** `{"message": "Successfully logged out."}`
+
 ---
 
 ## Profile Management
@@ -84,6 +92,39 @@ Retrieves full profile info of the currently authenticated user.
       "interests": ["Sport", "Music"]
   }
   ```
+  
+### 5.1. Update My Profile
+Updates basic profile info and additional info (height, bio, etc.). You can send partial data using `PATCH`.
+* **URL:** `user/profile/`
+* **Method:** `PATCH` / `PUT`
+* **Auth Required:** **Yes**
+* **Request Body (JSON):** Flat structure (no nested objects required). Coordinates will be automatically converted to a GeoDjango `Point`.
+  ```json
+  {
+      "first_name": "New Name",
+      "bio": "Updated bio text",
+      "height": 185,
+      "weight": 80,
+      "latitude": 50.4501,
+      "longitude": 30.5234,
+      "intention_id": 2
+  }
+  ```
+* **Success Response (200 OK):** Returns the updated profile object.
+
+### 5.2. Sync Interests
+Completely replaces the user's current interests with the provided list.
+* **URL:** `user/profile/interests/`
+* **Method:** `PATCH` / `PUT`
+* **Auth Required:** **Yes**
+* **Request Body (JSON):** Must contain between 2 and 100 unique interest IDs.
+  ```json
+  {
+      "interest_ids": [2, 5, 12, 18]
+  }
+  ```
+* **Success Response (200 OK):** Returns the updated profile object with the new interests list.
+
 
 ### 6. Manage Avatar
 Upload, replace, or delete the profile avatar.
@@ -110,6 +151,34 @@ Delete a specific photo by its ID. Enforces min limit (2).
 * **Method:** `DELETE`
 * **Auth Required:** **Yes**
 * **Success Response (200 OK):** `{"message": "Photo successfully deleted."}`
+
+### 9. Manage Search Settings
+View or update the matching filters (distance and age range).
+* **URL:** `user/settings/`
+* **Auth Required:** **Yes**
+* **Methods:**
+  * **`GET` (Retrieve Settings):**
+    Returns the settings in a frontend-friendly format.
+    ```json
+    {
+        "search_distance": 50,
+        "age_range": {
+            "min": 18,
+            "max": 50
+        }
+    }
+    ```
+  * **`PATCH` / `PUT` (Update Settings):**
+    Send `min_age` and `max_age` as separate integers. The backend will automatically validate and convert them to a database range.
+    ```json
+    {
+        "search_distance": 25,
+        "min_age": 20,
+        "max_age": 35
+    }
+    ```
+* **Success Response (200 OK):** Returns the updated settings.
+
 
 ---
 
