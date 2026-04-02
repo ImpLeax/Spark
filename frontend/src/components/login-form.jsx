@@ -16,13 +16,42 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
-export function LoginForm({
-  className,
-  ...props
-}) {
+import api from '@/services/axios';
+import { useState } from "react"
+
+
+export function LoginForm({ className, ...props }) {
+  
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const  [error409,setError429] = useState(false);
+
+
+  const handle_login = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await api.post('user/login/', {
+        username: email,
+        password: password
+      });
+      localStorage.setItem("access_token",response.data.access);
+      localStorage.setItem("refresh_token",response.data.refresh);
+    } catch (error) {
+      console.error("Error:", error.response?.data);
+      if(error.response?.status === 429){
+        setError429(true);
+        var timeout = window.setTimeout(()=>{
+          setError429(false);
+        },60*1000)
+      }
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="max-h-[380px] flex flex-col p-6">
+      <Card className="max-h-95 flex flex-col p-6">
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
           <CardDescription>
@@ -30,11 +59,22 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          
+          <form onSubmit={handle_login}>
             <FieldGroup>
               <Field className="">
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input id="email" type="email" placeholder="m@example.com" required />
+                <FieldLabel htmlFor="email" value={email} >Email</FieldLabel>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="m@example.com" 
+                  required 
+                  value={email} 
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    console.log(e.target.value);}
+                  }
+                />
               </Field>
               <Field className="py-1">
                 <div className="flex items-center">
@@ -45,8 +85,18 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input 
+                  id="password" 
+                  type="password" 
+                  required
+                  value={password} 
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    console.log(e.target.value);
+                  }}
+                />
               </Field>
+              <FieldLabel className={`text-red-500 ${!error409 && 'hidden'}`}>Too many attempts, try again in a minute</FieldLabel>
               <Field className="py-1">
                 <Button type="submit">Login</Button>
                 <Button variant="outline" type="button">

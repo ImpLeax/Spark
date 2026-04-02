@@ -6,18 +6,13 @@ import {motion} from "framer-motion";
 
 
 
-const Navbar = ({ onMenuClick, state, onLoginClick={setLogin}}) => {
+const Navbar = ({ onMenuClick, state, onLoginClick={setLogin},render}) => {
 
-  const location = useLocation();
-
-  var isDefaultPage = location.pathname === "/";
-  var isNotSignUpPage = location.pathname !== "/signup";
-  
   return (
     <nav className="top-0 z-49 bg-primary-foreground dark:bg-background border">
       <div className="max-w-7xl mx-auto px-5 py-3 flex justify-between items-center">
           <div className="flex items-center gap-4">
-          {!isDefaultPage && (
+          {!render && (
             <div>
               <Button variant="ghost" className="" onClick={() => onMenuClick(prev => !prev)}>
                   {state ? (
@@ -44,7 +39,7 @@ const Navbar = ({ onMenuClick, state, onLoginClick={setLogin}}) => {
               </motion.div>
           </div>
 
-          {isDefaultPage &&(
+          {render &&(
           <div className="leading-none flex text-lg gap-8 items-center">
             <a
               href="#offers"
@@ -64,10 +59,10 @@ const Navbar = ({ onMenuClick, state, onLoginClick={setLogin}}) => {
           </div>
           )}
 
-          {isDefaultPage && (
+          {render && (
             <div>
               <div className="flex gap-4 leading-none">
-                <Link to="/signup" onClick={isDefaultPage = false}
+                <Link to="/signup"
                       className="cursor-pointer hover:text-primary transition-colors">
                   <Button variant="ghost">Sign up</Button>
                 </Link>
