@@ -1,3 +1,5 @@
+import requests
+
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -5,10 +7,15 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError
+from rest_framework.throttling import ScopedRateThrottle
 from  django.contrib.auth import get_user_model
 from .serializers import UserRegistrationSerializer
-from django.utils.http import urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import  default_token_generator
+from django.conf import settings
+from django.core.mail import send_mail
+from django.core import signing
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -17,7 +24,9 @@ from .serializers import (
     GenderSerializer, InterestSerializer, IntentionSerializer,
     PhotoSerializer, AvatarUploadSerializer, GalleryAddSerializer,
     SettingsSerializer, ProfileUpdateSerializer, ProfileInterestsUpdateSerializer,
-    AccountDeleteSerializer, ChangePasswordSerializer
+    AccountDeleteSerializer, ChangePasswordSerializer, PasswordResetRequestSerializer,
+    PasswordResetConfirmSerializer, EmailChangeRequestSerializer, EmailChangeConfirmSerializer,
+    GoogleAuthSerializer
 )
 from .models import Gender, Interest, RelationshipIntention, Photo, Setting
 
@@ -25,6 +34,8 @@ from .models import Gender, Interest, RelationshipIntention, Photo, Setting
 class RegisterView(generics.CreateAPIView):
     """A view class for user registration."""
 
+    throttle_classes = (ScopedRateThrottle, )
+    throttle_scope = 'register_attempts'
     queryset = get_user_model().objects.all()
     permission_classes = (AllowAny, )
     serializer_class = UserRegistrationSerializer
@@ -34,6 +45,8 @@ class RegisterView(generics.CreateAPIView):
 class CustomTokenObtainPairView(TokenObtainPairView):
     """A modified view class for user login."""
 
+    throttle_classes = (ScopedRateThrottle, )
+    throttle_scope = 'login_attempts'
     serializer_class = CustomTokenObtainPairSerializer
 
 
@@ -83,6 +96,8 @@ class AccountDeleteView(generics.GenericAPIView):
 class ChangePasswordView(generics.GenericAPIView):
     """The view class for changing user's password."""
 
+    throttle_classes = (ScopedRateThrottle, )
+    throttle_scope = 'password_change'
     permission_classes = [IsAuthenticated]
     serializer_class = ChangePasswordSerializer
 
@@ -292,3 +307,186 @@ class SettingsManageView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user.profile.settings
+
+
+class PasswordResetRequestView(generics.GenericAPIView):
+    """A view class for retrieving a password reset request."""
+
+    throttle_classes = (ScopedRateThrottle, )
+    throttle_scope = 'password_reset'
+    permission_classes = (AllowAny, )
+    serializer_class = PasswordResetRequestSerializer
+
+    def post(self, request, *args, **kwargs):
+        User = get_user_model()
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+
+        user = User.objects.filter(email=email).first()
+
+        if user:
+            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            frontend_url = settings.FRONTEND_URL + settings.RESET_PASSWORD_PATH
+            reset_link = f"{frontend_url}?uid={uidb64}&token={token}"
+            print(f'\nClear reset link: {reset_link}\n')
+
+            send_mail(
+                subject='Password Recovery in Spark',
+                message=f'To reset your password, click the link below:\n{reset_link}',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+
+        return Response(
+            {"message": "If this email address is registered, we have sent password reset instructions to it."},
+            status=status.HTTP_200_OK
+        )
+
+class PasswordResetConfirmView(generics.GenericAPIView):
+    """A view class for password reset confirm."""
+
+    permission_classes = (AllowAny, )
+    serializer_class = PasswordResetConfirmSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.context["user"]
+
+        user.set_password(serializer.validated_data["new_password"])
+        user.save()
+
+        return Response(
+            {"message": "Your password has been successfully changed. You can now log in."},
+            status=status.HTTP_200_OK
+        )
+
+
+class EmailChangeRequestView(generics.GenericAPIView):
+    """View class for email change requests."""
+
+    throttle_classes = (ScopedRateThrottle, )
+    throttle_scope = 'email_change'
+    permission_classes = (IsAuthenticated, )
+    serializer_class = EmailChangeRequestSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+        new_email = serializer.validated_data['new_email']
+
+        payload = {
+            'user_id': user.id,
+            'new_email': new_email
+        }
+
+        token = signing.dumps(payload, salt='email-change')
+
+        frontend_url = settings.FRONTEND_URL +  settings.CHANGE_EMAIL_PATH
+        confirm_link = f"{frontend_url}?token={token}"
+
+        print(f'\nClear confirm link: {confirm_link}\n')
+
+        send_mail(
+            subject='Verifying a new email address in Spark',
+            message=f"You have requested a change of email address. To confirm, please click the link below:\n{confirm_link}\n\nIf this wasn't you, please ignore this email.",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[new_email],
+            fail_silently=False,
+        )
+
+        return Response(
+            {"message": "An email containing a confirmation link has been sent to your new address."},
+            status=status.HTTP_200_OK
+        )
+
+
+class EmailChangeConfirmView(generics.GenericAPIView):
+    """A view class for confirming email changes using a token."""
+
+    permission_classes = (AllowAny, )
+    serializer_class = EmailChangeConfirmSerializer
+
+    def post(self, request, *args, **kwargs):
+        User = get_user_model()
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data = serializer.validated_data['token']
+        user_id = data['user_id']
+        new_email = data['new_email']
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if User.objects.filter(email=new_email).exists():
+            return Response({"error": "This email address is already taken."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.email = new_email
+        user.save()
+
+        return Response({"message": "Your email address has been successfully updated."}, status=status.HTTP_200_OK)
+
+
+class GoogleAuthView(generics.GenericAPIView):
+    """A view class for logging in via a Google account."""
+
+    throttle_classes = (ScopedRateThrottle, )
+    throttle_scope = 'login_attempts'
+    permission_classes = (AllowAny, )
+    serializer_class = GoogleAuthSerializer
+
+    def post(self, request, *args, **kwargs):
+        User = get_user_model()
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        access_token = serializer.validated_data['access_token']
+
+        google_url = 'https://www.googleapis.com/oauth2/v3/userinfo'
+        response = requests.get(google_url, params={'access_token': access_token})
+
+        if not response.ok:
+            return Response(
+                {"error": "Invalid Google token. Please try again."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user_data = response.json()
+        email = user_data.get('email')
+        first_name = user_data.get('given_name', '')
+        last_name = user_data.get('family_name', '')
+
+        user = User.objects.filter(email=email).first()
+
+        if user:
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "status": "login",
+                "message": "Login successful.",
+                "tokens": {
+                    "access": str(refresh.access_token),
+                    "refresh": str(refresh)
+                }
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "status": "needs_registration",
+                "message": "Account not found. Please complete registration.",
+                "google_data": {
+                    "email": email,
+                    "first_name": first_name,
+                    "last_name": last_name
+                }
+            }, status=status.HTTP_200_OK)

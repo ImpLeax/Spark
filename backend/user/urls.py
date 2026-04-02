@@ -8,9 +8,14 @@ app_name = "user"
 urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='register'),
     path('login/', views.CustomTokenObtainPairView.as_view(), name='login'),
+    path('auth/google/', views.GoogleAuthView.as_view(), name='google_auth'),
     path('logout/', views.LogoutAPIView.as_view(), name='logout'),
     path('delete/', views.AccountDeleteView.as_view(), name='account_delete'),
     path('password/change/', views.ChangePasswordView.as_view(), name='password_change'),
+    path('password/reset/', views.PasswordResetRequestView.as_view(), name='password_reset_request'),
+    path('password/reset/confirm/', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('email/change/', views.EmailChangeRequestView.as_view(), name='email_change_request'),
+    path('email/change/confirm/', views.EmailChangeConfirmView.as_view(), name='email_change_confirm'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('activate/<uidb64>/<token>/', views.VerifyEmailView.as_view(), name="activate"),
 

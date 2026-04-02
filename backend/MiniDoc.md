@@ -4,11 +4,13 @@
 All API requests should be prefixed with:
 `http://127.0.0.1:8000/api/v1/`
 
-## Authentication (JWT)
+## Authentication (JWT) & Security
 This API uses JSON Web Tokens (JWT). For protected routes, include the Access Token in the HTTP Headers:
 `Authorization: Bearer <your_access_token>`
 
 > **Note:** Our Access Token contains custom claims. Decode it on the frontend (e.g., using `jwt-decode`) to instantly get the user's `profile_id`, `first_name`, and `last_name`.
+
+> **⚠️ Rate Limiting (Throttling):** > To prevent brute-force attacks, authentication endpoints (Login, Registration, Password Reset) are strictly rate-limited. If the limit is exceeded, the API will return a `429 Too Many Requests` status code. The frontend should handle this by reading the `Retry-After` header and displaying a countdown timer to the user.
 
 ---
 
@@ -98,7 +100,99 @@ Permanently deletes the user's account and all associated data (profile, photos,
   }
   ```  
 * **Success Response (204 No Content):** Returns an empty body or `{"message": "Your account and all associated data have been successfully deleted."}`
-> Frontend should clear local storage and redirect to the signup/login screen.
+> **Important for Frontend:** Frontend should clear local storage and redirect to the signup/login screen.
+
+### 4.8. Password Reset Request
+Initiates the password reset process by sending an email with a unique token to the user.
+* **URL:** `user/password/reset/`
+* **Method:** `POST`
+* **Auth Required:** No
+* **Request Body (JSON):**
+  ```json
+  {
+      "email": "user@spark.com"
+  }
+  ```
+* **Success Response (200 OK):** `{"message": "If this email address is registered, we have sent password reset instructions to it."}` *(Returns 200 even if the email does not exist to prevent enumeration).*
+
+### 4.9. Password Reset Confirm
+Sets a new password using the token and uid provided via the email link.
+* **URL:** `user/password/reset/confirm/`
+* **Method:** `POST`
+* **Auth Required:** No
+* **Request Body (JSON):**
+  ```json
+  {
+      "uidb64": "...",
+      "token": "...",
+      "new_password": "NewPassword123!",
+      "new_password_confirm": "NewPassword123!"
+  }
+  ```
+* **Success Response (200 OK):** `{"message": "Your password has been successfully changed. You can now log in."}`
+
+### 4.10. Change Email Request
+Initiates the email change process by sending a confirmation link to the **new** email address. The email is NOT updated in the database yet.
+* **URL:** `user/email/change/`
+* **Method:** `POST`
+* **Auth Required:** **Yes**
+* **Request Body (JSON):**
+  ```json
+  {
+      "new_email": "new_email@spark.com",
+      "password": "MySecretPassword123!"
+  }
+  ```
+* **Success Response (200 OK):** `{"message": "An email containing a confirmation link has been sent to your new address."}`
+
+### 4.11. Change Email Confirm
+Confirms and applies the new email address using the secure token from the email link.
+* **URL:** `user/email/change/confirm/`
+* **Method:** `POST`
+* **Auth Required:** No
+* **Request Body (JSON):**
+  ```json
+  {
+      "token": "..."
+  }
+  ```
+* **Success Response (200 OK):** `{"message": "Your email address has been successfully updated."}`
+> **Important for Frontend:** If the user is currently logged in, you may need to log them out or update their local state to reflect the new email.
+
+### 4.12. Google OAuth Authentication
+Handles login or partial registration via Google.
+* **URL:** `user/auth/google/`
+* **Method:** `POST`
+* **Auth Required:** No
+* **Request Body (JSON):** ```json
+  {
+      "access_token": "ya29.a0AfB_byC..." // Obtained from Google on frontend
+  }
+  ```
+* **Success Response - Path A (User Exists) [200 OK]:** Returns the JWT tokens.
+  ```json
+  {
+      "status": "login",
+      "message": "Login successful.",
+      "tokens": {
+          "access": "eyJhb...",
+          "refresh": "eyJhb..."
+      }
+  }
+  ```
+* **Success Response - Path B (New User) [200 OK]:** Returns user info to pre-fill the registration form.
+  ```json
+  {
+      "status": "needs_registration",
+      "message": "Account not found. Please complete registration.",
+      "google_data": {
+          "email": "user@gmail.com",
+          "first_name": "John",
+          "last_name": "Doe"
+      }
+  }
+  ```
+  > **Important for Frontend (Path B):** Route the user to the Signup screen. Pre-fill the email and name using `google_data`. Require the user to add age, gender, photos, and a password, then submit to the standard `/user/register/` endpoint.
 
 ---
 
@@ -236,17 +330,17 @@ View or update the matching filters (distance and age range).
 
 ## Directories (For Registration Forms)
 
-### 9. Get Genders
+### 10. Get Genders
 * **URL:** `user/genders/`
 * **Method:** `GET`
 * **Success Response:** `[ {"id": 1, "name": "Male"} ]`
 
-### 10. Get Intentions
+### 11. Get Intentions
 * **URL:** `user/intentions/`
 * **Method:** `GET`
 * **Success Response:** `[ {"id": 1, "name": "Serious relationships"} ]`
 
-### 11. Get Interests (Paginated)
+### 12. Get Interests (Paginated)
 * **URL:** `user/interests/`
 * **Method:** `GET`
 * **Query Params:** `?page=1&page_size=50`

@@ -34,6 +34,10 @@ ALLOWED_HOSTS = ['*']
 
 INTERNAL_IPS = ["127.0.0.1"]
 
+FRONTEND_URL = os.environ.get('FRONTEND_URL', getenv("FRONTEND_URL"))
+RESET_PASSWORD_PATH = os.environ.get('RESET_PASSWORD_PATH', getenv("RESET_PASSWORD_PATH"))
+CHANGE_EMAIL_PATH = os.environ.get('CHANGE_EMAIL_PATH', getenv("CHANGE_EMAIL_PATH"))
+
 #TURN IT OFF DURING THE DEPLOYMENT!!!
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -138,7 +142,17 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.ScopedRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'login_attempts': '5/m',
+        'register_attempts': '3/h',
+        'password_change': '3/h',
+        'password_reset': '5/m',
+        'email_change': '1/d',
+    }
 }
 
 SIMPLE_JWT = {
