@@ -25,6 +25,7 @@ urlpatterns = [
     path('intentions/', views.IntentionsListView.as_view(), name='intention_list'),
 
     path('profile/gallery/', views.GalleryManageView.as_view(), name='gallery_manage'),
+    path('profile/gallery/<int:pk>/', views.GetGalleryView.as_view(), name='get_gallery'),
     path('profile/gallery/<int:pk>/', views.GalleryDeleteView.as_view(), name='gallery_delete'),
     path('profile/avatar/', views.AvatarView.as_view(), name='profile_avatar'),
     path('profile/settings/', views.SettingsManageView.as_view(), name='search_settings'),

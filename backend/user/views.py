@@ -232,6 +232,17 @@ class GalleryManageView(APIView):
         )
 
 
+class GetGalleryView(APIView):
+    """A view class to get user's gallery."""
+
+    permission_classes = (IsAuthenticated, )
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request, pk, *args, **kwargs):
+        photos = Photo.objects.filter(profile__user=pk)
+        serializer = PhotoSerializer(photos, many=True, context={'request': request})
+        return Response(serializer.data)
+
 class GalleryDeleteView(generics.DestroyAPIView):
     """A view class for removing photos from the gallery."""
 

@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'corsheaders',
     'user.apps.UserConfig',
+    'recommendations.apps.RecommendationsConfig',
 
     #It should be at the end of the list.
     'django_cleanup.apps.CleanupConfig'
