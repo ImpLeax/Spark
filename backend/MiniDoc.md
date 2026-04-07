@@ -164,11 +164,12 @@ Handles login or partial registration via Google.
 * **URL:** `user/auth/google/`
 * **Method:** `POST`
 * **Auth Required:** No
-* **Request Body (JSON):** ```json
-  {
-      "access_token": "ya29.a0AfB_byC..." // Obtained from Google on frontend
-  }
-  ```
+* **Request Body (JSON):** 
+  ```json
+    {
+        "access_token": "ya29.a0AfB_byC..." // Obtained from Google on frontend
+    }
+    ```
 * **Success Response - Path A (User Exists) [200 OK]:** Returns the JWT tokens.
   ```json
   {
