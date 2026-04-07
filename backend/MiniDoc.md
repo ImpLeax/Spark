@@ -291,14 +291,33 @@ Manage the profile's photo gallery (limit: 2 to 4 photos).
     ```
   * `POST` (Content-Type: `multipart/form-data`): Send `photos: [file]` to add photos. Enforces max limit (4).
 
-### 8. Delete Gallery Photo
+### 8. Get user's Gallery (Photos)
+Get a list of links to photos in a user's gallery.
+* **URL:** `user/profile/gallery/<id>/`
+* **Auth Required:** **Yes**
+* **Method:`GET`**
+  ```json
+    [
+        {
+            "id": 5,
+            "photo": "http://127.0.0.1:8000/media/users/user_3/photos/2717085.jpeg"
+        },
+        {
+            "id": 6,
+            "photo": "http://127.0.0.1:8000/media/users/user_3/photos/2717085_SlqLW0P.jpeg"
+        }
+    ]
+  ```
+
+
+### 9. Delete Gallery Photo
 Delete a specific photo by its ID. Enforces min limit (2).
 * **URL:** `user/profile/gallery/<id>/`
 * **Method:** `DELETE`
 * **Auth Required:** **Yes**
 * **Success Response (200 OK):** `{"message": "Photo successfully deleted."}`
 
-### 9. Manage Search Settings
+### 10. Manage Search Settings
 View or update the matching filters (distance and age range).
 * **URL:** `user/settings/`
 * **Auth Required:** **Yes**
@@ -330,18 +349,79 @@ View or update the matching filters (distance and age range).
 
 ## Directories (For Registration Forms)
 
-### 10. Get Genders
+### 11. Get Genders
 * **URL:** `user/genders/`
 * **Method:** `GET`
 * **Success Response:** `[ {"id": 1, "name": "Male"} ]`
 
-### 11. Get Intentions
+### 12. Get Intentions
 * **URL:** `user/intentions/`
 * **Method:** `GET`
 * **Success Response:** `[ {"id": 1, "name": "Serious relationships"} ]`
 
-### 12. Get Interests (Paginated)
+### 13. Get Interests (Paginated)
 * **URL:** `user/interests/`
 * **Method:** `GET`
 * **Query Params:** `?page=1&page_size=50`
 * **Success Response:** `{"count": 150, "next": "...", "previous": null, "results": [ {"id": 1, "name": "Sport"} ]}`
+
+
+## Recommendation & Feed Endpoints
+
+### 14. Get Recommendations (The Feed)
+Retrieves a paginated list of matching profiles for the authenticated user. The algorithm automatically excludes already swiped users, filters by user settings (gender, age range, max distance), and orders the results by a relevance score (shared interests), distance, and last login time.
+* **URL:** `recommendation/list/`
+* **Method:** `GET`
+* **Auth Required:** **Yes**
+* **Query Params:** `?page=1&size=10` *(Default size is 10, max is 20)*
+* **Success Response (200 OK):**
+  ```json
+  {
+      "count": 45,
+      "next": "http://127.0.0.1:8000/api/v1/recommendation/list/?page=2",
+      "previous": null,
+      "results": [
+          {
+              "user_id": 14,
+              "username": "olena_spark",
+              "first_name": "Olena",
+              "age": 22,
+              "bio": "Love hiking and coffee.",
+              "avatar": "http://127.0.0.1:8000/media/avatars/olena.jpg",
+              "distance_km": 4.2
+          },
+          {
+              "user_id": 27,
+              "username": "max_dev",
+              "first_name": "Max",
+              "age": 25,
+              "bio": "Software engineer looking for meaningful connections.",
+              "avatar": null,
+              "distance_km": 12.5
+          }
+      ]
+  }
+  ```
+
+### 15. Swipe (Like or Pass)
+Records a user's action (swipe right/like or swipe left/pass) on another profile. 
+* **URL:** `recommendation/swipe/`
+* **Method:** `POST`
+* **Auth Required:** **Yes**
+* **Request Body (JSON):**
+  ```json
+  {
+      "receiver": 14,
+      "is_like": true
+  }
+  ```
+  *(Set `is_like: false` for a left swipe/pass)*
+* **Success Response (201 Created):** Returns the action details along with an `is_match` boolean.
+  ```json
+  {
+      "is_like": true,
+      "receiver": 14,
+      "is_match": true
+  }
+  ```
+> **Important for Frontend:** Always check the `is_match` boolean in the response when sending a "Like" (`is_like: true`). If `is_match` comes back as `true`, it means the feelings are mutual! You should instantly interrupt the feed and show a "It's a Match!" celebration modal before letting the user continue swiping.
