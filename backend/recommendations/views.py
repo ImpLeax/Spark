@@ -16,20 +16,11 @@ from .models import Interactions
 from .serializers import RecommendationSerializer, InteractionSerializer
 
 
-class RecommendationPagination(PageNumberPagination):
-    """Pagination class for recommendation list"""
-
-    page_size = 10
-    page_size_query_param = 'size'
-    max_page_size = 20
-
-
 class RecommendationListView(generics.ListAPIView):
     """A view class for GET - request. Send list of recommendations"""
 
     serializer_class = RecommendationSerializer
     permission_classes = (IsAuthenticated, )
-    pagination_class = RecommendationPagination
 
     def get_queryset(self):
         request_user = self.request.user
@@ -73,16 +64,18 @@ class RecommendationListView(generics.ListAPIView):
                     distance_to_me=Distance('location', location)
                 )
 
-        user_interest_ids = ProfileInterest.objects.filter(
-            profile=profile
-        ).values_list('interest_id', flat=True)
+        my_affinities = request_user.affinities.all()
+        when_clauses = [
+            When(profileinterest__interest_id=aff.interest_id, then=Value(aff.score))
+            for aff in my_affinities
+        ]
 
         candidates = candidates.annotate(
             relevance_score=Coalesce(
                 Sum(
                     Case(
-                        When(profileinterest__interest_id__in=user_interest_ids, then=Value(10)),
-                        default=Value(0),
+                        *when_clauses,
+                        default=Value(50),
                         output_field=IntegerField()
                     )
                 ),
@@ -99,7 +92,7 @@ class RecommendationListView(generics.ListAPIView):
 
         return candidates.order_by(*order_fields).select_related(
             'user', 'additional_info'
-        ).distinct()
+        ).distinct()[:10]
 
 
 class SwipeAPIView(generics.CreateAPIView):

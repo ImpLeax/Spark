@@ -16,7 +16,7 @@ from django.conf import settings
 from django.core import signing
 from psycopg2.extras import NumericRange
 
-from .models import Profile, Info, Gender, Interest, ProfileInterest, RelationshipIntention, Photo, Setting
+from .models import Profile, Info, Gender, Interest, ProfileInterest, RelationshipIntention, Photo, Setting, InterestAffinity
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -161,6 +161,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         ProfileInterest.objects.bulk_create([
             ProfileInterest(profile=profile, interest=interest)
+            for interest in interests_list
+        ])
+
+        InterestAffinity.objects.bulk_create([
+            InterestAffinity(user=user, interest=interest, score=75)
             for interest in interests_list
         ])
 
@@ -363,8 +368,10 @@ class ProfileInterestsUpdateSerializer(serializers.Serializer):
             raise serializers.ValidationError("The list of interests contains duplicates.")
         return value
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         interests = validated_data.get('interest_ids', [])
+        user = instance.user
 
         ProfileInterest.objects.filter(profile=instance).delete()
 
@@ -374,6 +381,17 @@ class ProfileInterestsUpdateSerializer(serializers.Serializer):
         ]
 
         ProfileInterest.objects.bulk_create(new_links)
+
+        for interest in interests:
+            affinity, created = InterestAffinity.objects.get_or_create(
+                user=user,
+                interest=interest,
+                defaults={'score': 50}
+            )
+
+            if affinity.score < 75:
+                affinity.score = 75
+                affinity.save()
 
         return instance
 

@@ -7,11 +7,13 @@ class RecommendationSerializer(serializers.ModelSerializer):
     """User info serializer class"""
 
     distance_km = serializers.SerializerMethodField()
+    shared_interests_score = serializers.IntegerField(source='relevance_score', read_only=True)
 
     username = serializers.CharField(source='user.username', read_only=True)
 
     age = serializers.IntegerField(source='additional_info.age', read_only=True)
     bio = serializers.CharField(source='additional_info.bio', read_only=True)
+    intention = serializers.CharField(source='intention.name', read_only=True)
 
     class Meta:
         model = Profile
@@ -22,7 +24,9 @@ class RecommendationSerializer(serializers.ModelSerializer):
             'age',
             'bio',
             'avatar',
-            'distance_km'
+            'shared_interests_score',
+            'distance_km',
+            'intention'
         ]
 
     def get_distance_km(self, obj):

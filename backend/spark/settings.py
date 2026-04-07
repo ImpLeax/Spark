@@ -106,7 +106,7 @@ WSGI_APPLICATION = 'spark.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.environ.get('POSTGRES_DB', 'spark'),
+        'NAME': os.environ.get('POSTGRES_DB', 'spark_db'),
         'USER': os.environ.get('POSTGRES_USER', 'root'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', getenv("DB_PASS")),
         'HOST': os.environ.get('POSTGRES_HOST', '127.0.0.1'),
