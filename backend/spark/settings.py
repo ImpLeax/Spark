@@ -38,8 +38,10 @@ FRONTEND_URL = os.environ.get('FRONTEND_URL', getenv("FRONTEND_URL"))
 RESET_PASSWORD_PATH = os.environ.get('RESET_PASSWORD_PATH', getenv("RESET_PASSWORD_PATH"))
 CHANGE_EMAIL_PATH = os.environ.get('CHANGE_EMAIL_PATH', getenv("CHANGE_EMAIL_PATH"))
 
-#TURN IT OFF DURING THE DEPLOYMENT!!!
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 

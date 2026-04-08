@@ -167,7 +167,7 @@ Handles login or partial registration via Google.
 * **Request Body (JSON):** 
   ```json
     {
-        "access_token": "ya29.a0AfB_byC..." // Obtained from Google on frontend
+        "access_token": "ya29.a0AfB_byC..." 
     }
     ```
 * **Success Response - Path A (User Exists) [200 OK]:** Returns the JWT tokens.
@@ -320,7 +320,7 @@ Delete a specific photo by its ID. Enforces min limit (2).
 
 ### 10. Manage Search Settings
 View or update the matching filters (distance and age range).
-* **URL:** `user/settings/`
+* **URL:** `user/profile/settings/`
 * **Auth Required:** **Yes**
 * **Methods:**
   * **`GET` (Retrieve Settings):**
