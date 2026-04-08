@@ -9,6 +9,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ValidationError
 from rest_framework.throttling import ScopedRateThrottle
 from  django.contrib.auth import get_user_model
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+
 from .serializers import UserRegistrationSerializer
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -17,7 +19,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.core import signing
 
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import (
     CustomTokenObtainPairSerializer, ProfileReadSerializer,
@@ -49,6 +51,61 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     throttle_scope = 'login_attempts'
     serializer_class = CustomTokenObtainPairSerializer
 
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+
+        if response.status_code == 200:
+            refresh_token = response.data.get('refresh')
+
+            response.set_cookie(
+                key='refresh_token',
+                value=refresh_token,
+                httponly=True,
+                samesite='Lax',
+                secure=False,
+                max_age=60 * 60 * 24 * 7 * 2
+            )
+
+            del response.data['refresh']
+
+        return response
+
+class CustomTokenRefreshView(TokenRefreshView):
+    """A view that refreshes the access token using the HttpOnly cookie."""
+
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.COOKIES.get('refresh_token')
+
+        if not refresh_token:
+            return Response(
+                {"detail": "Refresh token not found in cookies."},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        data = request.data.copy()
+        data['refresh'] = refresh_token
+
+        serializer = self.get_serializer(data=data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+
+        response = Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+        if 'refresh' in serializer.validated_data:
+            response.set_cookie(
+                key='refresh_token',
+                value=serializer.validated_data['refresh'],
+                httponly=True,
+                samesite='Lax',
+                secure=False,
+                max_age=60 * 60 * 24 * 7 * 2
+            )
+            del response.data['refresh']
+
+        return response
 
 class LogoutAPIView(APIView):
     """A view class for user logout."""
@@ -57,15 +114,19 @@ class LogoutAPIView(APIView):
 
     def post(self, request):
         try:
-            refresh_token = request.data.get('refresh')
-            token = RefreshToken(refresh_token)
+            refresh_token = request.COOKIES.get('refresh_token')
 
-            token.blacklist()
+            if refresh_token:
+                token = RefreshToken(refresh_token)
+                token.blacklist()
 
-            return Response(
+            response = Response(
                 {'message': 'Successful logout.'},
                 status=status.HTTP_205_RESET_CONTENT
             )
+
+            response.delete_cookie('refresh_token')
+            return response
 
         except Exception as e:
             return Response(
