@@ -50,3 +50,24 @@ class InteractionSerializer(serializers.ModelSerializer):
         if self.context['request'].user == data['receiver']:
             raise serializers.ValidationError("You cannot interact with yourself.")
         return data
+
+
+class LikeUserSereilizer(serializers.ModelSerializer):
+    """User info serializer class"""
+    username = serializers.CharField(source='user.username', read_only=True)
+    intention = serializers.CharField(source='intention.name', read_only=True, allow_null=True)
+    age = serializers.IntegerField(source='additional_info.age', read_only=True)
+    bio = serializers.CharField(source='additional_info.bio', read_only=True)
+
+
+    class Meta:
+        model = Profile
+        fields = [
+            'user_id',
+            'username',
+            'first_name',
+            'age',
+            'bio',
+            'avatar',
+            'intention'
+        ]
