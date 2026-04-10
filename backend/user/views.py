@@ -230,7 +230,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     """The paginator class for interests."""
 
     page_size = 10
-    page_size_query_param = 'page_size',
+    page_size_query_param = 'page_size'
     max_page_size = 50
 
 
