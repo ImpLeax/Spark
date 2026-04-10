@@ -6,7 +6,7 @@ services:
     container_name: spark_app_db_container
     restart: always
     environment:
-      POSTGRES_DB: spark_db
+      POSTGRES_DB: spark
       POSTGRES_USER: root
       POSTGRES_PASSWORD: 12344321
     ports:

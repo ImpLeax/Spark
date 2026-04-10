@@ -21,3 +21,4 @@ wheels/
 staticfiles/
 backend/media/
 frontend/
+tests/photos/

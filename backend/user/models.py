@@ -222,6 +222,25 @@ class ProfileInterest(models.Model):
     class Meta:
         unique_together = ('profile', 'interest')
 
+
+class InterestAffinity(models.Model):
+    """Model class for interest score"""
+
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        related_name='affinities'
+    )
+    interest = models.ForeignKey(
+        to=Interest,
+        on_delete=models.CASCADE
+    )
+    score = models.PositiveIntegerField(default=50)
+
+    class Meta:
+        unique_together = ('user', 'interest')
+
+
 class Setting(models.Model):
     """Model class for the user's settings."""
 

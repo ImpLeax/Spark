@@ -13,23 +13,14 @@ from rest_framework.exceptions import NotFound
 
 from user.models import Profile, ProfileInterest
 from .models import Interactions
-from .serializers import RecommendationSerializer, InteractionSerializer
-
-
-class RecommendationPagination(PageNumberPagination):
-    """Pagination class for recommendation list"""
-
-    page_size = 10
-    page_size_query_param = 'size'
-    max_page_size = 20
+from .serializers import RecommendationSerializer, InteractionSerializer, LikeUserSerializer
 
 
 class RecommendationListView(generics.ListAPIView):
     """A view class for GET - request. Send list of recommendations"""
 
     serializer_class = RecommendationSerializer
-    permission_classes = (IsAuthenticated, )
-    pagination_class = RecommendationPagination
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         request_user = self.request.user
@@ -44,6 +35,7 @@ class RecommendationListView(generics.ListAPIView):
         location = profile.location
         user_birth_date = profile.additional_info.birth_date
         user_age = date.today().year - user_birth_date.year
+        my_intention = profile.intention
 
         swiped_users_ids = Interactions.objects.filter(sender=request_user).values_list('receiver_id', flat=True)
 
@@ -73,21 +65,32 @@ class RecommendationListView(generics.ListAPIView):
                     distance_to_me=Distance('location', location)
                 )
 
-        user_interest_ids = ProfileInterest.objects.filter(
-            profile=profile
-        ).values_list('interest_id', flat=True)
+        my_affinities = request_user.affinities.all()
+        when_clauses = [
+            When(profileinterest__interest_id=aff.interest_id, then=Value(aff.score))
+            for aff in my_affinities
+        ]
+
+        if my_intention:
+            intention_bonus = Case(
+                When(intention=my_intention, then=Value(50)),
+                default=Value(0),
+                output_field=IntegerField()
+            )
+        else:
+            intention_bonus = Value(0)
 
         candidates = candidates.annotate(
             relevance_score=Coalesce(
                 Sum(
                     Case(
-                        When(profileinterest__interest_id__in=user_interest_ids, then=Value(10)),
-                        default=Value(0),
+                        *when_clauses,
+                        default=Value(50),
                         output_field=IntegerField()
                     )
                 ),
                 0
-            )
+            ) + intention_bonus
         )
 
         order_fields = ['-relevance_score']
@@ -99,14 +102,14 @@ class RecommendationListView(generics.ListAPIView):
 
         return candidates.order_by(*order_fields).select_related(
             'user', 'additional_info'
-        ).distinct()
+        ).distinct()[:10]
 
 
 class SwipeAPIView(generics.CreateAPIView):
     """A view class for POST - request. Save interaction from user to another user"""
 
     serializer_class = InteractionSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):
         interaction = serializer.save(sender=self.request.user)
@@ -131,3 +134,39 @@ class SwipeAPIView(generics.CreateAPIView):
         response_data['is_match'] = self.match_status
 
         return Response(response_data, status=status.HTTP_201_CREATED)
+
+
+class ILikedListView(generics.ListAPIView):
+    """A view class for GET - request. Return list of person user liked"""
+
+    serializer_class = LikeUserSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        request_user = self.request.user
+
+        liked_user_ids = Interactions.objects.filter(
+            sender=request_user,
+            is_like=True
+        ).values_list('receiver_id', flat=True)
+
+        return Profile.objects.filter(user_id__in=liked_user_ids).select_related(
+            'user', 'additional_info', 'intention').order_by('-user__date_joined')[:10]
+
+
+class LikedMeListView(generics.ListAPIView):
+    """A view class for GET - request. Return list of persons who liked user"""
+
+    serializer_class = LikeUserSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        request_user = self.request.user
+
+        liked_user_ids = Interactions.objects.filter(
+            receiver=request_user,
+            is_like=True
+        ).values_list('receiver_id', flat=True)
+
+        return Profile.objects.filter(user_id__in=liked_user_ids).select_related(
+            'user', 'additional_info', 'intention').order_by('-user__date_joined')[:10]
