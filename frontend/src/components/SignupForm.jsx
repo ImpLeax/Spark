@@ -112,9 +112,15 @@ export function SignupForm({ className, ...props }) {
   };
 
   const handleInterestToggle = (id) => {
-    setSelectedInterests(prev =>
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-    );
+    setSelectedInterests(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(item => item !== id);
+      }
+      if (prev.length >= 10) {
+        return prev;
+      }
+      return [...prev, id];
+    });
   };
 
   const handleSlotClick = (index) => {
