@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
@@ -8,10 +8,18 @@ const Navbar = ({ onLoginClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  
+  const location = useLocation();
+
+  const isLandingPage = location.pathname === "/";
+
+  useEffect(() => {
+    setIsVisible(true);
+    setIsOpen(false);
+  }, [location.pathname]);
+
   useEffect(() => {
     const controlNavbar = () => {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         if (Math.abs(window.scrollY - lastScrollY) < 15) return;
 
         if (window.scrollY > lastScrollY && window.scrollY > 80) {
@@ -24,18 +32,29 @@ const Navbar = ({ onLoginClick }) => {
       }
     };
 
-    window.addEventListener('scroll', controlNavbar);
-
-    return () => {
-      window.removeEventListener('scroll', controlNavbar);
-    };
+    window.addEventListener("scroll", controlNavbar);
+    return () => window.removeEventListener("scroll", controlNavbar);
   }, [lastScrollY]);
 
   const scrollTo = (id) => {
     setIsOpen(false);
     setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     }, 150);
+  };
+
+  const handleLoginClick = () => {
+    setIsOpen(false);
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 100);
+
+    if (onLoginClick) {
+      onLoginClick((prev) => !prev);
+    }
   };
 
   return (
@@ -43,28 +62,26 @@ const Navbar = ({ onLoginClick }) => {
       initial={{ y: 0 }}
       animate={{ y: isVisible ? 0 : "-100%" }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="fixed w-full top-0 z-50 bg-primary-foreground dark:bg-background border-b"
+      className="fixed w-full top-0 z-50 bg-primary-foreground dark:bg-background border-b shadow-sm"
     >
       <div className="max-w-7xl mx-auto px-5 py-3 flex justify-between items-center">
 
         <div className="flex items-center gap-4">
-          <motion.div initial={false}>
-            <Link to="/">
-              <h1 className="leading-none flex items-center">
-                <span className="text-3xl md:text-4xl text-transparent font-bold bg-linear-to-bl dark:from-red-600 dark:to-chart-1 from-pink-400 to-gray-200 bg-clip-text translate-z-0 [backface-visibility:hidden]">
-                  Spark
-                </span>
-              </h1>
-            </Link>
-          </motion.div>
+          <Link to="/">
+            <h1 className="leading-none flex items-center">
+              <span className="text-3xl md:text-4xl text-transparent font-bold bg-linear-to-bl dark:from-red-600 dark:to-chart-1 from-pink-400 to-gray-400 bg-clip-text">
+                Spark
+              </span>
+            </h1>
+          </Link>
         </div>
 
-        <div className="hidden md:flex leading-none text-lg gap-8 items-center">
+        <div className="hidden md:flex leading-none text-lg gap-8 items-center font-medium">
           <a
             href="#offers"
             onClick={(e) => {
               e.preventDefault();
-              scrollTo('offers');
+              scrollTo("offers");
             }}
             className="cursor-pointer hover:text-primary transition-colors"
           >
@@ -74,7 +91,7 @@ const Navbar = ({ onLoginClick }) => {
             href="#about"
             onClick={(e) => {
               e.preventDefault();
-              scrollTo('about');
+              scrollTo("about");
             }}
             className="cursor-pointer hover:text-primary transition-colors"
           >
@@ -82,9 +99,11 @@ const Navbar = ({ onLoginClick }) => {
           </a>
         </div>
 
-        <div className="hidden md:flex gap-4 leading-none">
-          <Button variant="ghost">Sign up</Button>
-          <Button>Login</Button>
+        <div className="hidden md:flex gap-4 leading-none items-center">
+          <Link to="/signup">
+            <Button variant="ghost">Sign up</Button>
+          </Link>
+          <Button onClick={handleLoginClick}>Login</Button>
         </div>
 
         <div className="md:hidden flex items-center">
@@ -98,7 +117,7 @@ const Navbar = ({ onLoginClick }) => {
       </div>
 
       <AnimatePresence>
-        {isOpen && (
+        {isOpen && isLandingPage && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -110,7 +129,7 @@ const Navbar = ({ onLoginClick }) => {
                 href="#offers"
                 onClick={(e) => {
                   e.preventDefault();
-                  scrollTo('offers');
+                  scrollTo("offers");
                 }}
                 className="text-xl font-medium cursor-pointer hover:text-primary transition-colors"
               >
@@ -120,7 +139,7 @@ const Navbar = ({ onLoginClick }) => {
                 href="#about"
                 onClick={(e) => {
                   e.preventDefault();
-                  scrollTo('about');
+                  scrollTo("about");
                 }}
                 className="text-xl font-medium cursor-pointer hover:text-primary transition-colors"
               >
@@ -128,9 +147,11 @@ const Navbar = ({ onLoginClick }) => {
               </a>
               <div className="flex flex-col gap-3 mt-4 pt-6 border-t border-border">
                 <Link to="/signup" className="w-full">
-                  <Button variant="outline" className="w-full text-lg py-6">Sign up</Button>
+                  <Button variant="outline" className="w-full text-lg py-6" onClick={() => setIsOpen(false)}>
+                    Sign up
+                  </Button>
                 </Link>
-                <Button onClick={() => onLoginClick && onLoginClick(prev => !prev)} className="w-full text-lg py-6">
+                <Button onClick={handleLoginClick} className="w-full text-lg py-6">
                   Login
                 </Button>
               </div>

@@ -1,0 +1,607 @@
+import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { DatePicker } from '@/components/index';
+import api from '@/services/axios';
+import { useEffect, useState, useRef } from "react";
+import { format } from "date-fns";
+import { Loader2, MapPin, CheckCircle2, Plus, X, ChevronRight } from "lucide-react";
+
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+
+export function SignupForm({ className, ...props }) {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [surname, setSurname] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState();
+
+  const [gender, setGender] = useState("");
+  const [lookingFor, setLookingFor] = useState("");
+  const [intention, setIntention] = useState("");
+  const [selectedInterests, setSelectedInterests] = useState([]);
+
+  const [isInterestsModalOpen, setIsInterestsModalOpen] = useState(false);
+  const [isIntentionModalOpen, setIsIntentionModalOpen] = useState(false);
+
+  const [photoSlots, setPhotoSlots] = useState([null, null, null, null]);
+  const [photoPreviews, setPhotoPreviews] = useState([null, null, null, null]);
+
+  const activeSlotIndex = useRef(null);
+  const fileInputRef = useRef(null);
+
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+
+  const [isLocating, setIsLocating] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error429, setError429] = useState(false);
+  const [formError, setFormError] = useState("");
+
+  const [intentionsList, setIntentionsList] = useState([]);
+  const [gendersList, setGendersList] = useState([]);
+  const [interestsList, setInterestsList] = useState([]);
+
+  useEffect(() => {
+    getGenders();
+    getIntentions();
+    getInterests();
+
+    return () => {
+      photoPreviews.forEach(url => {
+        if (url) URL.revokeObjectURL(url);
+      });
+    };
+  }, []);
+
+  const getGenders = async () => {
+    try {
+      const response = await api.get("user/genders/");
+      setGendersList(response.data);
+    } catch (error) {
+      console.error("Error fetching genders:", error);
+    }
+  }
+
+  const getIntentions = async () => {
+    try {
+      const response = await api.get("user/intentions/");
+      setIntentionsList(response.data);
+    } catch (error) {
+      console.error("Error fetching intentions:", error);
+    }
+  }
+
+  const getInterests = async () => {
+    try {
+      const response = await api.get("user/interests/?page=1&page_size=50");
+      setInterestsList(response.data.results || []);
+    } catch (error) {
+      console.error("Error fetching interests:", error);
+    }
+  }
+
+  const getLocation = () => {
+    setIsLocating(true);
+    setFormError("");
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          setLatitude(position.coords.latitude);
+          setLongitude(position.coords.longitude);
+          setIsLocating(false);
+        },
+        error => {
+          console.error("Location error:", error);
+          setFormError("Could not get location. Please allow access in your browser.");
+          setIsLocating(false);
+        }
+      );
+    } else {
+      setIsLocating(false);
+    }
+  };
+
+  const handleInterestToggle = (id) => {
+    setSelectedInterests(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleSlotClick = (index) => {
+    if (photoSlots[index]) return;
+    activeSlotIndex.current = index;
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const index = activeSlotIndex.current;
+
+    const newSlots = [...photoSlots];
+    newSlots[index] = file;
+    setPhotoSlots(newSlots);
+
+    const newPreviews = [...photoPreviews];
+    if (newPreviews[index]) URL.revokeObjectURL(newPreviews[index]);
+    newPreviews[index] = URL.createObjectURL(file);
+    setPhotoPreviews(newPreviews);
+
+    e.target.value = "";
+    setFormError("");
+  };
+
+  const handleRemovePhoto = (index, e) => {
+    e.stopPropagation();
+
+    const newSlots = [...photoSlots];
+    newSlots[index] = null;
+    setPhotoSlots(newSlots);
+
+    const newPreviews = [...photoPreviews];
+    if (newPreviews[index]) URL.revokeObjectURL(newPreviews[index]);
+    newPreviews[index] = null;
+    setPhotoPreviews(newPreviews);
+  };
+
+  const register = async (e) => {
+    e.preventDefault();
+    setFormError("");
+
+    const validPhotos = photoSlots.filter(photo => photo !== null);
+
+    if (validPhotos.length < 2) {
+      setFormError("Please upload at least 2 photos in the boxes on the right.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setFormError("Passwords do not match.");
+      return;
+    }
+    if (!dateOfBirth) {
+      setFormError("Please select your date of birth.");
+      return;
+    }
+    if (selectedInterests.length < 2) {
+      setFormError("Please select at least 2 interests.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    const formData = new FormData();
+
+    formData.append("username", username);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("first_name", firstName);
+    formData.append("last_name", lastName);
+    formData.append("surname", surname);
+    formData.append("birth_date", format(dateOfBirth, "yyyy-MM-dd"));
+
+    if (longitude && latitude) {
+      formData.append("longitude", longitude);
+      formData.append("latitude", latitude);
+    }
+
+    if (gender) formData.append("gender", gender);
+    if (lookingFor) formData.append("looking_for", lookingFor);
+    if (intention) formData.append("intention", intention);
+
+    selectedInterests.forEach(interestId => {
+      formData.append("interests", interestId);
+    });
+
+    validPhotos.forEach(file => {
+      formData.append("photos", file);
+    });
+
+    try {
+      const response = await api.post("user/register/", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Registration Error:", error.response?.data);
+      if (error.response?.status === 429) {
+        setError429(true);
+        window.setTimeout(() => setError429(false), 60 * 1000);
+      } else {
+        const errorMsg = error.response?.data ? Object.values(error.response.data)[0] : "Registration failed. Please try again.";
+        setFormError(String(errorMsg));
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  const selectedIntentionObj = intentionsList.find(i => i.id.toString() === intention);
+
+  return (
+    <div className="w-full max-w-6xl mx-auto relative p-4 lg:p-8">
+
+      <div className="flex flex-col p-6 sm:p-10 lg:p-12 shadow-2xl rounded-[2.5rem] bg-card/95 backdrop-blur-sm border border-border">
+
+        <div className="text-center mb-10">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">Create your account</h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Join Spark and find your perfect match today.
+          </p>
+        </div>
+
+        <form onSubmit={register}>
+
+          <div className="flex flex-col lg:flex-row gap-12 items-start">
+
+            <div className="flex-1 w-full flex flex-col">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-x-8 gap-y-10">
+
+                <div className="flex flex-col h-full">
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-semibold border-b pb-2">Personal Info</h3>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <Field>
+                        <FieldLabel htmlFor="firstName">First Name</FieldLabel>
+                        <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="John" required />
+                      </Field>
+                      <Field>
+                        <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
+                        <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Doe" required />
+                      </Field>
+                    </div>
+
+                    <Field>
+                      <FieldLabel htmlFor="surname">Surname</FieldLabel>
+                      <Input id="surname" value={surname} onChange={(e) => setSurname(e.target.value)} placeholder="Smith" required />
+                    </Field>
+
+                    <Field>
+                      <FieldLabel>Date of Birth</FieldLabel>
+                      <DatePicker selected={dateOfBirth} onSelect={setDateOfBirth} />
+                    </Field>
+
+                    <Field>
+                      <FieldLabel htmlFor="username">Username</FieldLabel>
+                      <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="johndoe123" required />
+                    </Field>
+
+                    <Field>
+                      <FieldLabel htmlFor="email">Email Address</FieldLabel>
+                      <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="m@example.com" required />
+                    </Field>
+                  </div>
+
+                  <div className="mt-auto pt-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <Field>
+                        <FieldLabel htmlFor="password">Password</FieldLabel>
+                        <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                      </Field>
+                      <Field>
+                        <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
+                        <Input id="confirm-password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+                      </Field>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col h-full">
+                  <div className="space-y-6">
+                    <h3 className="text-xl font-semibold border-b pb-2">Dating Profile</h3>
+
+                    <Field>
+                      <FieldLabel className="mb-2">Gender</FieldLabel>
+                      <div className="grid grid-cols-3 gap-2">
+                        {gendersList.length > 0 ? gendersList.map((el) => {
+                          const isSelected = gender === el.id.toString();
+                          return (
+                            <Button
+                              key={`gender-${el.id}`}
+                              type="button"
+                              variant={isSelected ? "default" : "secondary"}
+                              onClick={() => setGender(el.id.toString())}
+                              className={cn("w-full transition-all", !isSelected && "bg-muted text-foreground hover:bg-muted/80")}
+                            >
+                              {el.name}
+                            </Button>
+                          );
+                        }) : <p className="text-sm text-muted-foreground">Loading...</p>}
+                      </div>
+                    </Field>
+
+                    <Field>
+                      <FieldLabel className="mb-2">Looking For</FieldLabel>
+                      <div className="grid grid-cols-3 gap-2">
+                        {gendersList.length > 0 ? gendersList.map((el) => {
+                          const isSelected = lookingFor === el.id.toString();
+                          return (
+                            <Button
+                              key={`looking-${el.id}`}
+                              type="button"
+                              variant={isSelected ? "default" : "secondary"}
+                              onClick={() => setLookingFor(el.id.toString())}
+                              className={cn("w-full transition-all", !isSelected && "bg-muted text-foreground hover:bg-muted/80")}
+                            >
+                              {el.name}
+                            </Button>
+                          );
+                        }) : <p className="text-sm text-muted-foreground">Loading...</p>}
+                      </div>
+                    </Field>
+                  <Field>
+                    <FieldLabel className="mb-2">Intention</FieldLabel>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsIntentionModalOpen(true)}
+                      className="w-full flex justify-between items-center bg-secondary/20 hover:bg-secondary/40 border-dashed"
+                    >
+                      <span className={intention ? "text-foreground font-medium" : "text-muted-foreground"}>
+                        {selectedIntentionObj ? selectedIntentionObj.name : "Select your intention..."}
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </Button>
+                  </Field>
+
+                    <Field>
+                      <FieldLabel className="mb-2">Interests</FieldLabel>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsInterestsModalOpen(true)}
+                        className="w-full flex justify-between items-center bg-secondary/20 hover:bg-secondary/40 border-dashed"
+                      >
+                        <span className={selectedInterests.length > 0 ? "text-foreground font-medium" : "text-muted-foreground"}>
+                          {selectedInterests.length > 0
+                            ? `${selectedInterests.length} selected`
+                            : "Select your interests..."}
+                        </span>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      </Button>
+
+                      <FieldDescription className="mt-2">
+                        Select at least 2 ({selectedInterests.length}/10)
+                      </FieldDescription>
+                    </Field>
+                  </div>
+
+                  <div className="mt-auto pt-6">
+                    <Field>
+                      <FieldLabel>Location</FieldLabel>
+                      <div className="mt-2">
+                        <Button
+                          type="button"
+                          variant={latitude ? "secondary" : "outline"}
+                          onClick={getLocation}
+                          disabled={isLocating || latitude}
+                          className="w-full flex gap-2"
+                        >
+                          {isLocating && <Loader2 className="w-4 h-4 animate-spin" />}
+                          {!isLocating && !latitude && <MapPin className="w-4 h-4" />}
+                          {!isLocating && latitude && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                          {isLocating ? "Locating..." : (latitude ? "Location Saved" : "Get Current Location")}
+                        </Button>
+                      </div>
+                    </Field>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full lg:w-[350px] shrink-0">
+              <div className="mb-4">
+                <h3 className="text-xl font-semibold border-b pb-2">Photos</h3>
+                <p className="text-sm text-muted-foreground mt-3">Add 2 to 4 photos to stand out.</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                {[0, 1, 2, 3].map((index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleSlotClick(index)}
+                    className={cn(
+                      "relative aspect-[3/4] rounded-2xl overflow-hidden flex flex-col items-center justify-center transition-all",
+                      photoPreviews[index]
+                        ? "border border-border shadow-sm"
+                        : "border-2 border-dashed border-muted-foreground/30 bg-secondary/20 cursor-pointer hover:bg-secondary/40"
+                    )}
+                  >
+                    {photoPreviews[index] ? (
+                      <>
+                        <img src={photoPreviews[index]} alt={`Upload ${index + 1}`} className="object-cover w-full h-full" />
+
+                        <button
+                          type="button"
+                          onClick={(e) => handleRemovePhoto(index, e)}
+                          className="absolute top-2 right-2 w-8 h-8 bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </>
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-background flex items-center justify-center shadow-sm text-muted-foreground">
+                        <Plus className="w-5 h-5 text-foreground" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </div>
+
+          </div>
+
+          <div className="mt-12 pt-8 flex flex-col items-center max-w-xl mx-auto space-y-4">
+            {error429 && <p className="text-sm text-destructive font-medium text-center">Too many attempts, try again in a minute.</p>}
+            {formError && <p className="text-sm text-destructive font-medium text-center bg-destructive/10 p-3 rounded-md w-full">{formError}</p>}
+
+            <Button type="submit" className="w-full text-lg h-14 rounded-xl" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" /> Creating Account...
+                </span>
+              ) : "Create Account"}
+            </Button>
+            <div className="flex flex-col items-center space-y-3">
+              <p className="text-muted-foreground font-medium">
+                Already have an account?{" "}
+                <Link
+                  to="/"
+                  className="text-primary hover:underline underline-offset-4 transition-all font-bold"
+                >
+                  Log in
+                </Link>
+              </p>
+
+              <Link
+                to="/"
+                className="text-sm text-muted-foreground/60 hover:text-foreground transition-colors flex items-center gap-1 group"
+              >
+                <span className="group-hover:-translate-x-1 transition-transform">←</span>
+                Back to main page
+              </Link>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      {isIntentionModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-background/80 backdrop-blur-sm">
+          <div className="bg-card w-full max-w-md rounded-3xl shadow-2xl border border-border flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-6 border-b border-border">
+              <div>
+                <h2 className="text-2xl font-bold">What are you looking for?</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Select your relationship intention.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsIntentionModalOpen(false)}
+                className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors shrink-0"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto">
+              <div className="flex flex-col gap-3">
+                {intentionsList.length > 0 ? intentionsList.map((el) => {
+                  const isSelected = intention === el.id.toString();
+                  return (
+                    <Button
+                      key={`modal-intent-${el.id}`}
+                      type="button"
+                      variant={isSelected ? "default" : "secondary"}
+                      onClick={() => setIntention(el.id.toString())}
+                      className={cn(
+                        "w-full transition-all justify-start text-left px-5 py-4 h-auto text-base rounded-xl",
+                        !isSelected && "bg-secondary/50 text-foreground hover:bg-secondary"
+                      )}
+                    >
+                      {el.name}
+                    </Button>
+                  );
+                }) : (
+                  <div className="flex items-center justify-center w-full py-10 text-muted-foreground">
+                    <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                    Loading...
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-border bg-card/50 rounded-b-3xl">
+              <Button
+                onClick={() => setIsIntentionModalOpen(false)}
+                className="w-full h-12 text-lg rounded-xl"
+              >
+                Done
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {isInterestsModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-background/80 backdrop-blur-sm">
+          <div className="bg-card w-full max-w-2xl rounded-3xl shadow-2xl border border-border flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
+
+            <div className="flex items-center justify-between p-6 border-b border-border">
+              <div>
+                <h2 className="text-2xl font-bold">What are you into?</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Select your interests to find better matches. ({selectedInterests.length}/10)
+                </p>
+              </div>
+              <button
+                onClick={() => setIsInterestsModalOpen(false)}
+                className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto">
+              <div className="flex flex-wrap gap-3">
+                {interestsList.length > 0 ? interestsList.map((interest) => {
+                  const isSelected = selectedInterests.includes(interest.id);
+                  return (
+                    <Button
+                      key={`modal-interest-${interest.id}`}
+                      type="button"
+                      variant={isSelected ? "default" : "secondary"}
+                      onClick={() => handleInterestToggle(interest.id)}
+                      className={cn(
+                        "rounded-full transition-all py-2 px-4 h-auto text-sm",
+                        !isSelected && "bg-secondary/50 text-foreground hover:bg-secondary"
+                      )}
+                    >
+                      {interest.name}
+                    </Button>
+                  );
+                }) : (
+                  <div className="flex items-center justify-center w-full py-10 text-muted-foreground">
+                    <Loader2 className="w-6 h-6 animate-spin mr-2" />
+                    Loading interests...
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-border bg-card/50 rounded-b-3xl">
+              <Button
+                onClick={() => setIsInterestsModalOpen(false)}
+                className="w-full h-12 text-lg rounded-xl"
+              >
+                Done
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
+
+export default SignupForm;

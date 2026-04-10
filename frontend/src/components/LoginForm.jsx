@@ -109,7 +109,7 @@ export function LoginForm({ className, ...props }) {
                   Login with Google
                 </Button>
                 <div className="text-center text-sm text-muted-foreground pt-2">
-                  Don&apos;t have an account? <Link to="/" className="text-primary hover:underline font-medium">Sign up</Link>
+                  Don&apos;t have an account? <Link to="/signup" className="text-primary hover:underline font-medium">Sign up</Link>
                 </div>
               </Field>
             </FieldGroup>
