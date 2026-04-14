@@ -2,6 +2,7 @@ import { ThemeProvider, Navbar, Sidebar } from '@/components/index';
 import LandingPage from "@/pages/LandingPage.jsx";
 import SignupPage from "@/pages/SignupPage.jsx";
 import RecommendationsPage from "@/pages/RecommendationsPage";
+import ActivationPage from "@/pages/ActivationPage.jsx"
 import ProfilePage from "@/pages/ProfilePage.jsx";
 import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
@@ -51,6 +52,7 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
             <Route path="/signup" element={<PublicRoute><SignupPage /></PublicRoute>} />
+            <Route path="/activate/:uid/:token" element={<PublicRoute><ActivationPage /></PublicRoute>} />
             <Route path="/recommendations" element={<ProtectedRoute><RecommendationsPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           </Routes>
