@@ -294,7 +294,7 @@ Manage the profile's photo gallery (limit: 2 to 4 photos).
 
 ### 8. Get user's Gallery (Photos)
 Get a list of links to photos in a user's gallery.
-* **URL:** `user/profile/gallery/<id>/`
+* **URL:** `user/profile/<id>/gallery/
 * **Auth Required:** **Yes**
 * **Method:`GET`**
   ```json
