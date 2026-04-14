@@ -175,7 +175,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         token = default_token_generator.make_token(user)
 
-        activation_link = f"http://127.0.0.1:8000/api/v1/user/activate/{uid}/{token}/"
+        activation_link = settings.FRONTEND_URL + f"activate/{uid}/{token}/"
 
 
         print(f"\n\nClear activation link: {activation_link}\n\n")
