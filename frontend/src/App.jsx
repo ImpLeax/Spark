@@ -5,6 +5,7 @@ import RecommendationsPage from "@/pages/RecommendationsPage";
 import ActivationPage from "@/pages/ActivationPage.jsx"
 import ProfilePage from "@/pages/ProfilePage.jsx";
 import SettingsPage from "@/pages/SettingsPage.jsx";
+import EmailChangeConfirmPage from "@/pages/EmailChangeConfirmPage.jsx";
 import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { useState } from "react";
@@ -54,6 +55,7 @@ const AppContent = () => {
             <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
             <Route path="/signup" element={<PublicRoute><SignupPage /></PublicRoute>} />
             <Route path="/activate/:uid/:token" element={<PublicRoute><ActivationPage /></PublicRoute>} />
+            <Route path="/confirm-email" element={<EmailChangeConfirmPage />} />
             <Route path="/recommendations" element={<ProtectedRoute><RecommendationsPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
