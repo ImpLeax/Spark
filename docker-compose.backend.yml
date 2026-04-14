@@ -32,6 +32,9 @@ services:
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_EMAIL=admin@spark.com
       - DJANGO_SUPERUSER_PASSWORD=ADmin1234.
+      - FRONTEND_URL=http://localhost:5173/
+      - RESET_PASSWORD_PATH=reset-password/
+      - CHANGE_EMAIL_PATH=confirm-email/
 
 volumes:
   postgres_data:

@@ -10,7 +10,8 @@ import {
   Calendar,
   Settings2,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Weight
 } from "lucide-react";
 import api from "@/services/axios";
 import { calculateAge, parseLocation } from "@/lib/utils";
@@ -161,6 +162,7 @@ const ProfilePage = () => {
           <section className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <InfoCard icon={<Heart />} label="Intention" value={profile?.intention?.name} />
             <InfoCard icon={<Ruler />} label="Height" value={profile?.additional_info?.height ? `${profile.additional_info.height} cm` : null} />
+            <InfoCard icon={<Weight />} label="Weight" value={profile?.additional_info?.weight ? `${profile.additional_info.weight} kg` : null} />
             <InfoCard icon={<GraduationCap />} label="Education" value={profile?.additional_info?.education} />
             <InfoCard icon={<Calendar />} label="Joined" value="April 2026" />
           </section>
