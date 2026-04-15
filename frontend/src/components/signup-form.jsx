@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input"
 
 export function SignupForm({
   className,
+  onSaveData,
   ...props
 }) {
 
@@ -49,37 +50,20 @@ export function SignupForm({
   const [interestsList, setInterestsList] = useState([]);
 
   useEffect(() => {
-    getGenders();
-    getIntentions();
-    getInterests();
+      const fetchFormData = async () => {
+        try {
+          const response = await api.get("user/genders/");
+          setGendersList(response.data);
+          const response1 = await api.get("user/intentions/");
+          setIntentionsList(response1.data);
+          const response2 = await api.get("user/interests/?page=1&page_size=50");
+          setInterestsList(response2.data.results || []);
+        }catch(error){
+          console.error("Error:", error.response?.data);
+      }
+    }
+    fetchFormData();
   }, []);
-
-  const getGenders = async () => {
-    try {
-      const response = await api.get("user/genders/");
-      setGendersList(response.data);
-    } catch (error) {
-      console.error("Error:", error.response?.data);
-    }
-  }
-
-  const getIntentions = async () => {
-    try {
-      const response = await api.get("user/intentions/");
-      setIntentionsList(response.data);
-    } catch (error) {
-      console.error("Error:", error.response?.data);
-    }
-  }
-
-  const getInterests = async () => {
-    try {
-      const response = await api.get("user/interests/?page=1&page_size=50");
-      setInterestsList(response.data.results || []);
-    } catch (error) {
-      console.error("Error:", error.response?.data);
-    }
-  }
 
   const getLocation = () => {
     setIsLocating(true);
@@ -133,6 +117,25 @@ export function SignupForm({
       return;
     }
 
+    const userData = {
+      firstName,
+      lastName,
+      surname,
+      username,
+      email,
+      dateOfBirth: dateOfBirth ? format(dateOfBirth, "yyyy-MM-dd") : null,
+      gender,
+      lookingFor,
+      intention,
+      selectedInterests,
+      location: { latitude, longitude },
+      photos
+    };
+
+    if (onSaveData) {
+      onSaveData(userData);
+    }
+
     const formData = new FormData();
 
     formData.append("username", username);
@@ -174,8 +177,9 @@ export function SignupForm({
           "Content-Type": "multipart/form-data" 
         }
       });
-      console.log("Успіх:", response.data);
-      alert("Registration successful!");
+
+      localStorage.setItem("access_token", response.data.access);
+      localStorage.setItem("refresh_token", response.data.refresh);
       
     } catch (error) {
       console.error("Помилка:", error.response?.data);

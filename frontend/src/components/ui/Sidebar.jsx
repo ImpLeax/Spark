@@ -24,7 +24,7 @@ const Sidebar = ({ isOpen, render}) => {
       const response = await api.get("user/profile/");
       setProfile(response.data);
     } catch (error) {
-      console.error("Не вдалося завантажити профіль", error);
+      console.error("Error loading profile", error);
     } finally {
       setLoading(false);
     }
@@ -87,7 +87,7 @@ const Sidebar = ({ isOpen, render}) => {
               to="/logout"
               className="flex items-center gap-3 p-2 hover:bg-red-50 dark:hover:bg-primary dark:hover:text-black text-red-600 rounded-md"
             >
-              <span>Вийти</span>
+              <span>Exit</span>
             </NavLink>
           </div>
         </>

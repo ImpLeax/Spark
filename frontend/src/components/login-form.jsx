@@ -20,7 +20,7 @@ import api from '@/services/axios';
 import { useState } from "react"
 
 
-export function LoginForm({ className, ...props }) {
+export function LoginForm({ className,loadData ,...props }) {
   
 
   const [email, setEmail] = useState("");
@@ -38,13 +38,22 @@ export function LoginForm({ className, ...props }) {
       });
       localStorage.setItem("access_token",response.data.access);
       localStorage.setItem("refresh_token",response.data.refresh);
+
+      try {
+        const response = await api.get("user/profile/");
+        loadData(response.data);
+      } catch (error) {
+        console.error("Error during loading profile", error);
+      }
+
+
     } catch (error) {
       console.error("Error:", error.response?.data);
       if(error.response?.status === 429){
         setError429(true);
-        var timeout = window.setTimeout(()=>{
+        window.setTimeout(()=>{
           setError429(false);
-        },60*1000)
+        },60*1000);
       }
     }
   };

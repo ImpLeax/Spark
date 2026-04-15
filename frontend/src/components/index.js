@@ -10,3 +10,5 @@ export { default as SignUp } from '@/pages/SignUp';
 export { Skeleton } from '@/components/ui/skeleton';
 export { DatePicker } from '@/components/ui/datePicker';
 export { Calendar } from './ui/calendar';
+export { default as SettingsPage } from '../pages/SettingsPage';
+export { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, useCarousel} from '@/components/ui/carousel.jsx';

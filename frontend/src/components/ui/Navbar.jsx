@@ -6,7 +6,7 @@ import {motion} from "framer-motion";
 
 
 
-const Navbar = ({ onMenuClick, state, onLoginClick={setLogin},render}) => {
+const Navbar = ({ onMenuClick, state, onLoginClick,render}) => {
 
   return (
     <nav className="top-0 z-49 bg-primary-foreground dark:bg-background border">
@@ -26,8 +26,8 @@ const Navbar = ({ onMenuClick, state, onLoginClick={setLogin},render}) => {
             <motion.div initial={false}>
               <Link
                 to="/"
-                onClick={(e) => {
-                  setLogin(false);
+                onClick={() => {
+                    onLoginClick();
                 }}
               >
                 <h1 className="leading-none flex items-center">
