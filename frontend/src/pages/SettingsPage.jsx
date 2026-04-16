@@ -13,8 +13,7 @@ import {
   MapPin,
   CheckCircle2,
   Camera,
-  Plus,
-  X
+  Plus
 } from "lucide-react";
 import api from "@/services/axios";
 import { useAuth } from "@/context/AuthContext";
@@ -22,7 +21,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/Card.jsx";
 import { cn } from "@/lib/utils";
-
 
 const getErrorMessage = (error, defaultMessage) => {
   const data = error.response?.data;
@@ -58,15 +56,21 @@ const FormMessage = ({ msg }) => (
   </AnimatePresence>
 );
 
-
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState("profile");
+
+  useEffect(() => {
+    document.documentElement.style.scrollbarGutter = "stable";
+    return () => {
+      document.documentElement.style.scrollbarGutter = "auto";
+    };
+  }, []);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-5xl mx-auto px-4 py-8 md:p-10 w-full"
+      className="max-w-5xl mx-auto px-4 py-8 md:p-10 w-full min-h-[101vh]"
     >
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground">Settings</h1>
@@ -95,7 +99,7 @@ const SettingsPage = () => {
           />
         </div>
 
-        <div className="flex-1 min-w-0 min-h-[80vh]">
+        <div className="flex-1 min-w-0 min-h-[80vh] overflow-x-hidden sm:overflow-visible px-1">
           <AnimatePresence mode="wait">
             {activeTab === "profile" && (
               <motion.div key="profile" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.2 }}>
@@ -118,7 +122,6 @@ const SettingsPage = () => {
     </motion.div>
   );
 };
-
 
 const ProfileSettings = () => {
   const [profileData, setProfileData] = useState({
@@ -430,7 +433,6 @@ const ProfileSettings = () => {
   );
 };
 
-
 const DiscoverySettings = () => {
   const [distance, setDistance] = useState(50);
   const [minAge, setMinAge] = useState(18);
@@ -523,7 +525,6 @@ const DiscoverySettings = () => {
     </div>
   );
 };
-
 
 const AccountSettings = () => {
   const { logout } = useAuth();

@@ -32,7 +32,7 @@ function LandingPage() {
                         initial={{ opacity: 0, x: -100 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="w-full lg:w-1/2 text-center lg:text-left text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold leading-tight tracking-tight break-words text-foreground lg:text-white drop-shadow-md lg:drop-shadow-2xl"
+                        className="w-full text-center lg:text-left text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold leading-tight tracking-tight break-words text-foreground lg:text-white drop-shadow-md lg:drop-shadow-2xl"
                     >
                         DATING FOR EVERYONE EVERYWHERE ANYHOW
                     </motion.div>

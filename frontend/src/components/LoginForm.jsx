@@ -58,7 +58,7 @@ export function LoginForm({ className, ...props }) {
 
   return (
     <div className={cn("flex flex-col gap-6 w-full max-w-md mx-auto z-50 relative", className)} {...props}>
-      <Card className="flex flex-col p-6 shadow-2xl bg-card/95 backdrop-blur-sm border-white/10 dark:border-white/5">
+      <Card className="flex flex-col p-6 shadow-2xl bg-card/45 backdrop-blur-sm border-white/10 dark:border-white/5">
         <CardHeader>
           <CardTitle className="text-2xl text-foreground">Login to your account</CardTitle>
           <CardDescription className="text-muted-foreground">
@@ -77,7 +77,7 @@ export function LoginForm({ className, ...props }) {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="bg-background"
+                  className="bg-card/45"
                 />
               </Field>
               <Field className="space-y-2 pt-2">
@@ -96,7 +96,7 @@ export function LoginForm({ className, ...props }) {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-background"
+                  className="bg-card/45"
                 />
               </Field>
 
