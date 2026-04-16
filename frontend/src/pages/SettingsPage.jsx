@@ -529,6 +529,7 @@ const DiscoverySettings = () => {
 const AccountSettings = () => {
   const { logout } = useAuth();
   const [loadingAction, setLoadingAction] = useState(null);
+  const [accountInfo, setAccountInfo] = useState({ username: "...", email: "..." });
 
   const [msgPassword, setMsgPassword] = useState(null);
   const [msgEmail, setMsgEmail] = useState(null);
@@ -544,6 +545,18 @@ const AccountSettings = () => {
     setter({ type, text });
     setTimeout(() => setter(null), 5000);
   };
+
+  useEffect(() => {
+    const fetchAccountInfo = async () => {
+      try {
+        const response = await api.get("user/details/");
+        setAccountInfo(response.data);
+      } catch (error) {
+        console.error("Failed to load account details", error);
+      }
+    };
+    fetchAccountInfo();
+  }, []);
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
@@ -608,15 +621,11 @@ const AccountSettings = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           <div>
             <span className="text-sm font-semibold text-muted-foreground">Username</span>
-            <p className="font-medium text-lg mt-1">spark_user</p>
+            <p className="font-medium text-lg mt-1">{accountInfo.username}</p>
           </div>
           <div>
             <span className="text-sm font-semibold text-muted-foreground">Email Address</span>
-            <p className="font-medium text-lg mt-1">user@spark.com</p>
-          </div>
-          <div>
-            <span className="text-sm font-semibold text-muted-foreground">Account Status</span>
-            <p className="font-medium text-lg mt-1 text-green-500">Active</p>
+            <p className="font-medium text-lg mt-1">{accountInfo.email}</p>
           </div>
         </div>
       </Card>

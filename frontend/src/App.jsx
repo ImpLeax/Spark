@@ -11,6 +11,8 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { useState } from "react";
 import { cn } from "@/lib/utils.js";
 import { Menu } from "lucide-react";
+import ForgotPasswordPage from "@/pages/ForgotPasswordPage.jsx";
+import ResetPasswordPage from "@/pages/ResetPasswordPage.jsx";
 
 const AppContent = () => {
   const { isAuthenticated } = useAuth();
@@ -54,6 +56,8 @@ const AppContent = () => {
           <Routes>
             <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
             <Route path="/signup" element={<PublicRoute><SignupPage /></PublicRoute>} />
+            <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
+            <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
             <Route path="/activate/:uid/:token" element={<PublicRoute><ActivationPage /></PublicRoute>} />
             <Route path="/confirm-email" element={<EmailChangeConfirmPage />} />
             <Route path="/recommendations" element={<ProtectedRoute><RecommendationsPage /></ProtectedRoute>} />
