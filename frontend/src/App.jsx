@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils.js";
 import { Menu } from "lucide-react";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "@/pages/ResetPasswordPage.jsx";
+import PublicProfilePage from "@/pages/PublicProfilePage.jsx";
 
 const AppContent = () => {
   const { isAuthenticated } = useAuth();
@@ -63,6 +64,7 @@ const AppContent = () => {
             <Route path="/recommendations" element={<ProtectedRoute><RecommendationsPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+            <Route path="/profile/:userId" element={<ProtectedRoute><PublicProfilePage /></ProtectedRoute>} />
           </Routes>
         </main>
       </div>

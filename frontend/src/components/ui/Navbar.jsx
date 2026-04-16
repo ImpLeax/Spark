@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const Navbar = ({ onLoginClick }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -100,6 +101,10 @@ const Navbar = ({ onLoginClick }) => {
         </div>
 
         <div className="hidden md:flex gap-4 leading-none items-center">
+          <div className="mr-2 border-r pr-4">
+            <ThemeToggle isCollapsed={true} />
+          </div>
+
           <Link to="/signup">
             <Button variant="ghost">Sign up</Button>
           </Link>
@@ -145,6 +150,11 @@ const Navbar = ({ onLoginClick }) => {
               >
                 About
               </a>
+
+              <div className="mt-2">
+                 <ThemeToggle isCollapsed={false} />
+              </div>
+
               <div className="flex flex-col gap-3 mt-4 pt-6 border-t border-border">
                 <Link to="/signup" className="w-full">
                   <Button variant="outline" className="w-full text-lg py-6" onClick={() => setIsOpen(false)}>

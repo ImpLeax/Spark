@@ -5,7 +5,6 @@ import { KeyRound, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 import api from "@/services/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 
 const getErrorMessage = (error, defaultMessage) => {
   const data = error.response?.data;
@@ -46,6 +45,7 @@ const ResetPasswordPage = () => {
         uidb64: uid,
         token: token,
         new_password: passwords.new,
+        new_password_confirm: passwords.confirm,
       });
 
       setMessage({ type: "success", text: response.data.message || "Password reset successfully!" });
