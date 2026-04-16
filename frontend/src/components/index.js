@@ -1,7 +1,7 @@
 export { default as Navbar } from './ui/Navbar';
 export { default as Sidebar } from './ui/Sidebar';
 export { default as SidebarProfile } from './ui/SidebarProfile';
-export { default as ThemeProvider } from './theme-provider';
+export { ThemeProvider, useTheme } from './theme-provider';
 export { default as MainUnregistered} from'@/pages/MainUnregistered';
 export { BubbleBackground } from '@/components/animate-ui/components/backgrounds/bubble';
 export { SignupForm } from '@/components/signup-form';
@@ -12,3 +12,4 @@ export { DatePicker } from '@/components/ui/datePicker';
 export { Calendar } from './ui/calendar';
 export { default as SettingsPage } from '../pages/SettingsPage';
 export { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, useCarousel} from '@/components/ui/carousel.jsx';
+export { default as FancyToggle } from '@/components/ui/FancyToggle.jsx';

@@ -16,9 +16,13 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
-import api from '@/services/axios';
-import { useState } from "react"
+import { useState } from "react";
 
+import { useGoogleLogin } from "@react-oauth/google";
+
+import { useNavigate } from "react-router-dom";
+
+import api, { setAccessToken } from "@/services/axios";
 
 export function LoginForm({ className,loadData ,...props }) {
   
@@ -26,7 +30,7 @@ export function LoginForm({ className,loadData ,...props }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const  [error409,setError429] = useState(false);
-
+  const navigate = useNavigate();
 
   const handle_login = async (e) => {
     e.preventDefault();
@@ -36,9 +40,9 @@ export function LoginForm({ className,loadData ,...props }) {
         username: email,
         password: password
       });
-      localStorage.setItem("access_token",response.data.access);
-      localStorage.setItem("refresh_token",response.data.refresh);
 
+      setAccessToken(response.data.access);
+      navigate("/main");
       try {
         const response = await api.get("user/profile/");
         loadData(response.data);
@@ -57,6 +61,27 @@ export function LoginForm({ className,loadData ,...props }) {
       }
     }
   };
+
+  const login = useGoogleLogin({
+    onSuccess: async (credentialResponse) => {
+      const access_token = credentialResponse.access_token;
+
+      const response = await api.post("user/auth/google/", { "access_token": access_token });
+
+      if(response.data.status === "login"){
+        setAccessToken(response.data.tokens.access);
+        navigate("/main");
+      }
+      else if(response.data.status === "needs_registration"){
+        navigate("/signup", { state: { googleData: response.data.google_data } });
+      }
+
+    },
+    onError: (error) => {
+      console.error("Google login error:", error);
+    }
+  });
+
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -108,7 +133,7 @@ export function LoginForm({ className,loadData ,...props }) {
               <FieldLabel className={`text-red-500 ${!error409 && 'hidden'}`}>Too many attempts, try again in a minute</FieldLabel>
               <Field className="py-1">
                 <Button type="submit">Login</Button>
-                <Button variant="outline" type="button">
+                <Button variant="outline" type="button" onClick={() => login()}>
                   Login with Google
                 </Button>
                 <FieldDescription className="text-center">

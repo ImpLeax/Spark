@@ -1,5 +1,5 @@
 import './App.css'
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {Navbar,Sidebar,ThemeProvider,MainUnregistered,SignUp, SettingsPage} from '@/components/index';
 import { Route, Routes , useLocation} from 'react-router-dom';
 import MainContent from './pages/MainContent';
@@ -13,14 +13,28 @@ function App() {
   const toggleSidebar = () => setMenu(!menu);
   const toggleLogin = () => setLogin(!login);
   const loadData = (data) => setGlobalUserData(data);
+  useEffect(() => {
 
+      const refreshSelf = async () => {
+        try {
+          const response = await api.post('user/token/refresh/', {});
+          setAccessToken(response.data.access);
+        } catch (e) {
+          console.log("Сесія застаріла, треба логінитись");
+        } finally {
+          setIsRefreshing(false);
+        }
+      };
+
+      refreshSelf();
+    }, []);
 
   const location = useLocation();
 
   const isLandingPage = location.pathname === "/" || location.pathname === "/signup";
 
   return (
-      /*<ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
         <div className="relative">  
           <Navbar onMenuClick={toggleSidebar} onLoginClick={toggleLogin} state={menu} state2={login} render={isLandingPage} />
           
@@ -42,7 +56,7 @@ function App() {
 
                 <Route 
                   path="/main" 
-                  element={<SignUp/>} 
+                  element={<MainContent/>} 
                 />
 
                 <Route
@@ -59,8 +73,7 @@ function App() {
             </main>
           </div>
         </div>
-      </ThemeProvider>*/
-      <MainContent/>
+      </ThemeProvider>
     );
 }
 

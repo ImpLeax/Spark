@@ -6,13 +6,13 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import { useLocation } from "react-router-dom";
 
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
@@ -21,28 +21,26 @@ export function SignupForm({
   onSaveData,
   ...props
 }) {
+  const location = useLocation();
+  const googleData = location.state?.googleData;
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState(googleData?.first_name || "");
+  const [lastName, setLastName] = useState(googleData?.last_name || "");
+  const [email, setEmail] = useState(googleData?.email || "");
+  
   const [surname, setSurname] = useState("");
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
-
   const [dateOfBirth, setDateOfBirth] = useState();
   const [gender, setGender] = useState("");
   const [lookingFor, setLookingFor] = useState("");
   const [intention, setIntention] = useState("");  
   const [selectedInterests, setSelectedInterests] = useState([]);
-  
   const [photos, setPhotos] = useState([]);
-
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [isLocating, setIsLocating] = useState(false);
-
   const [error409, setError429] = useState(false);
 
   const [intentionsList, setIntentionsList] = useState([]);
@@ -144,8 +142,6 @@ export function SignupForm({
     formData.append("first_name", firstName); 
     formData.append("last_name", lastName);   
     formData.append("surname", surname);      
-
-
     formData.append("birth_date", format(dateOfBirth, "yyyy-MM-dd"));
 
     if (longitude && latitude) {
@@ -164,12 +160,6 @@ export function SignupForm({
     photos.forEach(file => {
       formData.append("photos", file);
     });
-
-    console.log("--- DATA TO SEND ---");
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
-    console.log("--------------------");
 
     try {
       const response = await api.post("user/register/", formData, {
@@ -311,10 +301,7 @@ export function SignupForm({
 
           <Field>
             <FieldLabel>Date of Birth</FieldLabel>
-            <DatePicker selected={dateOfBirth} onSelect={(newDate) => {
-                                                                        setDateOfBirth(newDate);
-                                                                        console.log("Date of Birth:", newDate);
-                                                                      }} />
+            <DatePicker selected={dateOfBirth} onSelect={(newDate) => { setDateOfBirth(newDate); }} />
           </Field>
 
           <Field>
@@ -328,7 +315,15 @@ export function SignupForm({
 
           <Field>
             <FieldLabel htmlFor="email">Email</FieldLabel>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <Input 
+              id="email" 
+              type="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+              disabled={!!googleData?.email}
+              className={googleData?.email ? "bg-muted text-muted-foreground" : ""}
+            />
           </Field>
 
           <Field>
