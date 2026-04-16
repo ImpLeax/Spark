@@ -566,14 +566,25 @@ class GoogleAuthView(generics.GenericAPIView):
 
         if user:
             refresh = RefreshToken.for_user(user)
-            return Response({
+
+            response_data = {
                 "status": "login",
                 "message": "Login successful.",
-                "tokens": {
-                    "access": str(refresh.access_token),
-                    "refresh": str(refresh)
-                }
-            }, status=status.HTTP_200_OK)
+                "access": str(refresh.access_token)
+            }
+
+            response = Response(response_data, status=status.HTTP_200_OK)
+
+            response.set_cookie(
+                key='refresh_token',
+                value=str(refresh),
+                httponly=True,
+                secure=settings.SIMPLE_JWT.get('AUTH_COOKIE_SECURE', False),
+                samesite='Lax',
+                max_age=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'].total_seconds()
+            )
+
+            return response
         else:
             return Response({
                 "status": "needs_registration",
