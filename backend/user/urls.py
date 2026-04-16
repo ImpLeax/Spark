@@ -7,6 +7,7 @@ app_name = "user"
 urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='register'),
     path('login/', views.CustomTokenObtainPairView.as_view(), name='login'),
+    path('details/', views.UserDetailView.as_view(), name='details'),
     path('auth/google/', views.GoogleAuthView.as_view(), name='google_auth'),
     path('logout/', views.LogoutAPIView.as_view(), name='logout'),
     path('delete/', views.AccountDeleteView.as_view(), name='account_delete'),
@@ -19,6 +20,7 @@ urlpatterns = [
     path('activate/<uidb64>/<token>/', views.VerifyEmailView.as_view(), name="activate"),
 
     path('profile/', views.UserProfileView.as_view(), name='profile'),
+    path('profile/<int:user_id>/', views.PublicProfileView.as_view(), name='view_profile'),
     path('genders/', views.GenderListView.as_view(), name='gender_list'),
     path('interests/', views.InterestListView.as_view(), name='interests_list'),
     path('intentions/', views.IntentionsListView.as_view(), name='intention_list'),

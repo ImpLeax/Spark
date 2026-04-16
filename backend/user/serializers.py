@@ -273,6 +273,15 @@ class ProfileReadSerializer(serializers.ModelSerializer):
         return [{'id': pi.interest.id, 'name': pi.interest.name} for pi in obj.profileinterest_set.all()]
 
 
+class UserDetailSerializer(serializers.ModelSerializer):
+    """The serializer class for view the user's username and email."""
+
+    class Meta:
+        model = get_user_model()
+        fields = [
+            'username', 'email'
+        ]
+
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     """The serializer class for modify the user profile."""
 

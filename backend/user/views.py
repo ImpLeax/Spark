@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, Throttled
 from rest_framework.throttling import ScopedRateThrottle
 from  django.contrib.auth import get_user_model
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
@@ -28,9 +28,9 @@ from .serializers import (
     SettingsSerializer, ProfileUpdateSerializer, ProfileInterestsUpdateSerializer,
     AccountDeleteSerializer, ChangePasswordSerializer, PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer, EmailChangeRequestSerializer, EmailChangeConfirmSerializer,
-    GoogleAuthSerializer
+    GoogleAuthSerializer, UserDetailSerializer
 )
-from .models import Gender, Interest, RelationshipIntention, Photo, Setting
+from .models import Gender, Interest, RelationshipIntention, Photo, Setting, Profile
 
 
 class RegisterView(generics.CreateAPIView):
@@ -216,6 +216,25 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user.profile
 
+
+class PublicProfileView(generics.RetrieveAPIView):
+    """A view class for retrieving another user's public profile."""
+
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ProfileReadSerializer
+
+    queryset = Profile.objects.all()
+
+    lookup_field = 'user_id'
+
+class UserDetailView(generics.RetrieveAPIView):
+    """View class for a user's username and email."""
+
+    permission_classes = (IsAuthenticated, )
+    serializer_class = UserDetailSerializer
+
+    def get_object(self):
+        return self.request.user
 
 class GenderListView(generics.ListAPIView):
     """The view class for the list of genders."""
@@ -443,7 +462,6 @@ class PasswordResetConfirmView(generics.GenericAPIView):
 class EmailChangeRequestView(generics.GenericAPIView):
     """View class for email change requests."""
 
-    throttle_classes = (ScopedRateThrottle, )
     throttle_scope = 'email_change'
     permission_classes = (IsAuthenticated, )
     serializer_class = EmailChangeRequestSerializer
@@ -451,6 +469,10 @@ class EmailChangeRequestView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        throttle = ScopedRateThrottle()
+        if not throttle.allow_request(request, self):
+            raise Throttled(wait=throttle.wait())
 
         user = request.user
         new_email = serializer.validated_data['new_email']
