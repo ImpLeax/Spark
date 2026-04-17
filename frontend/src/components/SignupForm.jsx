@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from '@/components/index';
@@ -16,11 +16,14 @@ import {
 import { Input } from "@/components/ui/input";
 
 export function SignupForm({ className, ...props }) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const location = useLocation();
+  const googleData = location.state?.googleData;
+
+  const [firstName, setFirstName] = useState(googleData?.first_name || "");
+  const [lastName, setLastName] = useState(googleData?.last_name || "");
+  const [email, setEmail] = useState(googleData?.email || "");
   const [surname, setSurname] = useState("");
   const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState();
@@ -284,7 +287,16 @@ export function SignupForm({ className, ...props }) {
 
                     <Field>
                       <FieldLabel htmlFor="email">Email Address</FieldLabel>
-                      <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="m@example.com" required />
+                      <Input
+                          id="email"
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="m@example.com"
+                          required
+                          readOnly={!!googleData?.email}
+                          className={googleData?.email ? "bg-muted text-muted-foreground cursor-not-allowed" : ""}
+                      />
                     </Field>
                   </div>
 
