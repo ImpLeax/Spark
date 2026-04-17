@@ -389,7 +389,9 @@ Retrieves a paginated list of matching profiles for the authenticated user. The 
               "age": 22,
               "bio": "Love hiking and coffee.",
               "avatar": "http://127.0.0.1:8000/media/avatars/olena.jpg",
-              "distance_km": 4.2
+              "shared_interests_score": 150,
+              "distance_km": 4.2,
+              "intention": "Serious relationships"
           },
           {
               "user_id": 27,
@@ -398,7 +400,9 @@ Retrieves a paginated list of matching profiles for the authenticated user. The 
               "age": 25,
               "bio": "Software engineer looking for meaningful connections.",
               "avatar": null,
-              "distance_km": 12.5
+              "shared_interests_score": 80,
+              "distance_km": 12.5,
+              "intention": "Still figuring it out"
           }
       ]
   }
@@ -426,3 +430,43 @@ Records a user's action (swipe right/like or swipe left/pass) on another profile
   }
   ```
 > **Important for Frontend:** Always check the `is_match` boolean in the response when sending a "Like" (`is_like: true`). If `is_match` comes back as `true`, it means the feelings are mutual! You should instantly interrupt the feed and show a "It's a Match!" celebration modal before letting the user continue swiping.
+
+### 16. Get Users I Liked (Likes Given)
+Retrieves a list of up to 10 profiles that the authenticated user has swiped right on (liked). Ordered by the date the target user joined (newest first).
+* **URL:** `recommendation/like/given/`
+* **Method:** `GET`
+* **Auth Required:** **Yes**
+* **Success Response (200 OK):**
+  ```json
+  [
+      {
+          "user_id": 14,
+          "username": "olena_spark",
+          "first_name": "Olena",
+          "age": 22,
+          "bio": "Love hiking and coffee.",
+          "avatar": "http://127.0.0.1:8000/media/avatars/olena.jpg",
+          "intention": "Serious relationships"
+      }
+  ]
+  ```
+
+### 17. Get Users Who Liked Me (Likes Received)
+Retrieves a list of up to 10 profiles of users who have swiped right on (liked) the authenticated user. Ordered by the date the sender joined (newest first).
+* **URL:** `recommendation/like/received/`
+* **Method:** `GET`
+* **Auth Required:** **Yes**
+* **Success Response (200 OK):**
+  ```json
+  [
+      {
+          "user_id": 27,
+          "username": "max_dev",
+          "first_name": "Max",
+          "age": 25,
+          "bio": "Software engineer looking for meaningful connections.",
+          "avatar": null,
+          "intention": "Still figuring it out"
+      }
+  ]
+  ```
