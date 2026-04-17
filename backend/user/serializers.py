@@ -16,6 +16,7 @@ from django.conf import settings
 from django.core import signing
 from psycopg2.extras import NumericRange
 
+from recommendations.models import Interactions
 from .models import Profile, Info, Gender, Interest, ProfileInterest, RelationshipIntention, Photo, Setting
 
 
@@ -260,17 +261,33 @@ class ProfileReadSerializer(serializers.ModelSerializer):
     intention = IntentionSerializer(read_only=True)
 
     interests = serializers.SerializerMethodField()
+    is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
         fields = [
             'id', 'avatar', 'first_name', 'last_name', 'surname',
             'location', 'gender', 'looking_for', 'intention',
-            'avatar', 'additional_info', 'interests'
+            'avatar', 'additional_info', 'interests', 'is_liked'
         ]
 
     def get_interests(self, obj):
         return [{'id': pi.interest.id, 'name': pi.interest.name} for pi in obj.profileinterest_set.all()]
+
+    def get_is_liked(self, obj):
+        request = self.context.get('request')
+
+        if request and request.user.is_authenticated:
+            if request.user.id == obj.user_id:
+                return False
+
+            return Interactions.objects.filter(
+                sender=request.user,
+                receiver_id=obj.user_id,
+                is_like=True
+            ).exists()
+
+        return False
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
