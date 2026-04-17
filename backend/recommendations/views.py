@@ -163,10 +163,17 @@ class LikedMeListView(generics.ListAPIView):
     def get_queryset(self):
         request_user = self.request.user
 
-        liked_user_ids = Interactions.objects.filter(
-            receiver=request_user,
-            is_like=True
+        interacted_user_ids = Interactions.objects.filter(
+            sender=request_user
         ).values_list('receiver_id', flat=True)
 
-        return Profile.objects.filter(user_id__in=liked_user_ids).select_related(
-            'user', 'additional_info', 'intention').order_by('-user__date_joined')[:10]
+        liked_me_ids = Interactions.objects.filter(
+            receiver=request_user,
+            is_like=True
+        ).exclude(
+            sender_id__in=interacted_user_ids
+        ).values_list('sender_id', flat=True)
+
+        return Profile.objects.filter(user_id__in=liked_me_ids).select_related(
+            'user', 'additional_info', 'intention'
+        ).order_by('-user__date_joined')[:10]
