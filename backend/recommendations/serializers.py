@@ -59,6 +59,7 @@ class LikeUserSerializer(serializers.ModelSerializer):
     intention = serializers.CharField(source='intention.name', read_only=True, allow_null=True)
     age = serializers.IntegerField(source='additional_info.age', read_only=True)
     bio = serializers.CharField(source='additional_info.bio', read_only=True)
+    distance_km = serializers.SerializerMethodField()
 
 
     class Meta:
@@ -70,5 +71,15 @@ class LikeUserSerializer(serializers.ModelSerializer):
             'age',
             'bio',
             'avatar',
-            'intention'
+            'intention',
+            'distance_km'
         ]
+
+    def get_distance_km(self, obj):
+        distance = getattr(obj, 'distance_to_me', None)
+        if distance is not None:
+            try:
+                return round(distance.km, 1)
+            except AttributeError:
+                return None
+        return None

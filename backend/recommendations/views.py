@@ -162,6 +162,7 @@ class LikedMeListView(generics.ListAPIView):
 
     def get_queryset(self):
         request_user = self.request.user
+        my_location = request_user.profile.location
 
         interacted_user_ids = Interactions.objects.filter(
             sender=request_user
@@ -174,6 +175,11 @@ class LikedMeListView(generics.ListAPIView):
             sender_id__in=interacted_user_ids
         ).values_list('sender_id', flat=True)
 
-        return Profile.objects.filter(user_id__in=liked_me_ids).select_related(
+        queryset = Profile.objects.filter(user_id__in=liked_me_ids).select_related(
             'user', 'additional_info', 'intention'
-        ).order_by('-user__date_joined')[:10]
+        )
+
+        if my_location:
+            queryset = queryset.annotate(distance_to_me=Distance('location', my_location))
+
+        return queryset.order_by('-user__date_joined')[:10]
