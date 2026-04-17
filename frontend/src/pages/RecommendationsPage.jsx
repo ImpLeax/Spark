@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, X, Info, MapPin, Loader2, Sparkles, MessageCircle } from "lucide-react";
+import { Heart, X, Info, MapPin, Sparkles, MessageCircle, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "@/services/axios";
 import { Badge } from "@/components/ui/badge";
@@ -8,12 +8,59 @@ import { Button } from "@/components/ui/button";
 import { FeedToggle } from "@/components/ui/FeedToggle";
 import { cn } from "@/lib/utils";
 
+// --- ЗВУК МЕТЧУ ---
+const playMatchSound = () => {
+  // Переконайся, що у тебе є файл /public/sounds/match.mp3
+  const audio = new Audio('/sounds/match.mp3');
+  audio.volume = 0.5; // Гучність 50%
+  audio.play().catch(e => console.log('Audio play blocked by browser:', e));
+};
+
+// --- КОМПОНЕНТ СКЕЛЕТОНА ДЛЯ ЗАВАНТАЖЕННЯ ---
+const CardSkeleton = () => (
+  <div className="absolute inset-0 w-full h-full rounded-[2rem] bg-card border border-border shadow-2xl overflow-hidden flex flex-col animate-pulse">
+    <div className="relative flex-1 bg-muted/50 flex items-center justify-center">
+      <User size={80} className="text-muted/30" />
+    </div>
+    <div className="absolute bottom-0 w-full p-6 space-y-4 bg-gradient-to-t from-background to-transparent">
+      <div className="h-10 bg-muted/80 rounded-lg w-2/3" />
+      <div className="h-4 bg-muted/80 rounded-md w-full" />
+      <div className="h-4 bg-muted/80 rounded-md w-4/5" />
+      <div className="h-6 bg-muted/80 rounded-full w-1/3 mt-2" />
+    </div>
+  </div>
+);
+
+// --- ВІЗУАЛЬНИЙ ЕФЕКТ СВАЙПУ (Лайк / Дізлайк) ---
+const SwipeFeedback = ({ type }) => {
+  if (!type) return null;
+
+  const isLike = type === 'like';
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.5, x: isLike ? -50 : 50, rotate: isLike ? -20 : 20 }}
+      animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 1.5], x: isLike ? 50 : -50, rotate: isLike ? 10 : -10 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className={cn(
+        "absolute inset-0 z-50 pointer-events-none flex items-center justify-center",
+        isLike ? "text-green-500 drop-shadow-[0_0_30px_rgba(34,197,94,0.5)]" : "text-destructive drop-shadow-[0_0_30px_rgba(239,68,68,0.5)]"
+      )}
+    >
+      {isLike ? (
+        <Heart size={140} fill="currentColor" />
+      ) : (
+        <X size={140} strokeWidth={4} />
+      )}
+    </motion.div>
+  );
+};
+
 // --- КОМПОНЕНТ КАРТКИ З ГАЛЕРЕЄЮ ---
 const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
   const [gallery, setGallery] = useState([]);
   const [photoIndex, setPhotoIndex] = useState(0);
 
-  // Завантажуємо галерею саме для цього профілю
   useEffect(() => {
     const fetchGallery = async () => {
       try {
@@ -26,7 +73,6 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
     fetchGallery();
   }, [profile.user_id]);
 
-  // Навігація між фотографіями
   const handleNextPhoto = (e) => {
     e.stopPropagation();
     if (photoIndex < gallery.length - 1) setPhotoIndex(prev => prev + 1);
@@ -37,7 +83,6 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
     if (photoIndex > 0) setPhotoIndex(prev => prev - 1);
   };
 
-  // Визначаємо поточне фото (якщо галерея ще вантажиться або порожня, показуємо аватар)
   const currentPhoto = gallery.length > 0 ? gallery[photoIndex]?.photo : profile.avatar;
 
   return (
@@ -53,12 +98,11 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
         x: exitX,
         opacity: 0,
         rotate: exitX * 0.05,
-        transition: { duration: 0.2 }
+        transition: { duration: 0.3, ease: "easeOut" }
       }}
       className="absolute inset-0 w-full h-full rounded-[2rem] bg-card border border-border shadow-2xl overflow-hidden flex flex-col"
     >
       <div className="relative flex-1 bg-muted">
-        {/* Індикатори фотографій (Tinder-style bars) */}
         {gallery.length > 1 && (
           <div className="absolute top-3 inset-x-0 flex gap-1 px-3 z-20">
             {gallery.map((_, i) => (
@@ -73,7 +117,6 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
           </div>
         )}
 
-        {/* Зображення */}
         {currentPhoto ? (
           <img
             src={currentPhoto}
@@ -81,28 +124,25 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-secondary/50">
-            <span className="text-muted-foreground">No Photo</span>
+          <div className="w-full h-full flex flex-col items-center justify-center bg-secondary/50 text-muted-foreground">
+            <User size={64} className="mb-4 opacity-50" />
+            <span className="font-medium">No Photo</span>
           </div>
         )}
 
-        {/* Градієнт знизу для читабельності тексту */}
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
 
-        {/* Невидимі зони для кліку (ліворуч/праворуч) */}
         <div className="absolute inset-0 flex z-10">
           <div className="w-1/2 h-full cursor-pointer" onClick={handlePrevPhoto} />
           <div className="w-1/2 h-full cursor-pointer" onClick={handleNextPhoto} />
         </div>
 
-        {/* Тег дистанції */}
-        {profile.distance_km !== undefined && (
+        {profile.distance_km !== undefined && profile.distance_km !== null && (
           <div className="absolute top-6 left-4 px-3 py-1.5 bg-black/40 backdrop-blur-md text-white rounded-full text-xs font-bold flex items-center gap-1.5 z-20 pointer-events-none">
             <MapPin size={14} /> {profile.distance_km} km away
           </div>
         )}
 
-        {/* Відсоток збігу */}
         {profile.shared_interests_score !== undefined && (
           <div className="absolute top-6 right-4 px-3 py-1.5 bg-primary/90 backdrop-blur-md text-white rounded-full text-xs font-black flex items-center gap-1.5 shadow-lg z-20 pointer-events-none">
             <Sparkles size={14} /> {profile.shared_interests_score}% Match
@@ -110,7 +150,6 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
         )}
       </div>
 
-      {/* Інформація під фото */}
       <div className="absolute bottom-0 w-full p-6 text-white space-y-3 z-30 pointer-events-none">
         <div className="flex items-end justify-between pointer-events-auto">
           <div>
@@ -149,6 +188,7 @@ const RecommendationsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const [exitX, setExitX] = useState(0);
+  const [swipeFeedback, setSwipeFeedback] = useState(null); // 'like' | 'pass'
   const [matchData, setMatchData] = useState(null);
 
   const navigate = useNavigate();
@@ -175,7 +215,10 @@ const RecommendationsPage = () => {
   const handleSwipe = async (isLike) => {
     if (profiles.length === 0) return;
 
+    // Включаємо анімації
     setExitX(isLike ? 200 : -200);
+    setSwipeFeedback(isLike ? 'like' : 'pass');
+
     const currentProfile = profiles[0];
 
     try {
@@ -186,20 +229,39 @@ const RecommendationsPage = () => {
 
       if (isLike && response.data.is_match) {
         setMatchData(currentProfile);
+        playMatchSound(); // Відтворюємо звук при метчі
       }
 
     } catch (error) {
       console.error("Swipe failed", error);
     }
 
+    // Прибираємо картку і вимикаємо ефекти після завершення анімації
     setTimeout(() => {
       setProfiles(prev => prev.slice(1));
       setExitX(0);
-    }, 200);
+      setSwipeFeedback(null);
+    }, 300); // 300мс — оптимальний час для плавної анімації
   };
 
   return (
     <div className="flex flex-col h-full min-h-[calc(100vh-65px)] md:min-h-screen bg-muted/20 relative overflow-hidden">
+
+      {/* Кольорове підсвічування по краям екрану при свайпі */}
+      <AnimatePresence>
+        {swipeFeedback === 'like' && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-green-500/20 to-transparent z-0 pointer-events-none"
+          />
+        )}
+        {swipeFeedback === 'pass' && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-red-500/20 to-transparent z-0 pointer-events-none"
+          />
+        )}
+      </AnimatePresence>
 
       <div className="pt-6 pb-4 px-4 shrink-0 relative z-10 flex flex-col items-center gap-4">
         <FeedToggle isLikesView={isLikesView} setIsLikesView={setIsLikesView} />
@@ -211,26 +273,27 @@ const RecommendationsPage = () => {
         </p>
       </div>
 
-      <div className="flex-1 relative flex items-center justify-center p-4">
-        {isLoading ? (
-          <div className="flex flex-col items-center text-muted-foreground gap-4">
-            <Loader2 className="w-10 h-10 animate-spin text-primary" />
-            <p className="font-medium">Finding the best sparks for you...</p>
-          </div>
-        ) : profiles.length === 0 ? (
-          <div className="text-center space-y-4 max-w-sm">
-            <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mx-auto mb-6">
-              <Sparkles className="w-10 h-10 text-muted-foreground" />
+      <div className="flex-1 relative flex items-center justify-center p-4 z-10">
+        <div className="relative w-full max-w-md aspect-[3/4] sm:aspect-[4/5] mx-auto flex items-center justify-center">
+
+          {/* Візуальний ефект свайпу над картками */}
+          <SwipeFeedback type={swipeFeedback} />
+
+          {isLoading ? (
+            <CardSkeleton />
+          ) : profiles.length === 0 ? (
+            <div className="text-center space-y-4 max-w-sm">
+              <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+                <Sparkles className="w-10 h-10 text-muted-foreground" />
+              </div>
+              <h3 className="text-2xl font-bold">No profiles left</h3>
+              <p className="text-muted-foreground">
+                {isLikesView
+                  ? "You haven't received any new likes yet. Keep swiping!"
+                  : "You've seen everyone nearby. Try adjusting your search settings or check back later."}
+              </p>
             </div>
-            <h3 className="text-2xl font-bold">No profiles left</h3>
-            <p className="text-muted-foreground">
-              {isLikesView
-                ? "You haven't received any new likes yet. Keep swiping!"
-                : "You've seen everyone nearby. Try adjusting your search settings or check back later."}
-            </p>
-          </div>
-        ) : (
-          <div className="relative w-full max-w-md aspect-[3/4] sm:aspect-[4/5] mx-auto">
+          ) : (
             <AnimatePresence>
               {profiles.map((profile, index) => {
                 if (index > 1) return null;
@@ -248,8 +311,8 @@ const RecommendationsPage = () => {
                 );
               })}
             </AnimatePresence>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {!isLoading && profiles.length > 0 && (
@@ -293,11 +356,19 @@ const RecommendationsPage = () => {
 
               <div className="relative w-40 h-40 mx-auto">
                 <div className="absolute inset-0 bg-pink-500 rounded-full animate-ping opacity-20" />
-                <img
-                  src={matchData.avatar || 'https://via.placeholder.com/150'}
-                  alt={matchData.first_name}
-                  className="w-full h-full rounded-full object-cover border-4 border-pink-500 relative z-10"
-                />
+
+                {/* ЗАГЛУШКА ДЛЯ МЕТЧУ БЕЗ ФОТО */}
+                {matchData.avatar ? (
+                  <img
+                    src={matchData.avatar}
+                    alt={matchData.first_name}
+                    className="w-full h-full rounded-full object-cover border-4 border-pink-500 relative z-10 bg-card"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-full border-4 border-pink-500 relative z-10 bg-secondary flex flex-col items-center justify-center text-muted-foreground shadow-inner">
+                     <User size={64} />
+                  </div>
+                )}
               </div>
 
               <div className="space-y-4 pt-8">
