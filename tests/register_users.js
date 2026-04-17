@@ -26,8 +26,8 @@ const first_names = ['Anna', 'Natali', 'Maria', 'Anastasia', 'Liza', 'Sasha'];
 const last_names = ['Sergeivna', 'Volodymyrivna', 'Maxymivna'];
 const surnames = ['Shevchenko', 'Kovalenko', 'Boiko', 'Polishchuk', 'Ivanenko'];
 
-const n = 20;
-for (let i=7;i<n;i++){
+const n = 80;
+for (let i=20;i<n;i++){
     const formData = new FormData();
     formData.append("username", `user${i}`);
     formData.append("email", `user${i}@gmail.com`);

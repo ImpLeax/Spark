@@ -19,6 +19,5 @@ wheels/
 
 #static
 staticfiles/
-backend/media/
 frontend/
 tests/photos/
