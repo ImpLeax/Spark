@@ -19,7 +19,7 @@ wheels/
 
 #static
 staticfiles/
-backend/media/
+backend/
 
 # Logs
 frontend/logs

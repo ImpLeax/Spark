@@ -12,14 +12,21 @@ import {
   ChevronLeft,
   ChevronRight,
   Weight,
-  MessageCircle
+  MessageCircle,
+  Loader2
 } from "lucide-react";
 import api from "@/services/axios";
-import { calculateAge, parseLocation } from "@/lib/utils";
+import { calculateAge, parseLocation, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge.jsx";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/Card.jsx";
+
+const playMatchSound = () => {
+  const audio = new Audio('/sounds/match.mp3');
+  audio.volume = 0.5;
+  audio.play().catch(e => console.log('Audio play blocked by browser:', e));
+};
 
 const PublicProfilePage = () => {
   const { userId } = useParams();
@@ -31,10 +38,12 @@ const PublicProfilePage = () => {
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [cityName, setCityName] = useState("Loading location...");
 
+  const [isLiking, setIsLiking] = useState(false);
+  const [matchData, setMatchData] = useState(null);
+
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-
         const [profileRes, galleryRes] = await Promise.all([
           api.get(`user/profile/${userId}/`),
           api.get(`user/profile/${userId}/gallery/`).catch(() => ({ data: [] }))
@@ -82,6 +91,29 @@ const PublicProfilePage = () => {
 
   const nextPhoto = () => setActivePhotoIndex((prev) => (prev + 1) % gallery.length);
   const prevPhoto = () => setActivePhotoIndex((prev) => (prev - 1 + gallery.length) % gallery.length);
+
+  const handleLike = async () => {
+    if (profile?.is_liked || isLiking) return;
+
+    setIsLiking(true);
+    try {
+      const response = await api.post("recommendation/swipe/", {
+        receiver: userId,
+        is_like: true
+      });
+
+      setProfile(prev => ({ ...prev, is_liked: true }));
+
+      if (response.data.is_match) {
+        setMatchData(profile);
+        playMatchSound();
+      }
+    } catch (error) {
+      console.error("Failed to like user", error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
 
   if (loading) return <ProfileSkeleton />;
   if (!profile) return <div className="text-center py-20 text-muted-foreground">Profile not found.</div>;
@@ -144,11 +176,25 @@ const PublicProfilePage = () => {
               >
                 <ChevronLeft className="mr-2 h-5 w-5" /> Back
               </Button>
+
               <Button
-                className="flex-1 h-12 md:h-14 rounded-2xl text-base md:text-lg font-bold shadow-sm"
+                className={cn(
+                  "flex-1 h-12 md:h-14 rounded-2xl text-base md:text-lg font-bold shadow-sm transition-all",
+                  profile?.is_liked
+                    ? "bg-pink-500/20 text-pink-500 hover:bg-pink-500/30 border-0"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
+                onClick={handleLike}
+                disabled={profile?.is_liked || isLiking}
               >
-                <Heart className="mr-2 h-5 w-5" /> Like
+                {isLiking ? (
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                ) : (
+                  <Heart className={cn("mr-2 h-5 w-5", profile?.is_liked ? "fill-current" : "")} />
+                )}
+                {profile?.is_liked ? "Liked" : "Like"}
               </Button>
+
             </div>
           </div>
         </div>
@@ -218,6 +264,67 @@ const PublicProfilePage = () => {
 
         </div>
       </div>
+
+      <AnimatePresence>
+        {matchData && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-white"
+          >
+            <motion.div
+              initial={{ scale: 0.5, y: 50 }}
+              animate={{ scale: 1, y: 0 }}
+              className="text-center space-y-8 max-w-sm w-full"
+            >
+              <div className="space-y-2">
+                <h2 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 animate-pulse">
+                  It's a Match!
+                </h2>
+                <p className="text-lg text-white/70">You and {matchData.first_name} liked each other.</p>
+              </div>
+
+              <div className="relative w-40 h-40 mx-auto">
+                <div className="absolute inset-0 bg-pink-500 rounded-full animate-ping opacity-20" />
+
+                {matchData.avatar ? (
+                  <img
+                    src={matchData.avatar}
+                    alt={matchData.first_name}
+                    className="w-full h-full rounded-full object-cover border-4 border-pink-500 relative z-10 bg-card"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-full border-4 border-pink-500 relative z-10 bg-secondary flex flex-col items-center justify-center text-muted-foreground shadow-inner">
+                     <User size={64} />
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-4 pt-8">
+                <Button
+                  onClick={() => {
+                    setMatchData(null);
+                    navigate('/messages');
+                  }}
+                  className="w-full h-14 rounded-2xl bg-white text-black hover:bg-white/90 text-lg font-bold"
+                >
+                  <MessageCircle className="mr-2 h-5 w-5" /> Say Hello
+                </Button>
+
+                <Button
+                  onClick={() => setMatchData(null)}
+                  variant="ghost"
+                  className="w-full h-14 rounded-2xl text-white/70 hover:text-white hover:bg-white/10 text-lg"
+                >
+                  Close
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </motion.div>
   );
 };

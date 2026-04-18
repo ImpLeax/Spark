@@ -13,7 +13,9 @@ import {
   MapPin,
   CheckCircle2,
   Camera,
-  Plus
+  Plus,
+  X,
+  ChevronRight
 } from "lucide-react";
 import api from "@/services/axios";
 import { useAuth } from "@/context/AuthContext";
@@ -127,6 +129,16 @@ const ProfileSettings = () => {
   const [profileData, setProfileData] = useState({
     firstName: "", lastName: "", surname: "", bio: "", height: "", weight: "",
   });
+
+  const [intention, setIntention] = useState("");
+  const [selectedInterests, setSelectedInterests] = useState([]);
+
+  const [intentionsList, setIntentionsList] = useState([]);
+  const [interestsList, setInterestsList] = useState([]);
+
+  const [isIntentionModalOpen, setIsIntentionModalOpen] = useState(false);
+  const [isInterestsModalOpen, setIsInterestsModalOpen] = useState(false);
+
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
 
@@ -152,10 +164,15 @@ const ProfileSettings = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const [profileRes, galleryRes] = await Promise.all([
+        const [profileRes, galleryRes, intRes, intListRes] = await Promise.all([
           api.get("user/profile/"),
-          api.get("user/profile/gallery/")
+          api.get("user/profile/gallery/"),
+          api.get("user/intentions/"),
+          api.get("user/interests/?page=1&page_size=50")
         ]);
+
+        setIntentionsList(intRes.data);
+        setInterestsList(intListRes.data.results || []);
 
         const data = profileRes.data;
         setProfileData({
@@ -166,6 +183,10 @@ const ProfileSettings = () => {
           height: data.additional_info?.height || "",
           weight: data.additional_info?.weight || "",
         });
+
+        setIntention(data.intention?.id ? data.intention.id.toString() : "");
+        setSelectedInterests(data.interests?.map(i => i.id) || []);
+
         setAvatar(data.avatar);
         setGallery(galleryRes.data);
       } catch (error) {
@@ -176,6 +197,18 @@ const ProfileSettings = () => {
     };
     fetchProfileData();
   }, []);
+
+  const handleInterestToggle = (id) => {
+    setSelectedInterests(prev => {
+      if (prev.includes(id)) {
+        return prev.filter(item => item !== id);
+      }
+      if (prev.length >= 10) {
+        return prev;
+      }
+      return [...prev, id];
+    });
+  };
 
   const handleAvatarUpload = async (e) => {
     const file = e.target.files[0];
@@ -242,6 +275,11 @@ const ProfileSettings = () => {
 
   const handleSaveInfo = async (e) => {
     e.preventDefault();
+
+    if (selectedInterests.length < 2) {
+      return showMessage("error", "Please select at least 2 interests.");
+    }
+
     setIsSaving(true);
     setMessage(null);
 
@@ -254,13 +292,18 @@ const ProfileSettings = () => {
 
     if (profileData.height) payload.height = Number(profileData.height);
     if (profileData.weight) payload.weight = Number(profileData.weight);
+    if (intention) payload.intention_id = Number(intention);
+
     if (latitude && longitude) {
       payload.latitude = latitude;
       payload.longitude = longitude;
     }
 
     try {
-      await api.patch("user/profile/", payload);
+      await Promise.all([
+        api.patch("user/profile/", payload),
+        api.patch("user/profile/interests/", { interest_ids: selectedInterests })
+      ]);
       showMessage("success", "Profile info updated successfully!");
     } catch (error) {
       showMessage("error", getErrorMessage(error, "Failed to update profile info."));
@@ -288,6 +331,8 @@ const ProfileSettings = () => {
       setIsLocating(false);
     }
   };
+
+  const selectedIntentionObj = intentionsList.find(i => i.id.toString() === intention);
 
   if (isLoading) return <div className="animate-pulse h-96 bg-muted/50 rounded-3xl" />;
 
@@ -402,6 +447,37 @@ const ProfileSettings = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
+                <label className="text-sm font-semibold text-muted-foreground">Intention</label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsIntentionModalOpen(true)}
+                  className="w-full flex justify-between items-center bg-secondary/20 hover:bg-secondary/40 border-dashed h-12 rounded-xl"
+                >
+                  <span className={intention ? "text-foreground font-medium" : "text-muted-foreground"}>
+                    {selectedIntentionObj ? selectedIntentionObj.name : "Select intention..."}
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                </Button>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-muted-foreground">Interests</label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsInterestsModalOpen(true)}
+                  className="w-full flex justify-between items-center bg-secondary/20 hover:bg-secondary/40 border-dashed h-12 rounded-xl"
+                >
+                  <span className={selectedInterests.length > 0 ? "text-foreground font-medium" : "text-muted-foreground"}>
+                    {selectedInterests.length > 0 ? `${selectedInterests.length} selected` : "Select interests..."}
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
                 <label className="text-sm font-semibold text-muted-foreground">Height (cm)</label>
                 <Input type="number" placeholder="180" value={profileData.height} onChange={(e) => setProfileData({...profileData, height: e.target.value})} className="h-12" />
               </div>
@@ -429,6 +505,80 @@ const ProfileSettings = () => {
           </form>
         </div>
       </Card>
+
+      <AnimatePresence>
+        {isIntentionModalOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-background/80 backdrop-blur-sm">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-card w-full max-w-md rounded-3xl shadow-2xl border border-border flex flex-col max-h-[85vh]">
+              <div className="flex items-center justify-between p-6 border-b border-border">
+                <div>
+                  <h2 className="text-2xl font-bold">What are you looking for?</h2>
+                  <p className="text-sm text-muted-foreground mt-1">Select your relationship intention.</p>
+                </div>
+                <button onClick={() => setIsIntentionModalOpen(false)} className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors shrink-0">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto">
+                <div className="flex flex-col gap-3">
+                  {intentionsList.length > 0 ? intentionsList.map((el) => {
+                    const isSelected = intention === el.id.toString();
+                    return (
+                      <Button key={`modal-intent-${el.id}`} type="button" variant={isSelected ? "default" : "secondary"} onClick={() => setIntention(el.id.toString())} className={cn("w-full transition-all justify-start text-left px-5 py-4 h-auto text-base rounded-xl", !isSelected && "bg-secondary/50 text-foreground hover:bg-secondary")}>
+                        {el.name}
+                      </Button>
+                    );
+                  }) : (
+                    <div className="flex items-center justify-center w-full py-10 text-muted-foreground"><Loader2 className="w-6 h-6 animate-spin mr-2" />Loading...</div>
+                  )}
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-border bg-card/50 rounded-b-3xl">
+                <Button onClick={() => setIsIntentionModalOpen(false)} className="w-full h-12 text-lg rounded-xl">Done</Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isInterestsModalOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-background/80 backdrop-blur-sm">
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-card w-full max-w-2xl rounded-3xl shadow-2xl border border-border flex flex-col max-h-[85vh]">
+              <div className="flex items-center justify-between p-6 border-b border-border">
+                <div>
+                  <h2 className="text-2xl font-bold">What are you into?</h2>
+                  <p className="text-sm text-muted-foreground mt-1">Select your interests to find better matches. ({selectedInterests.length}/10)</p>
+                </div>
+                <button onClick={() => setIsInterestsModalOpen(false)} className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto">
+                <div className="flex flex-wrap gap-3">
+                  {interestsList.length > 0 ? interestsList.map((interest) => {
+                    const isSelected = selectedInterests.includes(interest.id);
+                    return (
+                      <Button key={`modal-interest-${interest.id}`} type="button" variant={isSelected ? "default" : "secondary"} onClick={() => handleInterestToggle(interest.id)} className={cn("rounded-full transition-all py-2 px-4 h-auto text-sm", !isSelected && "bg-secondary/50 text-foreground hover:bg-secondary")}>
+                        {interest.name}
+                      </Button>
+                    );
+                  }) : (
+                    <div className="flex items-center justify-center w-full py-10 text-muted-foreground"><Loader2 className="w-6 h-6 animate-spin mr-2" />Loading interests...</div>
+                  )}
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-border bg-card/50 rounded-b-3xl">
+                <Button onClick={() => setIsInterestsModalOpen(false)} className="w-full h-12 text-lg rounded-xl">Done</Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

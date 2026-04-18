@@ -8,15 +8,12 @@ import { Button } from "@/components/ui/button";
 import { FeedToggle } from "@/components/ui/FeedToggle";
 import { cn } from "@/lib/utils";
 
-// --- ЗВУК МЕТЧУ ---
 const playMatchSound = () => {
-  // Переконайся, що у тебе є файл /public/sounds/match.mp3
   const audio = new Audio('/sounds/match.mp3');
-  audio.volume = 0.5; // Гучність 50%
+  audio.volume = 0.5;
   audio.play().catch(e => console.log('Audio play blocked by browser:', e));
 };
 
-// --- КОМПОНЕНТ СКЕЛЕТОНА ДЛЯ ЗАВАНТАЖЕННЯ ---
 const CardSkeleton = () => (
   <div className="absolute inset-0 w-full h-full rounded-[2rem] bg-card border border-border shadow-2xl overflow-hidden flex flex-col animate-pulse">
     <div className="relative flex-1 bg-muted/50 flex items-center justify-center">
@@ -31,7 +28,6 @@ const CardSkeleton = () => (
   </div>
 );
 
-// --- ВІЗУАЛЬНИЙ ЕФЕКТ СВАЙПУ (Лайк / Дізлайк) ---
 const SwipeFeedback = ({ type }) => {
   if (!type) return null;
 
@@ -56,7 +52,6 @@ const SwipeFeedback = ({ type }) => {
   );
 };
 
-// --- КОМПОНЕНТ КАРТКИ З ГАЛЕРЕЄЮ ---
 const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
   const [gallery, setGallery] = useState([]);
   const [photoIndex, setPhotoIndex] = useState(0);
@@ -181,14 +176,13 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
   );
 };
 
-// --- ГОЛОВНА СТОРІНКА ---
 const RecommendationsPage = () => {
   const [isLikesView, setIsLikesView] = useState(false);
   const [profiles, setProfiles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [exitX, setExitX] = useState(0);
-  const [swipeFeedback, setSwipeFeedback] = useState(null); // 'like' | 'pass'
+  const [swipeFeedback, setSwipeFeedback] = useState(null);
   const [matchData, setMatchData] = useState(null);
 
   const navigate = useNavigate();
@@ -215,7 +209,6 @@ const RecommendationsPage = () => {
   const handleSwipe = async (isLike) => {
     if (profiles.length === 0) return;
 
-    // Включаємо анімації
     setExitX(isLike ? 200 : -200);
     setSwipeFeedback(isLike ? 'like' : 'pass');
 
@@ -229,25 +222,23 @@ const RecommendationsPage = () => {
 
       if (isLike && response.data.is_match) {
         setMatchData(currentProfile);
-        playMatchSound(); // Відтворюємо звук при метчі
+        playMatchSound();
       }
 
     } catch (error) {
       console.error("Swipe failed", error);
     }
 
-    // Прибираємо картку і вимикаємо ефекти після завершення анімації
     setTimeout(() => {
       setProfiles(prev => prev.slice(1));
       setExitX(0);
       setSwipeFeedback(null);
-    }, 300); // 300мс — оптимальний час для плавної анімації
+    }, 300);
   };
 
   return (
     <div className="flex flex-col h-full min-h-[calc(100vh-65px)] md:min-h-screen bg-muted/20 relative overflow-hidden">
 
-      {/* Кольорове підсвічування по краям екрану при свайпі */}
       <AnimatePresence>
         {swipeFeedback === 'like' && (
           <motion.div
@@ -276,7 +267,6 @@ const RecommendationsPage = () => {
       <div className="flex-1 relative flex items-center justify-center p-4 z-10">
         <div className="relative w-full max-w-md aspect-[3/4] sm:aspect-[4/5] mx-auto flex items-center justify-center">
 
-          {/* Візуальний ефект свайпу над картками */}
           <SwipeFeedback type={swipeFeedback} />
 
           {isLoading ? (
@@ -357,7 +347,6 @@ const RecommendationsPage = () => {
               <div className="relative w-40 h-40 mx-auto">
                 <div className="absolute inset-0 bg-pink-500 rounded-full animate-ping opacity-20" />
 
-                {/* ЗАГЛУШКА ДЛЯ МЕТЧУ БЕЗ ФОТО */}
                 {matchData.avatar ? (
                   <img
                     src={matchData.avatar}
