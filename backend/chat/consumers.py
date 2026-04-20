@@ -1,9 +1,11 @@
 import json
+import base64
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import ChatRoom, Message
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.core.files.base import ContentFile
 
 User = get_user_model()
 
@@ -101,7 +103,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         action = text_data_json.get("action", "send_message")
 
         if action == "send_message":
-            message_text = text_data_json["message"]
+            message_text = text_data_json.get("message", "")
             sender_id = self.user.id
 
             saved_message = await self.save_message(sender_id, self.room_id, message_text)
@@ -111,6 +113,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'chat_message',
                     'message': message_text,
+                    'file_url': None,
                     'sender_id': sender_id,
                     'msg_id': saved_message.id,
                     'is_read': False
@@ -142,6 +145,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'action': 'new_message',
             'message': event['message'],
+            'file_url': event.get('file_url'),
             'sender_id': event['sender_id'],
             'msg_id': event['msg_id'],
             'is_read': event['is_read']
@@ -155,7 +159,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     @database_sync_to_async
-    def save_message(self, sender_id, room_id, text):
+    def save_message(self, sender_id, room_id, text, file_data=None, file_name=None):
         room = ChatRoom.objects.get(id=room_id)
         sender = User.objects.get(id=sender_id)
         return Message.objects.create(room=room, sender=sender, text=text)

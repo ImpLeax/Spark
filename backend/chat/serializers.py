@@ -4,16 +4,22 @@ from django.core.cache import cache
 
 class MessageSerializer(serializers.ModelSerializer):
     is_mine = serializers.SerializerMethodField()
+    file_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Message
-        fields = ['id', 'sender_id', 'text', 'is_read', 'created_at', 'is_mine']
+        fields = ['id', 'sender_id', 'text', 'file_url', 'is_read', 'created_at', 'is_mine']
 
     def get_is_mine(self, obj):
         request = self.context.get('request')
         if request and hasattr(request, 'user'):
             return obj.sender_id == request.user.id
         return False
+    
+    def get_file_url(self, obj):
+        if obj.file:
+            return obj.file.url
+        return None
 
 
 class ChatRoomListSerializer(serializers.ModelSerializer):

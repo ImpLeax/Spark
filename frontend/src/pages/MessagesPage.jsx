@@ -1,16 +1,34 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, ArrowLeft, Loader2, Search, MessageCircle, Check, CheckCheck, ChevronDown } from "lucide-react";
+import { Send, ArrowLeft, Loader2, Search, MessageCircle, Check, CheckCheck, ChevronDown, Paperclip, X } from "lucide-react";
 import { format } from "date-fns";
 import api from "@/services/axios";
 import { cn } from "@/lib/utils";
 import { getAccessToken, API_BASE_URL } from "@/services/axios";
 import { usePresence } from "@/context/PresenceContext";
+import KlipyPicker from "@/components/KlipyPicker";
 
 const getAvatarUrl = (avatarPath, firstName) => {
   if (!avatarPath) return `https://ui-avatars.com/api/?name=${firstName}&background=random&color=fff`;
   if (avatarPath.startsWith("http")) return avatarPath;
   return `${API_BASE_URL}${avatarPath}`;
+};
+
+const getAttachmentUrl = (url) => {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    const cleanBaseUrl = API_BASE_URL.replace(/\/$/, '');
+    const cleanPath = url.startsWith('/') ? url : `/${url}`;
+    return `${cleanBaseUrl}${cleanPath}`;
+};
+
+const getFileNameFromUrl = (url) => {
+    if (!url) return "Attachment";
+    try {
+        return decodeURIComponent(url.split('/').pop().split('?')[0]);
+    } catch (error) {
+        return "Attachment";
+    }
 };
 
 const getWebSocketBaseUrl = () => {
@@ -24,9 +42,13 @@ const MessagesPage = () => {
   const [chats, setChats] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
 
+  const currentUserId = localStorage.getItem("user_id") || "spark_user";
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [nextCursor, setNextCursor] = useState(null);
+  const [showGifPicker, setShowGifPicker] = useState(false);
 
   const [isLoadingChats, setIsLoadingChats] = useState(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
@@ -37,9 +59,9 @@ const MessagesPage = () => {
   const ws = useRef(null);
   const chatContainerRef = useRef(null);
   const unreadMessageRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const processedNotifications = useRef(new Set());
-
   const previousScrollHeight = useRef(0);
 
   const isOnline = useCallback((userId, fallback) => {
@@ -123,6 +145,7 @@ const MessagesPage = () => {
     setNextCursor(null);
     setIsLoadingMessages(true);
     setShowScrollBottomBtn(false);
+    setSelectedFiles([]);
 
     const roomId = activeChat.id;
     const token = getAccessToken();
@@ -172,6 +195,7 @@ const MessagesPage = () => {
           const newMessage = {
             id: data.msg_id,
             text: data.message,
+            file_url: data.file_url,
             is_mine: data.sender_id === activeChat.partner.id ? false : true,
             created_at: new Date().toISOString(),
             is_read: data.is_read
@@ -201,6 +225,7 @@ const MessagesPage = () => {
                 ...existingChat,
                 last_message: {
                     text: newMessage.text,
+                    file_url: newMessage.file_url,
                     is_mine: newMessage.is_mine,
                     created_at: newMessage.created_at,
                     is_read: newMessage.is_read
@@ -260,17 +285,83 @@ const MessagesPage = () => {
       };
   }, [sendMarkAsRead, messages]);
 
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const newFiles = Array.from(e.target.files);
+      
+      setSelectedFiles(prev => {
+        const prevArray = prev || [];
+        return [...prevArray, ...newFiles].slice(0, 10);
+      });
+      
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
-  const sendMessage = (e) => {
+  const removeFile = (indexToRemove) => {
+    setSelectedFiles(prev => prev.filter((_, index) => index !== indexToRemove));
+  };
+
+  const sendMessage = async (e) => {
     e.preventDefault();
-    if (!input.trim() || !ws.current || ws.current.readyState !== WebSocket.OPEN) return;
+    if (!input.trim() && selectedFiles.length === 0) return;
 
+    if (selectedFiles.length > 0) {
+        const formData = new FormData();
+        
+        if (input.trim()) {
+            formData.append('message', input.trim());
+        }
+
+        selectedFiles.forEach(file => {
+            formData.append('files', file);
+        });
+
+        try {
+            await api.post(`chat/${activeChat.id}/upload/`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            
+            setInput("");
+            setSelectedFiles([]);
+        } catch (error) {
+            console.error("Помилка завантаження файлу: ", error);
+            const errorMessage = error.response?.data?.error 
+                              || error.response?.data?.detail 
+                              || "Помилка при завантаженні файлу. Перевірте формат та розмір.";
+            
+            alert(`Не вдалося відправити файл: ${errorMessage}`);
+  
+        }
+    } 
+    else {
+        if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
+        ws.current.send(JSON.stringify({
+            action: "send_message",
+            message: input.trim()
+        }));
+        setInput("");
+    }
+  };
+
+  const sendGif = (gifUrl) => {
+    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
+    
     ws.current.send(JSON.stringify({
         action: "send_message",
-        message: input.trim()
+        message: gifUrl
     }));
-    setInput("");
+    
+    setShowGifPicker(false);
   };
+
+  const isGifMessage = (text) => {
+    if (!text) return false;
+    const urlPattern = /^(https?:\/\/(?:[a-z0-9\-]+\.)*(?:tenor\.com|giphy\.com|gph\.is)[^\s]*|\S+\.gif)$/i;
+    return urlPattern.test(text.trim());
+  };
+
+
 
   const scrollToBottom = (behavior = "smooth") => {
     setTimeout(() => {
@@ -285,7 +376,18 @@ const MessagesPage = () => {
           });
         }
       }
-    }, 50);
+    }, 250);
+  };
+
+  const handleGifSelect = (gifUrl) => {
+    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
+
+    ws.current.send(JSON.stringify({
+        action: "send_message",
+        message: gifUrl
+    }));
+
+    setShowGifPicker(false);
   };
 
   const handleScroll = useCallback(async () => {
@@ -447,7 +549,7 @@ const MessagesPage = () => {
                           chat.unread_count > 0 && activeChat?.id !== chat.id && "text-foreground font-semibold"
                         )}>
                           {chat.last_message
-                            ? chat.last_message.text
+                            ? (chat.last_message.text || (chat.last_message.file_url ? "📎 File" : ""))
                             : "New match! Say hello 👋"}
                         </p>
                     </div>
@@ -520,6 +622,7 @@ const MessagesPage = () => {
               messages.map((msg, index) => {
                 const showAvatar = !msg.is_mine && (index === messages.length - 1 || messages[index + 1]?.is_mine);
                 const isFirstUnread = index === firstUnreadIndex;
+                const fileUrl = getAttachmentUrl(msg.file_url);
 
                 return (
                   <React.Fragment key={msg.id || index}>
@@ -547,7 +650,38 @@ const MessagesPage = () => {
                           ? "bg-primary text-primary-foreground rounded-br-sm"
                           : "bg-card border border-border text-foreground rounded-bl-sm"
                       )}>
-                        <p className="text-[14px] leading-relaxed break-words">{msg.text}</p>
+                        
+                        {/* Відображення файлу */}
+                        {fileUrl && (
+                            <div className="mb-2 rounded-lg overflow-hidden flex flex-col">
+                                {fileUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+                                    <img src={fileUrl} alt="attachment" className="max-w-full h-auto rounded-md object-contain" />
+                                ) : (
+                                    <a 
+                                        href={fileUrl} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer" 
+                                        className="flex items-center gap-2 p-2 bg-background/20 rounded-md hover:bg-background/30 transition-colors"
+                                    >
+                                        <Paperclip className="w-4 h-4 shrink-0 text-foreground/80" />
+                                        <span className="truncate text-[13px] font-medium underline-offset-2 hover:underline">
+                                            {getFileNameFromUrl(msg.file_url)}
+                                        </span>
+                                    </a>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Відображення тексту (якщо він є) */}
+                        {msg.text && (
+                            isGifMessage(msg.text) ? (
+                                  <div className="mt-1 rounded-lg overflow-hidden bg-muted/20 max-w-[250px]">
+                                      <img src={msg.text} alt="GIF" className="w-full h-auto object-contain" />
+                                  </div>
+                              ) : (
+                                  <p className="text-[14px] leading-relaxed break-words">{msg.text}</p>
+                              )
+                        )}
 
                         <div className={cn(
                             "flex items-center justify-end gap-1 mt-0.5",
@@ -587,21 +721,104 @@ const MessagesPage = () => {
                 )}
             </AnimatePresence>
 
-          <form onSubmit={sendMessage} className="p-4 bg-background border-t border-border shrink-0 flex gap-2 relative">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Write a message..."
-              className="flex-1 bg-muted/50 px-4 py-3 rounded-full text-[14px] outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-transparent focus:border-border"
-            />
-            <button
-              type="submit"
-              disabled={!input.trim()}
-              className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0 shadow-md active:scale-95 cursor-pointer"
-            >
-              <Send className="w-5 h-5 ml-0.5" />
-            </button>
+          <AnimatePresence>
+            {selectedFiles.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="absolute bottom-[85px] mb-2 left-4 right-4 bg-card/95 backdrop-blur-sm border border-border rounded-xl shadow-lg z-50 p-2 flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-muted"
+              >
+                {selectedFiles.map((file, index) => (
+                  <motion.div 
+                    key={`${file.name}-${index}`}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.8, opacity: 0 }}
+                    className="flex items-center gap-2 bg-muted/50 p-1.5 pr-2 rounded-lg border border-border/50 shrink-0"
+                  >
+                    <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+                      <Paperclip className="w-4 h-4 text-primary" />
+                    </div>
+                    <div className="flex flex-col max-w-[120px]">
+                      <span className="text-[12px] font-medium truncate text-foreground">
+                        {file.name}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {(file.size / 1024 / 1024).toFixed(1)} MB
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => removeFile(index)}
+                      type="button"
+                      className="p-1 ml-1 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </motion.div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {showGifPicker && (
+              <div className="absolute bottom-[85px] left-4 z-[100]">
+                <KlipyPicker 
+                  apiKey={import.meta.env.VITE_KLIPY_API_KEY}
+                  onGifClick={handleGifSelect}
+                  onClose={() => setShowGifPicker(false)}
+                />
+              </div>
+            )}
+          </AnimatePresence>
+
+          <form onSubmit={sendMessage} className="p-4 bg-background border-t border-border shrink-0 flex gap-2 relative items-center">
+              
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                className="hidden"
+                multiple 
+              />
+              
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-colors shrink-0 cursor-pointer"
+              >
+                <Paperclip className="w-5 h-5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowGifPicker(!showGifPicker)}
+                className={cn(
+                  "w-10 h-10 flex items-center justify-center rounded-full transition-colors shrink-0 cursor-pointer",
+                  showGifPicker ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <span className="font-bold text-[11px] border-2 border-current rounded-[4px] px-1 tracking-wider leading-none py-0.5">
+                  GIF
+                </span>
+              </button>
+
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Write a message..."
+                className="flex-1 bg-muted/50 px-4 py-3 rounded-full text-[14px] outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-transparent focus:border-border"
+              />
+              
+              <button
+                type="submit"
+                disabled={!input.trim() && selectedFiles.length === 0}
+                className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0 shadow-md active:scale-95 cursor-pointer"
+              >
+                <Send className="w-5 h-5 ml-0.5" />
+              </button>
           </form>
         </div>
       ) : (
