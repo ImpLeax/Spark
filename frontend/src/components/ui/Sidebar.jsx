@@ -18,6 +18,15 @@ const Sidebar = ({ render, isCollapsed, setIsCollapsed }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  useEffect(() => {
+    if (location.pathname.startsWith("/messages")) {
+      setIsCollapsed(true);
+    }
+    else if (window.innerWidth >= 768) {
+      setIsCollapsed(false);
+    }
+  }, [location.pathname, setIsCollapsed]);
+
   const menuItems = [
     {
       name: "Discover",

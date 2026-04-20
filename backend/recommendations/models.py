@@ -1,6 +1,7 @@
 from django.db import models
 from user.models import User
 from django.utils import timezone
+from chat.models import ChatRoom
 
 
 class Interactions(models.Model):
@@ -45,7 +46,9 @@ class Match(models.Model):
         related_name='matches_as_user2'
     )
 
-    chat_id = models.IntegerField(
+    chat = models.ForeignKey(
+        to=ChatRoom,
+        on_delete=models.SET_NULL,
         null=True,
         blank=True
     )

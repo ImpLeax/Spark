@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/user/', include('user.urls', namespace="user")),
     path('api/v1/recommendation/', include('recommendations.urls', namespace="recommendation")),
+    path('api/v1/chat/', include('chat.urls', namespace="chat")),
 ]
 
 if settings.DEBUG:

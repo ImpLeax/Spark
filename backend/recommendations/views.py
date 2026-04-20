@@ -1,17 +1,14 @@
-from django.shortcuts import render
 from datetime import date
 from rest_framework import generics, status
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum, Case, When, Value, IntegerField
 from django.db.models.functions import Coalesce
 from django.contrib.gis.measure import D
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from django.contrib.gis.db.models.functions import Distance
 from rest_framework.exceptions import NotFound
 
-from user.models import Profile, ProfileInterest
+from user.models import Profile
 from .models import Interactions
 from .serializers import RecommendationSerializer, InteractionSerializer, LikeUserSerializer
 

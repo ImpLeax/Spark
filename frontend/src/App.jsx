@@ -8,12 +8,14 @@ import SettingsPage from "@/pages/SettingsPage.jsx";
 import EmailChangeConfirmPage from "@/pages/EmailChangeConfirmPage.jsx";
 import { Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { PresenceProvider } from '@/context/PresenceContext';
 import { useState } from "react";
 import { cn } from "@/lib/utils.js";
 import { Menu } from "lucide-react";
 import ForgotPasswordPage from "@/pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "@/pages/ResetPasswordPage.jsx";
 import PublicProfilePage from "@/pages/PublicProfilePage.jsx";
+import MessagesPage from "@/pages/MessagesPage.jsx";
 
 const AppContent = () => {
   const { isAuthenticated } = useAuth();
@@ -37,6 +39,7 @@ const AppContent = () => {
 
         {isAuthenticated && !isLandingPage && (
           <button
+            id="mobile-menu-btn"
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="md:hidden fixed bottom-6 right-6 z-[60] bg-primary text-primary-foreground p-4 rounded-full shadow-2xl active:scale-90 transition-transform"
           >
@@ -64,6 +67,7 @@ const AppContent = () => {
             <Route path="/recommendations" element={<ProtectedRoute><RecommendationsPage /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+            <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
             <Route path="/profile/:userId" element={<ProtectedRoute><PublicProfilePage /></ProtectedRoute>} />
           </Routes>
         </main>
@@ -86,7 +90,9 @@ function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <AuthProvider>
-        <AppContent />
+        <PresenceProvider>
+          <AppContent />
+        </PresenceProvider>
       </AuthProvider>
     </ThemeProvider>
   );

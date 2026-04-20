@@ -19,7 +19,12 @@ wheels/
 
 #static
 staticfiles/
-backend/
+backend/media/
+backend/test_data_db.json
+tests/
+docker-compose.backend.yml
+docker-compose.yml
+Dockerfile
 
 # Logs
 frontend/logs
