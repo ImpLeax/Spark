@@ -7,6 +7,8 @@ from django.contrib.gis.measure import D
 from rest_framework.response import Response
 from django.contrib.gis.db.models.functions import Distance
 from rest_framework.exceptions import NotFound
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 from user.models import Profile
 from .models import Interactions
@@ -118,6 +120,15 @@ class SwipeAPIView(generics.CreateAPIView):
                 receiver=self.request.user,
                 is_like=True
             ).exists()
+            channel_layer = get_channel_layer()
+            if not is_match:
+                async_to_sync(channel_layer.group_send)(
+                    f"user_{interaction.receiver.id}_notifications",
+                    {
+                        'type': 'new_like_notification',
+                        'sender_id': self.request.user.id
+                    }
+                )
 
         self.match_status = is_match
 

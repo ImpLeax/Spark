@@ -16,13 +16,14 @@ import ForgotPasswordPage from "@/pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "@/pages/ResetPasswordPage.jsx";
 import PublicProfilePage from "@/pages/PublicProfilePage.jsx";
 import MessagesPage from "@/pages/MessagesPage.jsx";
+import TeamPage from "@/pages/TeamPage.jsx";
 
 const AppContent = () => {
   const { isAuthenticated } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 768);
 
   const location = useLocation();
-  const isLandingPage = location.pathname === "/";
+  const isLandingPage = location.pathname === "/" || location.pathname === "/team";
 
   return (
     <div className="relative min-h-screen flex flex-col">
@@ -59,6 +60,7 @@ const AppContent = () => {
         )}>
           <Routes>
             <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
+            <Route path="/team" element={<PublicRoute><TeamPage /></PublicRoute>} />
             <Route path="/signup" element={<PublicRoute><SignupPage /></PublicRoute>} />
             <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
             <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />

@@ -14,8 +14,8 @@ class EmailOrUsernameModelBackend(ModelBackend):
             )
 
             if user.check_password(password) and self.user_can_authenticate(user):
-                return  user
-        except User.DoesNotExist:
+                return user
+        except (User.DoesNotExist, User.MultipleObjectsReturned):
             return None
 
         return None

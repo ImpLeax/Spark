@@ -43,26 +43,6 @@ function Calendar({
 
   return (
     <div className="relative w-fit">
-
-      <div className="absolute inset-x-0 top-0 flex w-full items-center justify-between px-8 z-10 pointer-events-none">
-        <Button
-          type="button"
-          variant={buttonVariant}
-          className={cn("pointer-events-auto size-(--cell-size) p-0 text-muted-foreground hover:text-foreground", defaultClassNames.button_previous)}
-          onClick={prevYear}
-        >
-          <ChevronsLeftIcon className="size-4" />
-        </Button>
-        <Button
-          type="button"
-          variant={buttonVariant}
-          className={cn("pointer-events-auto size-(--cell-size) p-0 text-muted-foreground hover:text-foreground", defaultClassNames.button_next)}
-          onClick={nextYear}
-        >
-          <ChevronsRightIcon className="size-4" />
-        </Button>
-      </div>
-
       <DayPicker
         month={displayMonth}
         onMonthChange={handleMonthChange}

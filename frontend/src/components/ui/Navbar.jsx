@@ -12,6 +12,7 @@ const Navbar = ({ onLoginClick }) => {
   const location = useLocation();
 
   const isLandingPage = location.pathname === "/";
+  const isTeamPage = location.pathname === "/team";
 
   useEffect(() => {
     setIsVisible(true);
@@ -77,7 +78,8 @@ const Navbar = ({ onLoginClick }) => {
           </Link>
         </div>
 
-        <div className="hidden md:flex leading-none text-lg gap-8 items-center font-medium">
+        {!isTeamPage && (
+          <div className="hidden md:flex leading-none text-lg gap-8 items-center font-medium">
           <a
             href="#offers"
             onClick={(e) => {
@@ -99,6 +101,7 @@ const Navbar = ({ onLoginClick }) => {
             About
           </a>
         </div>
+        )}
 
         <div className="hidden md:flex gap-4 leading-none items-center">
           <div className="mr-2 border-r pr-4">
@@ -108,7 +111,10 @@ const Navbar = ({ onLoginClick }) => {
           <Link to="/signup">
             <Button variant="ghost">Sign up</Button>
           </Link>
-          <Button onClick={handleLoginClick}>Login</Button>
+          {isTeamPage
+            ? (<Link to="/"><Button>Login</Button></Link>)
+            : (<Button onClick={handleLoginClick}>Login</Button>)
+          }
         </div>
 
         <div className="md:hidden flex items-center">

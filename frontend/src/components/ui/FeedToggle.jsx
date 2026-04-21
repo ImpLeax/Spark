@@ -2,7 +2,7 @@ import React from 'react';
 import { Compass, Heart } from 'lucide-react';
 import { cn } from "@/lib/utils";
 
-export function FeedToggle({ isLikesView, setIsLikesView }) {
+export function FeedToggle({ isLikesView, setIsLikesView, likesBadge }) {
   return (
     <div className="relative flex items-center p-1 bg-secondary/50 backdrop-blur-md rounded-full w-72 mx-auto border border-border shadow-inner">
       <div
@@ -29,7 +29,14 @@ export function FeedToggle({ isLikesView, setIsLikesView }) {
           isLikesView ? "text-pink-500" : "text-muted-foreground hover:text-foreground"
         )}
       >
-        <Heart size={18} /> Likes
+        <Heart size={18} />
+        Likes
+
+        {likesBadge > 0 && (
+          <span className="absolute top-1 right-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white shadow-sm animate-in zoom-in duration-300">
+            {likesBadge}
+          </span>
+        )}
       </button>
     </div>
   );

@@ -1,9 +1,11 @@
 import json
+import base64
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import ChatRoom, Message
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.core.files.base import ContentFile
 
 User = get_user_model()
 
@@ -18,7 +20,7 @@ class PresenceConsumer(AsyncWebsocketConsumer):
 
         self.cache_key = f"user_{self.user.id}_presence"
         connections = cache.get(self.cache_key, 0)
-        cache.set(self.cache_key, connections + 1, timeout=None)
+        cache.set(self.cache_key, connections + 1, timeout=86400)
 
         self.personal_group = f"user_{self.user.id}_notifications"
         await self.channel_layer.group_add(self.personal_group, self.channel_name)
@@ -45,7 +47,7 @@ class PresenceConsumer(AsyncWebsocketConsumer):
                 "type": "presence_change", "user_id": self.user.id, "status": False
             })
         else:
-            cache.set(self.cache_key, connections, timeout=None)
+            cache.set(self.cache_key, connections, timeout=86400)
 
         await self.channel_layer.group_discard("global_presence", self.channel_name)
 
@@ -61,8 +63,21 @@ class PresenceConsumer(AsyncWebsocketConsumer):
             "type": "notification",
             "chat_id": event["chat_id"],
             "message": event["message"],
+            "file_url": event.get("file_url"),
             "sender_id": event["sender_id"],
             "created_at": event["created_at"]
+        }))
+
+    async def new_like_notification(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "new_like",
+            "sender_id": event["sender_id"]
+        }))
+
+    async def new_match_notification(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "new_match",
+            "chat_data": event["chat_data"]
         }))
 
 
@@ -101,7 +116,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         action = text_data_json.get("action", "send_message")
 
         if action == "send_message":
-            message_text = text_data_json["message"]
+            message_text = text_data_json.get("message", "")
             sender_id = self.user.id
 
             saved_message = await self.save_message(sender_id, self.room_id, message_text)
@@ -111,6 +126,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'chat_message',
                     'message': message_text,
+                    'file_url': saved_message.file.url if saved_message.file else None,
                     'sender_id': sender_id,
                     'msg_id': saved_message.id,
                     'is_read': False
@@ -123,6 +139,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'type': 'new_message_notification',
                     'chat_id': int(self.room_id),
                     'message': message_text,
+                    'file_url': saved_message.file.url if saved_message.file else None,
                     'sender_id': sender_id,
                     'created_at': saved_message.created_at.isoformat()
                 }
@@ -142,6 +159,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'action': 'new_message',
             'message': event['message'],
+            'file_url': event.get('file_url'),
             'sender_id': event['sender_id'],
             'msg_id': event['msg_id'],
             'is_read': event['is_read']
@@ -155,7 +173,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
     @database_sync_to_async
-    def save_message(self, sender_id, room_id, text):
+    def save_message(self, sender_id, room_id, text, file_data=None, file_name=None):
         room = ChatRoom.objects.get(id=room_id)
         sender = User.objects.get(id=sender_id)
         return Message.objects.create(room=room, sender=sender, text=text)

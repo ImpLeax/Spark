@@ -9,7 +9,6 @@ class RecommendationSerializer(serializers.ModelSerializer):
     distance_km = serializers.SerializerMethodField()
     shared_interests_score = serializers.IntegerField(source='relevance_score', read_only=True)
 
-    username = serializers.CharField(source='user.username', read_only=True)
 
     age = serializers.IntegerField(source='additional_info.age', read_only=True)
     bio = serializers.CharField(source='additional_info.bio', read_only=True)
@@ -19,7 +18,6 @@ class RecommendationSerializer(serializers.ModelSerializer):
         model = Profile
         fields = [
             'user_id',
-            'username',
             'first_name',
             'age',
             'bio',
@@ -55,7 +53,6 @@ class InteractionSerializer(serializers.ModelSerializer):
 class LikeUserSerializer(serializers.ModelSerializer):
     """User info serializer class"""
 
-    username = serializers.CharField(source='user.username', read_only=True)
     intention = serializers.CharField(source='intention.name', read_only=True, allow_null=True)
     age = serializers.IntegerField(source='additional_info.age', read_only=True)
     bio = serializers.CharField(source='additional_info.bio', read_only=True)
@@ -66,7 +63,6 @@ class LikeUserSerializer(serializers.ModelSerializer):
         model = Profile
         fields = [
             'user_id',
-            'username',
             'first_name',
             'age',
             'bio',

@@ -3,6 +3,7 @@ import { BubbleBackground, LoginForm } from '@/components/index';
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { Sparkles, Heart, MessageCircle, Shield, Users, TrendingUp } from "lucide-react";
+import {Link} from "react-router-dom";
 
 function LandingPage() {
     const { theme } = useTheme();
@@ -74,7 +75,7 @@ function LandingPage() {
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[
-                        { icon: Heart, title: "Smart Matching", desc: "Our AI analyzes your interests to find the most compatible partners.", color: "text-red-500" },
+                        { icon: Heart, title: "Smart Matching", desc: "Our smart algorithm analyzes your interests to find the most compatible matches.", color: "text-red-500" },
                         { icon: Shield, title: "Secure & Private", desc: "Your data is encrypted. Chat only after a mutual match.", color: "text-blue-500" },
                         { icon: MessageCircle, title: "Real-time Chat", desc: "Instant notifications and smooth messaging experience.", color: "text-green-500" },
                         { icon: Users, title: "Shared Interests", desc: "Tag system helps you find people with the same hobbies.", color: "text-orange-500" },
@@ -99,10 +100,10 @@ function LandingPage() {
                     <h2 className="text-4xl font-bold text-center mb-16">How it works?</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {[
-                            { step: "01", t: "Sign Up", d: "Create your account in minutes.", img: "https://images.unsplash.com/photo-1770894807442-108cc33c0a7a?w=400&q=80" },
-                            { step: "02", t: "Profile", d: "Add photos and tell your story.", img: "https://images.unsplash.com/photo-1762522921456-cdfe882d36c3?w=400&q=80" },
-                            { step: "03", t: "Explore", d: "Like profiles that catch your eye.", img: "https://images.unsplash.com/photo-1650911566261-5cb2db67c38a?w=400&q=80" },
-                            { step: "04", t: "Chat", d: "Start talking after a match.", img: "https://images.unsplash.com/photo-1758525226150-ba35c1165a32?w=400&q=80" }
+                            { step: "01", t: "Sign Up", d: "Create your account in minutes.", img: "/images/signup.avif" },
+                            { step: "02", t: "Profile", d: "Add photos and tell your story.", img: "/images/profile.jpg" },
+                            { step: "03", t: "Explore", d: "Like profiles that catch your eye.", img: "/images/recommendations.jpg" },
+                            { step: "04", t: "Chat", d: "Start talking after a match.", img: "/images/chats.jpg" }
                         ].map((s, i) => (
                             <div key={i} className="group">
                                 <div className="text-5xl font-black text-primary/10 mb-2 group-hover:text-primary/30 transition-colors">{s.step}</div>
@@ -132,7 +133,7 @@ function LandingPage() {
                         <h4 className="font-bold mb-4">Company</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
                             <li><button className="hover:text-primary transition-colors">About Us</button></li>
-                            <li><button className="hover:text-primary transition-colors">Team</button></li>
+                            <li><Link to="/team" className="hover:text-primary transition-colors">Team</Link></li>
                             <li><button className="hover:text-primary transition-colors">Careers</button></li>
                         </ul>
                     </div>

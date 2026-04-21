@@ -8,11 +8,14 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
+import { usePresence } from "@/context/PresenceContext";
 
 const Sidebar = ({ render, isCollapsed, setIsCollapsed }) => {
   const [profile, setProfile] = useState(null);
   const [isLoading, setLoading] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
+
+  const { likesCount, unreadMessagesCount } = usePresence();
 
   const { logout } = useAuth();
   const navigate = useNavigate();
@@ -27,18 +30,25 @@ const Sidebar = ({ render, isCollapsed, setIsCollapsed }) => {
     }
   }, [location.pathname, setIsCollapsed]);
 
+  const formatBadgeCount = (count) => {
+    if (!count || count <= 0) return null;
+    return count > 9999 ? "9999+" : count;
+  };
+
   const menuItems = [
     {
       name: "Discover",
       path: "/recommendations",
       icon: <Search size={22} />,
-      isActive: (pathname) => pathname === "/recommendations" || (pathname.startsWith("/profile/") && pathname !== "/profile")
+      isActive: (pathname) => pathname === "/recommendations" || (pathname.startsWith("/profile/") && pathname !== "/profile"),
+      badge: formatBadgeCount(likesCount)
     },
     {
       name: "Messages",
       path: "/messages",
       icon: <MessageCircle size={22} />,
-      isActive: (pathname) => pathname.startsWith("/messages")
+      isActive: (pathname) => pathname.startsWith("/messages"),
+      badge: formatBadgeCount(unreadMessagesCount)
     },
     {
       name: "My Profile",
@@ -101,9 +111,7 @@ const Sidebar = ({ render, isCollapsed, setIsCollapsed }) => {
       <motion.div
         initial={false}
         animate={{
-          width: isCollapsed
-            ? (window.innerWidth < 768 ? 0 : 80)
-            : 280,
+          width: isCollapsed ? (window.innerWidth < 768 ? 0 : 80) : 280,
           x: isCollapsed && window.innerWidth < 768 ? -20 : 0
         }}
         transition={{ type: "spring", stiffness: 300, damping: 35 }}
@@ -173,10 +181,24 @@ const Sidebar = ({ render, isCollapsed, setIsCollapsed }) => {
                     x: isCollapsed ? -10 : 0
                   }}
                   transition={{ duration: 0.2 }}
-                  className="truncate"
+                  className="flex-1 truncate pr-10"
                 >
                   {item.name}
                 </motion.span>
+
+                {!isCollapsed && item.badge && (
+                    <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 bg-destructive text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-sm"
+                    >
+                        {item.badge}
+                    </motion.div>
+                )}
+
+                {isCollapsed && item.badge && (
+                    <div className="absolute top-2 right-3 w-2.5 h-2.5 bg-destructive rounded-full border-2 border-card" />
+                )}
               </Link>
             );
           })}

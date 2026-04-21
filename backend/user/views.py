@@ -10,6 +10,9 @@ from rest_framework.exceptions import ValidationError, Throttled
 from rest_framework.throttling import ScopedRateThrottle
 from  django.contrib.auth import get_user_model
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from channels.layers import get_channel_layer
+from django.core.cache import cache
+from asgiref.sync import async_to_sync
 
 from .serializers import UserRegistrationSerializer
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -114,6 +117,20 @@ class LogoutAPIView(APIView):
 
     def post(self, request):
         try:
+            user_id = request.user.id
+
+            cache_key = f"user_{user_id}_presence"
+            cache.delete(cache_key)
+
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "global_presence",
+                {
+                    "type": "presence_change",
+                    "user_id": user_id,
+                    "status": False
+                }
+            )
             refresh_token = request.COOKIES.get('refresh_token')
 
             if refresh_token:

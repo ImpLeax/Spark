@@ -82,7 +82,7 @@ export function LoginForm({ className, ...props }) {
 
           setAccessToken(response.data.access);
 
-          login();
+          login(response.data.access);
 
           navigate('/recommendations');
         } else if (response.data.status === 'needs_registration') {

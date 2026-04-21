@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FeedToggle } from "@/components/ui/FeedToggle";
 import { cn } from "@/lib/utils";
+import { usePresence } from "@/context/PresenceContext";
 
 const playMatchSound = () => {
   const audio = new Audio('/sounds/match.mp3');
@@ -187,6 +188,8 @@ const RecommendationsPage = () => {
 
   const navigate = useNavigate();
 
+  const { likesCount, clearLikesCount, muteNextNotification  } = usePresence();
+
   useEffect(() => {
     const fetchProfiles = async () => {
       setIsLoading(true);
@@ -196,6 +199,10 @@ const RecommendationsPage = () => {
 
         const data = response.data.results || response.data;
         setProfiles(data);
+
+        if (isLikesView) {
+            clearLikesCount();
+        }
       } catch (error) {
         console.error("Failed to load profiles", error);
       } finally {
@@ -206,6 +213,17 @@ const RecommendationsPage = () => {
     fetchProfiles();
   }, [isLikesView]);
 
+  useEffect(() => {
+      if (likesCount > 0 && isLikesView && !isLoading) {
+
+          api.get("recommendation/like/received/").then(res => {
+              const data = res.data.results || res.data;
+              setProfiles(data);
+              clearLikesCount();
+          });
+      }
+  }, [likesCount, isLikesView, isLoading]);
+
   const handleSwipe = async (isLike) => {
     if (profiles.length === 0) return;
 
@@ -213,6 +231,10 @@ const RecommendationsPage = () => {
     setSwipeFeedback(isLike ? 'like' : 'pass');
 
     const currentProfile = profiles[0];
+
+    if (isLike) {
+        muteNextNotification();
+    }
 
     try {
       const response = await api.post("recommendation/swipe/", {
@@ -255,7 +277,7 @@ const RecommendationsPage = () => {
       </AnimatePresence>
 
       <div className="pt-6 pb-4 px-4 shrink-0 relative z-10 flex flex-col items-center gap-4">
-        <FeedToggle isLikesView={isLikesView} setIsLikesView={setIsLikesView} />
+        <FeedToggle isLikesView={isLikesView} setIsLikesView={setIsLikesView} likesBadge={likesCount}/>
 
         <p className="text-sm text-muted-foreground font-medium">
           {isLikesView
