@@ -44,6 +44,9 @@ const MessagesPage = () => {
 
   const currentUserId = localStorage.getItem("user_id") || "spark_user";
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -70,10 +73,20 @@ const MessagesPage = () => {
     return status !== undefined ? status : fallback;
   }, [onlineUsers]);
 
+  // Затримка пошуку: чекаємо 500мс після останнього введення
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Завантаження чатів із врахуванням пошуку
   useEffect(() => {
     const fetchChats = async () => {
+      setIsLoadingChats(true);
       try {
-        const res = await api.get("chat/");
+        const res = await api.get(`chat/?search=${encodeURIComponent(debouncedSearch)}`);
         setChats(res.data);
       } catch (error) {
         console.error("Failed to load chats:", error);
@@ -82,7 +95,7 @@ const MessagesPage = () => {
       }
     };
     fetchChats();
-  }, []);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     if (!newMessageNotification) return;
@@ -474,6 +487,8 @@ const MessagesPage = () => {
             <input
               type="text"
               placeholder="Search matches..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-muted/50 pl-9 pr-4 py-2 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-transparent focus:border-border"
             />
           </div>
@@ -482,10 +497,15 @@ const MessagesPage = () => {
         <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-1 scrollbar-thin scrollbar-thumb-muted">
           {isLoadingChats ? (
             <div className="flex justify-center py-10"><Loader2 className="animate-spin text-primary" /></div>
-          ) : chats.length === 0 ? (
+          ) : chats.length === 0 && !searchQuery ? (
             <div className="text-center py-10 text-muted-foreground">
               <MessageCircle className="w-10 h-10 mx-auto mb-3 opacity-30" />
               <p className="text-sm">No messages yet.<br/>Start swiping to get matches!</p>
+            </div>
+          ) : chats.length === 0 && searchQuery ? (
+            <div className="text-center py-10 text-muted-foreground">
+              <Search className="w-8 h-8 mx-auto mb-3 opacity-30" />
+              <p className="text-sm">Нічого не знайдено за запитом<br/>"{searchQuery}"</p>
             </div>
           ) : (
             chats.map(chat => {

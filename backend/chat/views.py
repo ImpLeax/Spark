@@ -6,6 +6,8 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from .models import ChatRoom, Message
 from django.db.models import Q, Max
+from django.db.models.functions import Greatest
+from django.contrib.postgres.search import TrigramSimilarity
 from .serializers import ChatRoomListSerializer
 import os
 
@@ -51,15 +53,28 @@ class ChatListView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
 
-        return ChatRoom.objects.filter(
-            Q(user1=user) | Q(user2=user)
-        ).annotate(
-            last_msg_time=Max('messages__created_at')
-        ).order_by(
-            '-last_msg_time', '-created_at'
-        ).select_related(
-            'user1__profile', 'user2__profile'
-        )
+        qs = ChatRoom.objects.filter(Q(user1=user) | Q(user2=user))
+        search_query = self.request.query_params.get('search', '').strip()
+
+        if search_query:
+            if len(search_query) < 3:
+                qs = qs.filter(
+                    Q(user1__profile__first_name__icontains=search_query) |
+                    Q(user2__profile__first_name__icontains=search_query)
+                )
+            else:
+                qs = qs.annotate(
+                    similarity=Greatest(
+                        TrigramSimilarity('user1__profile__first_name', search_query),
+                        TrigramSimilarity('user2__profile__first_name', search_query)
+                    )
+                ).filter(
+                    similarity__gt=0.1
+                ).order_by('-similarity')
+        else:
+            qs = qs.order_by('-created_at')
+        
+        return qs
     
 class MessageUploadView(APIView):
     """A view class for uploading files/images to a chat via HTTP POST."""
