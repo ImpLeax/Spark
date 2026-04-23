@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, X, Info, MapPin, Sparkles, MessageCircle, User } from "lucide-react";
+import { Heart, X, Info, MapPin, Sparkles, MessageCircle, User, Sliders } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "@/services/axios";
 import { Badge } from "@/components/ui/badge";
@@ -181,6 +181,8 @@ const RecommendationsPage = () => {
   const [isLikesView, setIsLikesView] = useState(false);
   const [profiles, setProfiles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [maxDistance, setMaxDistance] = useState(null);
 
   const [exitX, setExitX] = useState(0);
   const [swipeFeedback, setSwipeFeedback] = useState(null);
@@ -191,36 +193,55 @@ const RecommendationsPage = () => {
   const { likesCount, clearLikesCount, muteNextNotification  } = usePresence();
 
   useEffect(() => {
-    const fetchProfiles = async () => {
-      setIsLoading(true);
+    const fetchSettings = async () => {
       try {
-        const endpoint = isLikesView ? "recommendation/like/received/" : "recommendation/list/";
-        const response = await api.get(endpoint);
-
-        const data = response.data.results || response.data;
-        setProfiles(data);
-
-        if (isLikesView) {
-            clearLikesCount();
-        }
+        const res = await api.get("user/profile/settings/");
+        setMaxDistance(res.data.search_distance);
       } catch (error) {
-        console.error("Failed to load profiles", error);
-      } finally {
-        setIsLoading(false);
+        console.error("Failed to load settings", error);
       }
     };
+    fetchSettings();
+  }, []);
 
-    fetchProfiles();
+  const fetchProfiles = async (isLoadMore = false) => {
+    if (!isLoadMore) setIsLoading(true);
+    else setIsFetchingMore(true);
+
+    try {
+      const endpoint = isLikesView ? "recommendation/like/received/" : "recommendation/list/";
+      const response = await api.get(endpoint);
+
+      const data = response.data.results || response.data;
+
+      if (isLoadMore) {
+        setProfiles(prev => {
+            const existingIds = new Set(prev.map(p => p.user_id));
+            const newProfiles = data.filter(p => !existingIds.has(p.user_id));
+            return [...prev, ...newProfiles];
+        });
+      } else {
+        setProfiles(data);
+      }
+
+      if (isLikesView && !isLoadMore) {
+          clearLikesCount();
+      }
+    } catch (error) {
+      console.error("Failed to load profiles", error);
+    } finally {
+      setIsLoading(false);
+      setIsFetchingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfiles(false);
   }, [isLikesView]);
 
   useEffect(() => {
       if (likesCount > 0 && isLikesView && !isLoading) {
-
-          api.get("recommendation/like/received/").then(res => {
-              const data = res.data.results || res.data;
-              setProfiles(data);
-              clearLikesCount();
-          });
+          fetchProfiles(false);
       }
   }, [likesCount, isLikesView, isLoading]);
 
@@ -252,7 +273,16 @@ const RecommendationsPage = () => {
     }
 
     setTimeout(() => {
-      setProfiles(prev => prev.slice(1));
+      setProfiles(prev => {
+        const newProfiles = prev.slice(1);
+
+        if (newProfiles.length <= 1 && !isFetchingMore) {
+          fetchProfiles(true);
+        }
+
+        return newProfiles;
+      });
+
       setExitX(0);
       setSwipeFeedback(null);
     }, 300);
@@ -304,6 +334,35 @@ const RecommendationsPage = () => {
                   ? "You haven't received any new likes yet. Keep swiping!"
                   : "You've seen everyone nearby. Try adjusting your search settings or check back later."}
               </p>
+
+              {!isLikesView && maxDistance !== null && maxDistance < 5000 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="mt-8 p-5 bg-card/60 backdrop-blur-md rounded-2xl border border-border shadow-sm text-left"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-primary/10 text-primary rounded-full shrink-0">
+                      <MapPin size={18} />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground">Want more matches?</h4>
+                      <p className="text-sm text-muted-foreground mt-1 mb-4">
+                        Try expanding your search distance. You are currently looking within {maxDistance} km.
+                      </p>
+                      <Button
+                        onClick={() => navigate('/settings')}
+                        variant="default"
+                        className="w-full rounded-xl shadow-sm"
+                      >
+                        <Sliders className="w-4 h-4 mr-2" /> Adjust Distance
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
             </div>
           ) : (
             <AnimatePresence>

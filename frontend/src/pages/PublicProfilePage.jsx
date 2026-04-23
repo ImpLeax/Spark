@@ -33,6 +33,7 @@ const PublicProfilePage = () => {
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [gallery, setGallery] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
@@ -44,13 +45,15 @@ const PublicProfilePage = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const [profileRes, galleryRes] = await Promise.all([
+        const [profileRes, galleryRes, currentUserRes] = await Promise.all([
           api.get(`user/profile/${userId}/`),
-          api.get(`user/profile/${userId}/gallery/`).catch(() => ({ data: [] }))
+          api.get(`user/profile/${userId}/gallery/`).catch(() => ({ data: [] })),
+          api.get("user/profile/").catch(() => ({ data: null }))
         ]);
 
         setProfile(profileRes.data);
         setGallery(galleryRes.data);
+        setCurrentUser(currentUserRes.data);
       } catch (error) {
         console.error("Error fetching profile:", error);
         navigate("/recommendations");
@@ -115,10 +118,26 @@ const PublicProfilePage = () => {
     }
   };
 
+  const checkCompatibility = () => {
+    if (!profile || !currentUser) return true;
+
+    const targetLookingFor = profile.looking_for?.toLowerCase();
+    const myGender = currentUser.gender?.toLowerCase();
+    const myLookingFor = currentUser.looking_for?.toLowerCase();
+    const targetGender = profile.gender?.toLowerCase();
+
+    const targetAcceptsMe = !targetLookingFor || targetLookingFor === "anyone" || targetLookingFor === myGender;
+
+    const iAcceptTarget = !myLookingFor || myLookingFor === "anyone" || myLookingFor === targetGender;
+
+    return targetAcceptsMe && iAcceptTarget;
+  };
+
   if (loading) return <ProfileSkeleton />;
   if (!profile) return <div className="text-center py-20 text-muted-foreground">Profile not found.</div>;
 
   const age = calculateAge(profile?.additional_info?.birth_date);
+  const isCompatible = checkCompatibility();
 
   return (
       <motion.div
@@ -182,17 +201,19 @@ const PublicProfilePage = () => {
                   "flex-1 h-12 md:h-14 rounded-2xl text-base md:text-lg font-bold shadow-sm transition-all",
                   profile?.is_liked
                     ? "bg-pink-500/20 text-pink-500 hover:bg-pink-500/30 border-0"
-                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : !isCompatible
+                      ? "bg-muted text-muted-foreground border-0"
+                      : "bg-primary text-primary-foreground hover:bg-primary/90"
                 )}
                 onClick={handleLike}
-                disabled={profile?.is_liked || isLiking}
+                disabled={profile?.is_liked || isLiking || !isCompatible}
               >
                 {isLiking ? (
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 ) : (
                   <Heart className={cn("mr-2 h-5 w-5", profile?.is_liked ? "fill-current" : "")} />
                 )}
-                {profile?.is_liked ? "Liked" : "Like"}
+                {profile?.is_liked ? "Liked" : (!isCompatible ? "Incompatible" : "Like")}
               </Button>
 
             </div>

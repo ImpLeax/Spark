@@ -1,11 +1,9 @@
 import json
-import base64
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import ChatRoom, Message
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.core.files.base import ContentFile
 
 User = get_user_model()
 
@@ -78,6 +76,27 @@ class PresenceConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             "type": "new_match",
             "chat_data": event["chat_data"]
+        }))
+
+    async def chat_deleted_notification(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "chat_deleted",
+            "chat_id": event["chat_id"]
+        }))
+
+    async def message_edited_event(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'message_edited',
+            'chat_id': event['chat_id'],
+            'msg_id': event['msg_id'],
+            'text': event['text']
+        }))
+
+    async def message_deleted_event(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'message_deleted',
+            'chat_id': event['chat_id'],
+            'msg_id': event['msg_id']
         }))
 
 
@@ -171,6 +190,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'reader_id': event['reader_id']
         }))
 
+    async def message_edited_event(self, event):
+        await self.send(text_data=json.dumps({
+            'action': 'message_edited',
+            'msg_id': event['msg_id'],
+            'text': event['text']
+        }))
+
+    async def message_deleted_event(self, event):
+        await self.send(text_data=json.dumps({
+            'action': 'message_deleted',
+            'msg_id': event['msg_id']
+        }))
 
     @database_sync_to_async
     def save_message(self, sender_id, room_id, text, file_data=None, file_name=None):

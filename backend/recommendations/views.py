@@ -1,6 +1,7 @@
 from datetime import date
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Sum, Case, When, Value, IntegerField, Avg, ExpressionWrapper, F, FloatField
 from django.db.models import Sum, Case, When, Value, IntegerField
 from django.db.models.functions import Coalesce
 from django.contrib.gis.measure import D
@@ -71,25 +72,31 @@ class RecommendationListView(generics.ListAPIView):
         ]
 
         if my_intention:
-            intention_bonus = Case(
-                When(intention=my_intention, then=Value(50)),
-                default=Value(0),
-                output_field=IntegerField()
+            intention_match = Case(
+                When(intention=my_intention, then=Value(100.0)),
+                default=Value(0.0),
+                output_field=FloatField()
             )
         else:
-            intention_bonus = Value(0)
+            intention_match = Value(0)
 
         candidates = candidates.annotate(
-            relevance_score=Coalesce(
-                Sum(
+            avg_interest=Coalesce(
+                Avg(
                     Case(
                         *when_clauses,
                         default=Value(50),
                         output_field=IntegerField()
                     )
                 ),
-                0
-            ) + intention_bonus
+                50.0, output_field=FloatField()
+            ),
+            intention_score=intention_match
+        ).annotate(
+            relevance_score=ExpressionWrapper(
+                (F('avg_interest') * 0.6) + (F('intention_score') * 0.4),
+                output_field=FloatField()
+            )
         )
 
         order_fields = ['-relevance_score']
@@ -100,7 +107,7 @@ class RecommendationListView(generics.ListAPIView):
         order_fields.append('-user__last_login')
 
         return candidates.order_by(*order_fields).select_related(
-            'user', 'additional_info'
+            'user', 'additional_info', 'intention'
         ).distinct()[:10]
 
 

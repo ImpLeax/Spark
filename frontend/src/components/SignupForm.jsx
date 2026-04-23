@@ -2,10 +2,12 @@ import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from '@/components/index';
+import { ImageCropperModal } from "@/components/ui/ImageCropperModal";
 import api from '@/services/axios';
 import { useEffect, useState, useRef } from "react";
 import { format } from "date-fns";
 import { Loader2, MapPin, CheckCircle2, Plus, X, ChevronRight } from "lucide-react";
+import { Turnstile } from '@marsidev/react-turnstile';
 
 import {
   Field,
@@ -42,6 +44,9 @@ export function SignupForm({ className, ...props }) {
   const activeSlotIndex = useRef(null);
   const fileInputRef = useRef(null);
 
+  const turnstileRef = useRef(null);
+  const [turnstileToken, setTurnstileToken] = useState(null);
+
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
 
@@ -53,6 +58,7 @@ export function SignupForm({ className, ...props }) {
   const [intentionsList, setIntentionsList] = useState([]);
   const [gendersList, setGendersList] = useState([]);
   const [interestsList, setInterestsList] = useState([]);
+  const [cropState, setCropState] = useState({ isOpen: false, imageSrc: null, slotIndex: null });
 
   useEffect(() => {
     getGenders();
@@ -136,7 +142,23 @@ export function SignupForm({ className, ...props }) {
     const file = e.target.files[0];
     if (!file) return;
 
-    const index = activeSlotIndex.current;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropState({
+        isOpen: true,
+        imageSrc: reader.result,
+        slotIndex: activeSlotIndex.current
+      });
+    };
+    reader.readAsDataURL(file);
+
+    e.target.value = "";
+    setFormError("");
+  };
+
+  const handleCropComplete = (croppedBlob) => {
+    const index = cropState.slotIndex;
+    const file = new File([croppedBlob], `photo-${index}.jpg`, { type: "image/jpeg" });
 
     const newSlots = [...photoSlots];
     newSlots[index] = file;
@@ -147,10 +169,8 @@ export function SignupForm({ className, ...props }) {
     newPreviews[index] = URL.createObjectURL(file);
     setPhotoPreviews(newPreviews);
 
-    e.target.value = "";
-    setFormError("");
+    setCropState({ isOpen: false, imageSrc: null, slotIndex: null });
   };
-
   const handleRemovePhoto = (index, e) => {
     e.stopPropagation();
 
@@ -167,6 +187,11 @@ export function SignupForm({ className, ...props }) {
   const register = async (e) => {
     e.preventDefault();
     setFormError("");
+
+    if (!turnstileToken) {
+      setFormError("Please complete the bot verification.");
+      return;
+    }
 
     const validPhotos = photoSlots.filter(photo => photo !== null);
 
@@ -198,6 +223,8 @@ export function SignupForm({ className, ...props }) {
     formData.append("surname", surname);
     formData.append("birth_date", format(dateOfBirth, "yyyy-MM-dd"));
 
+    formData.append("cf_turnstile_response", turnstileToken);
+
     if (longitude && latitude) {
       formData.append("longitude", longitude);
       formData.append("latitude", latitude);
@@ -222,6 +249,11 @@ export function SignupForm({ className, ...props }) {
       window.location.href = "/";
     } catch (error) {
       console.error("Registration Error:", error.response?.data);
+      if (turnstileRef.current) {
+        turnstileRef.current.reset();
+      }
+      setTurnstileToken(null);
+
       if (error.response?.status === 429) {
         setError429(true);
         window.setTimeout(() => setError429(false), 60 * 1000);
@@ -469,6 +501,15 @@ export function SignupForm({ className, ...props }) {
           </div>
 
           <div className="mt-12 pt-8 flex flex-col items-center max-w-xl mx-auto space-y-4">
+            <div className="w-full flex justify-center py-2">
+                <Turnstile
+                  ref={turnstileRef}
+                  siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                  onSuccess={(token) => setTurnstileToken(token)}
+                  onError={() => setFormError("Bot verification encountered an error. Please refresh.")}
+                />
+            </div>
+
             {error429 && <p className="text-sm text-destructive font-medium text-center">Too many attempts, try again in a minute.</p>}
             {formError && <p className="text-sm text-destructive font-medium text-center bg-destructive/10 p-3 rounded-md w-full">{formError}</p>}
 
@@ -617,7 +658,14 @@ export function SignupForm({ className, ...props }) {
           </div>
         </div>
       )}
-
+      {cropState.isOpen && (
+        <ImageCropperModal
+          imageSrc={cropState.imageSrc}
+          aspect={3/4}
+          onComplete={handleCropComplete}
+          onClose={() => setCropState({ isOpen: false, imageSrc: null, slotIndex: null })}
+        />
+      )}
     </div>
   );
 }

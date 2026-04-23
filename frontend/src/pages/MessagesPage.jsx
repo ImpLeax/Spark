@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, ArrowLeft, Loader2, Search, MessageCircle, Check, CheckCheck, ChevronDown, Paperclip, X } from "lucide-react";
+import { Send, ArrowLeft, Loader2, Search, MessageCircle, Check, CheckCheck, ChevronDown, Paperclip, X, Trash2, Edit2, Ban } from "lucide-react";
 import { format } from "date-fns";
 import api from "@/services/axios";
 import { cn } from "@/lib/utils";
 import { getAccessToken, API_BASE_URL } from "@/services/axios";
 import { usePresence } from "@/context/PresenceContext";
 import KlipyPicker from "@/components/ui/KlipyPicker";
+import { Link } from "react-router-dom";
 
 const getAvatarUrl = (avatarPath, firstName) => {
   if (!avatarPath) return `https://ui-avatars.com/api/?name=${firstName}&background=random&color=fff`;
@@ -50,12 +51,18 @@ const MessagesPage = () => {
       onlineUsers,
       newMessageNotification,
       newMatchNotification,
+      chatDeletedNotification,
+      messageEditNotification,
+      messageDeletedNotification,
       setUnreadMessagesCount,
       setActiveChatId
   } = usePresence();
 
   const [chats, setChats] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -66,8 +73,12 @@ const MessagesPage = () => {
   const [isLoadingChats, setIsLoadingChats] = useState(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isFetchingOlder, setIsFetchingOlder] = useState(false);
+  const [isDeletingChat, setIsDeletingChat] = useState(false);
 
   const [showScrollBottomBtn, setShowScrollBottomBtn] = useState(false);
+
+  const [contextMenu, setContextMenu] = useState(null);
+  const [editingMessage, setEditingMessage] = useState(null);
 
   const ws = useRef(null);
   const chatContainerRef = useRef(null);
@@ -81,6 +92,9 @@ const MessagesPage = () => {
 
   const [messagesHeightChanged, setMessagesHeightChanged] = useState(false);
 
+  const currentSearchRef = useRef(debouncedSearch);
+  const activeChatRef = useRef(activeChat);
+
   const isOnline = useCallback((userId, fallback) => {
     if (!onlineUsers) return fallback;
     const status = onlineUsers[String(userId)] ?? onlineUsers[Number(userId)];
@@ -88,15 +102,48 @@ const MessagesPage = () => {
   }, [onlineUsers]);
 
   useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+      currentSearchRef.current = debouncedSearch;
+  }, [debouncedSearch]);
+
+  useEffect(() => {
+      activeChatRef.current = activeChat;
       if (setActiveChatId) {
           setActiveChatId(activeChat ? activeChat.id : null);
       }
   }, [activeChat, setActiveChatId]);
 
   useEffect(() => {
+      if (!messageEditNotification) return;
+      const { chat_id } = messageEditNotification;
+
+      if (!activeChatRef.current || activeChatRef.current.id !== chat_id) {
+          api.get(`chat/?search=${encodeURIComponent(currentSearchRef.current)}`)
+             .then(res => setChats(sortChats(res.data)))
+             .catch(console.error);
+      }
+  }, [messageEditNotification]);
+
+  useEffect(() => {
+      if (!messageDeletedNotification) return;
+      const { chat_id } = messageDeletedNotification;
+
+      if (!activeChatRef.current || activeChatRef.current.id !== chat_id) {
+          api.get(`chat/?search=${encodeURIComponent(currentSearchRef.current)}`)
+             .then(res => setChats(sortChats(res.data)))
+             .catch(console.error);
+      }
+  }, [messageDeletedNotification]);
+
+  useEffect(() => {
     const fetchChats = async () => {
+      setIsLoadingChats(true);
       try {
-        const res = await api.get("chat/");
+        const res = await api.get(`chat/?search=${encodeURIComponent(debouncedSearch)}`);
         setChats(sortChats(res.data));
 
         if (setUnreadMessagesCount) {
@@ -110,7 +157,56 @@ const MessagesPage = () => {
       }
     };
     fetchChats();
-  }, [setUnreadMessagesCount]);
+  }, [setUnreadMessagesCount, debouncedSearch]);
+
+  const handleDeleteChat = async () => {
+    if (!activeChat) return;
+
+    const confirmDelete = window.confirm(
+        `Are you sure you want to unmatch and delete your chat with ${activeChat.partner.first_name}? This cannot be undone.`
+    );
+
+    if (!confirmDelete) return;
+
+    setIsDeletingChat(true);
+    try {
+        await api.delete(`chat/${activeChat.id}/delete/`);
+
+        if (activeChat.unread_count > 0 && setUnreadMessagesCount) {
+            setUnreadMessagesCount(prev => Math.max(0, prev - activeChat.unread_count));
+        }
+
+        setChats(prev => prev.filter(c => c.id !== activeChat.id));
+        setActiveChat(null);
+    } catch (error) {
+        console.error("Failed to delete chat:", error);
+        alert("Failed to delete chat. Please try again.");
+    } finally {
+        setIsDeletingChat(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!chatDeletedNotification) return;
+
+    setChats(prevChats => {
+        const chatToRemove = prevChats.find(c => c.id === chatDeletedNotification);
+
+        if (chatToRemove && chatToRemove.unread_count > 0 && setUnreadMessagesCount) {
+            setUnreadMessagesCount(prev => Math.max(0, prev - chatToRemove.unread_count));
+        }
+
+        return prevChats.filter(chat => chat.id !== chatDeletedNotification);
+    });
+
+    setActiveChat(prevActive => {
+        if (prevActive && prevActive.id === chatDeletedNotification) {
+            return null;
+        }
+        return prevActive;
+    });
+  }, [chatDeletedNotification, setUnreadMessagesCount]);
+
 
   useEffect(() => {
     if (!newMessageNotification) return;
@@ -246,6 +342,7 @@ const MessagesPage = () => {
     setIsLoadingMessages(true);
     setShowScrollBottomBtn(false);
     setSelectedFiles([]);
+    setEditingMessage(null);
 
     const roomId = activeChat.id;
     const token = getAccessToken();
@@ -291,7 +388,32 @@ const MessagesPage = () => {
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      if (data.action === "new_message") {
+      if (data.action === "message_edited") {
+          setMessages((prev) => {
+              const updated = prev.map(m => m.id === data.msg_id ? { ...m, text: data.text, is_edited: true } : m);
+
+              if (updated.length > 0 && updated[updated.length - 1].id === data.msg_id) {
+                  setChats(prevChats => prevChats.map(c =>
+                      c.id === roomId && c.last_message ? { ...c, last_message: { ...c.last_message, text: data.text } } : c
+                  ));
+              }
+              return updated;
+          });
+      }
+      else if (data.action === "message_deleted") {
+          setMessages((prev) => {
+              const filtered = prev.filter(m => m.id !== data.msg_id);
+
+              if (prev.length > 0 && prev[prev.length - 1].id === data.msg_id) {
+                  const newLastMessage = filtered.length > 0 ? filtered[filtered.length - 1] : null;
+                  setChats(prevChats => prevChats.map(c =>
+                      c.id === roomId ? { ...c, last_message: newLastMessage ? { ...newLastMessage } : null } : c
+                  ));
+              }
+              return filtered;
+          });
+      }
+      else if (data.action === "new_message") {
           const newMessage = {
             id: data.msg_id,
             text: data.message,
@@ -371,6 +493,12 @@ const MessagesPage = () => {
     };
   }, [activeChat, flushPendingReads]);
 
+  useEffect(() => {
+    const handleClickOutside = () => setContextMenu(null);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       const newFiles = Array.from(e.target.files);
@@ -386,10 +514,76 @@ const MessagesPage = () => {
     setSelectedFiles(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
+  const handleContextMenu = (e, msg) => {
+      if (!msg.is_mine) return;
+
+      e.preventDefault();
+
+      const x = Math.min(e.pageX, window.innerWidth - 150);
+      const y = Math.min(e.pageY, window.innerHeight - 100);
+
+      setContextMenu({
+          visible: true,
+          x,
+          y,
+          msg
+      });
+  };
+
+  const startEditing = (msg) => {
+      setEditingMessage(msg);
+      setInput(msg.text || "");
+      setSelectedFiles([]);
+  };
+
+  const cancelEditing = () => {
+      setEditingMessage(null);
+      setInput("");
+  };
+
+  const handleMessageDelete = async (msgId) => {
+      try {
+          await api.delete(`chat/messages/${msgId}/`);
+          setMessages((prev) => {
+              const filtered = prev.filter(m => m.id !== msgId);
+              if (prev.length > 0 && prev[prev.length - 1].id === msgId) {
+                  const newLastMessage = filtered.length > 0 ? filtered[filtered.length - 1] : null;
+                  setChats(prevChats => prevChats.map(c =>
+                      c.id === activeChat.id ? { ...c, last_message: newLastMessage ? { ...newLastMessage } : null } : c
+                  ));
+              }
+              return filtered;
+          });
+      } catch (error) {
+          console.error("Failed to delete message:", error);
+          alert("Failed to delete message.");
+      }
+  };
+
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!activeChat) return;
     if (!input.trim() && selectedFiles.length === 0) return;
+
+    if (editingMessage) {
+        try {
+            await api.patch(`chat/messages/${editingMessage.id}/`, { text: input.trim() });
+            setMessages((prev) => {
+                const updated = prev.map(m => m.id === editingMessage.id ? { ...m, text: input.trim(), is_edited: true } : m);
+                if (updated.length > 0 && updated[updated.length - 1].id === editingMessage.id) {
+                    setChats(prevChats => prevChats.map(c =>
+                        c.id === activeChat.id ? { ...c, last_message: { ...c.last_message, text: input.trim() } } : c
+                    ));
+                }
+                return updated;
+            });
+            cancelEditing();
+        } catch (error) {
+            console.error("Failed to edit message:", error);
+            alert("Failed to edit message.");
+        }
+        return;
+    }
 
     if (selectedFiles.length > 0) {
         const formData = new FormData();
@@ -563,6 +757,8 @@ const MessagesPage = () => {
             <input
               type="text"
               placeholder="Search matches..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-muted/50 pl-9 pr-4 py-2 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-transparent focus:border-border"
             />
           </div>
@@ -571,10 +767,15 @@ const MessagesPage = () => {
         <div className="flex-1 overflow-y-auto px-2 pb-2 space-y-1 scrollbar-thin scrollbar-thumb-muted">
           {isLoadingChats ? (
             <div className="flex justify-center py-10"><Loader2 className="animate-spin text-primary" /></div>
-          ) : chats.length === 0 ? (
+          ) : chats.length === 0 && !searchQuery ? (
             <div className="text-center py-10 text-muted-foreground">
               <MessageCircle className="w-10 h-10 mx-auto mb-3 opacity-30" />
               <p className="text-sm">No messages yet.<br/>Start swiping to get matches!</p>
+            </div>
+          ) : chats.length === 0 && searchQuery ? (
+            <div className="text-center py-10 text-muted-foreground">
+              <Search className="w-8 h-8 mx-auto mb-3 opacity-30" />
+              <p className="text-sm">No results found for your query<br/>"{searchQuery}"</p>
             </div>
           ) : (
             chats.map(chat => {
@@ -658,11 +859,11 @@ const MessagesPage = () => {
             transition={{ type: "spring", bounce: 0, duration: 0.35 }}
             className="absolute md:relative inset-0 md:inset-auto z-50 md:z-auto flex-1 flex flex-col bg-background w-full h-[100dvh] md:h-auto shadow-2xl md:shadow-none"
           >
-            <div className="h-[65px] border-b border-border bg-card/80 backdrop-blur-md flex items-center px-4 shrink-0 z-10 shadow-sm">
-              <button onClick={() => setActiveChat(null)} className="md:hidden p-2 -ml-2 mr-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
-                <ArrowLeft className="w-5 h-5" />
-              </button>
+            <div className="h-[65px] border-b border-border bg-card/80 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-10 shadow-sm">
               <div className="flex items-center gap-3">
+                <button onClick={() => setActiveChat(null)} className="md:hidden p-2 -ml-2 mr-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
                 <div className="relative w-9 h-9 shrink-0">
                   <img
                     src={getAvatarUrl(chatToDisplay.partner.avatar, chatToDisplay.partner.first_name)}
@@ -674,25 +875,37 @@ const MessagesPage = () => {
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <h3 className="font-semibold text-[15px] leading-tight">{chatToDisplay.partner.first_name}</h3>
+                  <Link to={`/profile/${chatToDisplay.partner.id}`} className="flex items-center gap-3 group">
+                    <h3 className="font-semibold text-[15px] leading-tight group-hover:underline decoration-primary underline-offset-2 transition-all">{chatToDisplay.partner.first_name}</h3>
+                  </Link>
                   <span className="text-[11px] text-muted-foreground font-medium">
                       {isOnline(chatToDisplay.partner.id, chatToDisplay.partner.is_online) ? "Online" : "Offline"}
                   </span>
                 </div>
               </div>
-                <AnimatePresence>
-                  {currentChatData?.unread_count > 0 && (
-                      <motion.div
-                          initial={{ opacity: 0, y: -20 }}
-                          animate={{ opacity: 1, y: 15 }}
-                          exit={{ opacity: 0, y: -20 }}
-                          className="absolute top-full left-1/2 -translate-x-1/2 z-30 pointer-events-none"
-                      >
-                          <span className="bg-primary text-primary-foreground text-[11px] font-bold px-4 py-1.5 rounded-full shadow-lg border border-primary-foreground/20 whitespace-nowrap">
-                              New messages
-                          </span>
-                      </motion.div>
-                  )}
+
+              <button
+                onClick={handleDeleteChat}
+                disabled={isDeletingChat}
+                className="p-2 text-muted-foreground hover:text-destructive transition-colors rounded-full hover:bg-destructive/10 shrink-0"
+                title="Unmatch & Delete Chat"
+              >
+                {isDeletingChat ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" />}
+              </button>
+
+              <AnimatePresence>
+                {currentChatData?.unread_count > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 15 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="absolute top-full left-1/2 -translate-x-1/2 z-30 pointer-events-none"
+                    >
+                        <span className="bg-primary text-primary-foreground text-[11px] font-bold px-4 py-1.5 rounded-full shadow-lg border border-primary-foreground/20 whitespace-nowrap">
+                            New messages
+                        </span>
+                    </motion.div>
+                )}
               </AnimatePresence>
             </div>
 
@@ -711,108 +924,125 @@ const MessagesPage = () => {
               {isLoadingMessages ? (
                 <div className="flex justify-center items-center h-full"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
               ) : (
-                messages.map((msg, index) => {
-                  const showAvatar = !msg.is_mine && (index === messages.length - 1 || messages[index + 1]?.is_mine);
-                  const isFirstUnread = index === firstUnreadIndex;
-                  const isUnreadPartnerMessage = !msg.is_mine && !msg.is_read;
+                <AnimatePresence mode="popLayout">
+                  {messages.map((msg, index) => {
+                    const showAvatar = !msg.is_mine && (index === messages.length - 1 || messages[index + 1]?.is_mine);
+                    const isFirstUnread = index === firstUnreadIndex;
+                    const isUnreadPartnerMessage = !msg.is_mine && !msg.is_read;
 
-                  const fileUrl = getAttachmentUrl(msg.file_url);
-                  const isGifOnly = isGifMessage(msg.text) && !fileUrl;
+                    const fileUrl = getAttachmentUrl(msg.file_url);
+                    const isGifOnly = isGifMessage(msg.text) && !fileUrl;
 
-                  return (
-                    <React.Fragment key={msg.id || index}>
-                      {isFirstUnread && (
-                          <div
-                              ref={unreadMessageRef}
-                              className="flex justify-center my-4"
-                          >
-                          </div>
-                      )}
-
-                      <motion.div
-                        data-id={msg.id}
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={cn(
-                            "flex items-end gap-2",
-                            msg.is_mine ? "justify-end" : "justify-start",
-                            isUnreadPartnerMessage ? "unread-message" : ""
-                        )}
-                      >
-                        {!msg.is_mine && (
-                          <div className="w-7 h-7 shrink-0 mb-1">
-                            {showAvatar && (
-                              <img
-                                src={getAvatarUrl(chatToDisplay.partner.avatar, chatToDisplay.partner.first_name)}
-                                className="w-full h-full rounded-full object-cover shadow-sm"
-                                alt="avatar"
-                              />
-                            )}
-                          </div>
-                        )}
-
-                        <div className={cn(
-                          "rounded-[1.2rem] shadow-sm flex flex-col overflow-hidden",
-                          msg.is_mine
-                            ? "bg-primary text-primary-foreground rounded-br-sm"
-                            : "bg-card border border-border text-foreground rounded-bl-sm",
-                          isGifOnly ? "p-0 max-w-[250px] sm:max-w-[300px]" : "px-4 py-2 max-w-[70%]"
-                        )}>
-
-                          {fileUrl && (
-                              <div className="mb-2 rounded-lg overflow-hidden flex flex-col">
-                                  {fileUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
-                                      <img src={fileUrl} alt="attachment" className="max-w-full h-auto rounded-md object-contain" />
-                                  ) : (
-                                      <a
-                                          href={fileUrl}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="flex items-center gap-2 p-2 bg-background/20 rounded-md hover:bg-background/30 transition-colors"
-                                      >
-                                          <Paperclip className="w-4 h-4 shrink-0 text-foreground/80" />
-                                          <span className="truncate text-[13px] font-medium underline-offset-2 hover:underline">
-                                              {getFileNameFromUrl(msg.file_url)}
-                                          </span>
-                                      </a>
-                                  )}
+                    return (
+                        <motion.div
+                          layout
+                          key={msg.id || index}
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{
+                              opacity: 0,
+                              scale: 0.85,
+                              originX: msg.is_mine ? 1 : 0,
+                              transition: { duration: 0.2 }
+                          }}
+                          className="w-full flex flex-col"
+                        >
+                          {isFirstUnread && (
+                              <div
+                                  ref={unreadMessageRef}
+                                  className="flex justify-center my-4"
+                              >
                               </div>
                           )}
 
-                          {msg.text && (
-                              isGifOnly ? (
-                                    <img src={msg.text} alt="GIF" className="w-full h-auto block object-cover" />
-                                ) : isGifMessage(msg.text) ? (
-                                    <div className="mt-1 rounded-lg overflow-hidden bg-muted/20 max-w-[250px]">
-                                        <img src={msg.text} alt="GIF" className="w-full h-auto object-contain" />
-                                    </div>
-                                ) : (
-                                    <p className="text-[14px] leading-relaxed break-words">{msg.text}</p>
-                                )
-                          )}
+                          <div
+                            data-id={msg.id}
+                            className={cn(
+                                "flex items-end gap-2 relative",
+                                msg.is_mine ? "justify-end" : "justify-start",
+                                isUnreadPartnerMessage ? "unread-message" : ""
+                            )}
+                            onContextMenu={(e) => handleContextMenu(e, msg)}
+                          >
+                            {!msg.is_mine && (
+                              <div className="w-7 h-7 shrink-0 mb-1">
+                                {showAvatar && (
+                                  <img
+                                    src={getAvatarUrl(chatToDisplay.partner.avatar, chatToDisplay.partner.first_name)}
+                                    className="w-full h-full rounded-full object-cover shadow-sm"
+                                    alt="avatar"
+                                  />
+                                )}
+                              </div>
+                            )}
 
-                          <div className={cn(
-                              "flex items-center justify-end gap-1",
-                              isGifOnly ? "px-3 pb-1.5 pt-1.5" : "mt-0.5",
-                              msg.is_mine ? "text-primary-foreground/70" : "text-muted-foreground"
-                          )}>
-                              <span className="text-[10px] font-medium">
-                                {format(new Date(msg.created_at), "HH:mm")}
-                              </span>
+                            <div className={cn(
+                              "rounded-[1.2rem] shadow-sm flex flex-col overflow-hidden cursor-pointer",
+                              msg.is_mine
+                                ? "bg-primary text-primary-foreground rounded-br-sm"
+                                : "bg-card border border-border text-foreground rounded-bl-sm",
+                              isGifOnly ? "p-0 max-w-[250px] sm:max-w-[300px]" : "px-4 py-2 max-w-[70%]"
+                            )}>
 
-                              {msg.is_mine && (
-                                  msg.is_read ? (
-                                      <CheckCheck className="w-3.5 h-3.5" />
-                                  ) : (
-                                      <Check className="w-3.5 h-3.5 opacity-70" />
-                                  )
+                              {fileUrl && (
+                                  <div className="mb-2 rounded-lg overflow-hidden flex flex-col">
+                                      {fileUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+                                          <img src={fileUrl} alt="attachment" className="max-w-full h-auto rounded-md object-contain" />
+                                      ) : (
+                                          <a
+                                              href={fileUrl}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="flex items-center gap-2 p-2 bg-background/20 rounded-md hover:bg-background/30 transition-colors"
+                                          >
+                                              <Paperclip className="w-4 h-4 shrink-0 text-foreground/80" />
+                                              <span className="truncate text-[13px] font-medium underline-offset-2 hover:underline">
+                                                  {getFileNameFromUrl(msg.file_url)}
+                                              </span>
+                                          </a>
+                                      )}
+                                  </div>
                               )}
+
+                              {msg.text && (
+                                  isGifOnly ? (
+                                        <img src={msg.text} alt="GIF" className="w-full h-auto block object-cover" />
+                                    ) : isGifMessage(msg.text) ? (
+                                        <div className="mt-1 rounded-lg overflow-hidden bg-muted/20 max-w-[250px]">
+                                            <img src={msg.text} alt="GIF" className="w-full h-auto object-contain" />
+                                        </div>
+                                    ) : (
+                                        <p className="text-[14px] leading-relaxed break-words">{msg.text}</p>
+                                    )
+                              )}
+
+                              <div className={cn(
+                                  "flex items-center justify-end gap-1",
+                                  isGifOnly ? "px-3 pb-1.5 pt-1.5" : "mt-0.5",
+                                  msg.is_mine ? "text-primary-foreground/70" : "text-muted-foreground"
+                              )}>
+                                  <span className="text-[10px] font-medium">
+                                    {format(new Date(msg.created_at), "HH:mm")}
+                                  </span>
+
+                                  {msg.is_edited && (
+                                      <span className="text-[10px] font-medium opacity-80">(edited)</span>
+                                  )}
+
+                                  {msg.is_mine && (
+                                      msg.is_read ? (
+                                          <CheckCheck className="w-3.5 h-3.5" />
+                                      ) : (
+                                          <Check className="w-3.5 h-3.5 opacity-70" />
+                                      )
+                                  )}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    </React.Fragment>
-                  );
-                })
+                        </motion.div>
+                    );
+                  })}
+                </AnimatePresence>
               )}
 
             </div>
@@ -882,53 +1112,112 @@ const MessagesPage = () => {
               )}
             </AnimatePresence>
 
-            <form onSubmit={sendMessage} className="p-4 bg-background border-t border-border shrink-0 flex gap-2 relative items-center">
+            <form onSubmit={sendMessage} className="p-4 bg-background border-t border-border shrink-0 flex flex-col relative">
 
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  className="hidden"
-                  multiple
-                />
+                <AnimatePresence>
+                    {editingMessage && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="flex items-center justify-between bg-muted/50 p-2 px-4 rounded-t-xl text-sm border-b border-border/50"
+                        >
+                            <div className="flex items-center gap-2 text-primary">
+                                <Edit2 className="w-4 h-4" />
+                                <span className="font-medium">Editing message</span>
+                            </div>
+                            <button type="button" onClick={cancelEditing} className="text-muted-foreground hover:text-foreground">
+                                <X className="w-4 h-4" />
+                            </button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-colors shrink-0 cursor-pointer"
-                >
-                  <Paperclip className="w-5 h-5" />
-                </button>
+                <div className="flex gap-2 items-center pt-2">
+                    <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    multiple
+                    />
 
-                <button
-                  type="button"
-                  onClick={() => setShowGifPicker(!showGifPicker)}
-                  className={cn(
-                    "w-10 h-10 flex items-center justify-center rounded-full transition-colors shrink-0 cursor-pointer",
-                    showGifPicker ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  )}
-                >
-                  <span className="font-bold text-[11px] border-2 border-current rounded-[4px] px-1 tracking-wider leading-none py-0.5">
-                    GIF
-                  </span>
-                </button>
+                    {!editingMessage && (
+                        <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-colors shrink-0 cursor-pointer"
+                        >
+                        <Paperclip className="w-5 h-5" />
+                        </button>
+                    )}
 
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Write a message..."
-                  className="flex-1 bg-muted/50 px-4 py-3 rounded-full text-[14px] outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-transparent focus:border-border"
-                />
+                    {!editingMessage && (
+                        <button
+                        type="button"
+                        onClick={() => setShowGifPicker(!showGifPicker)}
+                        className={cn(
+                            "w-10 h-10 flex items-center justify-center rounded-full transition-colors shrink-0 cursor-pointer",
+                            showGifPicker ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        )}
+                        >
+                        <span className="font-bold text-[11px] border-2 border-current rounded-[4px] px-1 tracking-wider leading-none py-0.5">
+                            GIF
+                        </span>
+                        </button>
+                    )}
 
-                <button
-                  type="submit"
-                  disabled={!input.trim() && selectedFiles.length === 0}
-                  className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0 shadow-md active:scale-95 cursor-pointer"
-                >
-                  <Send className="w-5 h-5 ml-0.5" />
-                </button>
+                    <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Write a message..."
+                    className={cn(
+                        "flex-1 bg-muted/50 px-4 py-3 rounded-full text-[14px] outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-transparent focus:border-border",
+                        editingMessage && "rounded-tl-none border-primary/30 bg-primary/5"
+                    )}
+                    />
+
+                    <button
+                    type="submit"
+                    disabled={!input.trim() && selectedFiles.length === 0}
+                    className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0 shadow-md active:scale-95 cursor-pointer"
+                    >
+                    <Send className="w-5 h-5 ml-0.5" />
+                    </button>
+                </div>
             </form>
+
+            <AnimatePresence>
+                {contextMenu && contextMenu.visible && (
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.1 }}
+                        style={{ top: contextMenu.y, left: contextMenu.x }}
+                        className="fixed z-[200] w-40 bg-card border border-border shadow-xl rounded-xl overflow-hidden py-1"
+                    >
+                        {(!contextMenu.msg.file_url && !isGifMessage(contextMenu.msg.text)) && (
+                            <button
+                                onClick={() => startEditing(contextMenu.msg)}
+                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors text-left"
+                            >
+                                <Edit2 className="w-4 h-4 text-muted-foreground" />
+                                Edit
+                            </button>
+                        )}
+                        <button
+                            onClick={() => handleMessageDelete(contextMenu.msg.id)}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-destructive/10 text-destructive transition-colors text-left"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                            Delete
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
           </motion.div>
         )}
       </AnimatePresence>

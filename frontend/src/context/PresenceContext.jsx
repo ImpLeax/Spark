@@ -11,13 +11,14 @@ export const PresenceProvider = ({ children }) => {
     const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
     const [likesCount, setLikesCount] = useState(0);
     const [newMatchNotification, setNewMatchNotification] = useState(null);
+    const [chatDeletedNotification, setChatDeletedNotification] = useState(null);
+
+    const [messageEditNotification, setMessageEditNotification] = useState(null);
+    const [messageDeletedNotification, setMessageDeletedNotification] = useState(null);
 
     const suppressSoundUntil = useRef(0);
-
     const currentActiveChatRef = useRef(null);
-
     const notifiedCountsRef = useRef({});
-
     const audioRef = useRef(null);
 
     const playNotificationSound = useCallback(() => {
@@ -80,14 +81,12 @@ export const PresenceProvider = ({ children }) => {
 
                 if (currentActiveChatRef.current !== incomingChatId) {
                     if (Date.now() > suppressSoundUntil.current) {
-
                         if (!notifiedCountsRef.current[incomingChatId]) {
                             playNotificationSound();
                             notifiedCountsRef.current[incomingChatId] = true;
                         }
                     }
                 }
-
                 setUnreadMessagesCount(prev => prev + 1);
             }
             else if (data.type === "new_like") {
@@ -98,12 +97,20 @@ export const PresenceProvider = ({ children }) => {
             }
             else if (data.type === "new_match") {
                 setNewMatchNotification(data.chat_data);
-
                 if (Date.now() > suppressSoundUntil.current) {
                     playNotificationSound();
                 }
-
                 setUnreadMessagesCount(prev => prev + 1);
+            }
+            else if (data.type === "chat_deleted") {
+                setChatDeletedNotification(data.chat_id);
+                setTimeout(() => setChatDeletedNotification(null), 500);
+            }
+            else if (data.type === "message_edited") {
+                setMessageEditNotification({ ...data, _ts: Date.now() });
+            }
+            else if (data.type === "message_deleted") {
+                setMessageDeletedNotification({ ...data, _ts: Date.now() });
             }
         };
 
@@ -129,6 +136,9 @@ export const PresenceProvider = ({ children }) => {
             unreadMessagesCount,
             setUnreadMessagesCount,
             muteNextNotification,
+            chatDeletedNotification,
+            messageEditNotification,
+            messageDeletedNotification,
             setActiveChatId
         }}>
             {children}

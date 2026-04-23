@@ -1,3 +1,5 @@
+import json
+import urllib
 from datetime import date
 from django.utils.encoding import force_bytes, force_str
 from rest_framework import serializers
@@ -26,6 +28,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         write_only=True,
         style={'input_type': 'password'}
+    )
+
+    cf_turnstile_response = serializers.CharField(
+        write_only=True,
+        required=True,
+        error_messages={'required': 'Please complete the bot verification.'}
     )
 
     first_name = serializers.CharField(
@@ -86,11 +94,34 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = [
-            'username', 'email', 'password', 'first_name',
+            'username', 'email', 'password', 'cf_turnstile_response', 'first_name',
             'last_name', 'surname', 'longitude', 'latitude', 'gender',
             'looking_for', 'intention', 'birth_date', 'interests',
             'photos'
         ]
+
+    def validate_cf_turnstile_response(self, value):
+        secret_key = getattr(settings, 'TURNSTILE_SECRET_KEY', None)
+
+        if not secret_key:
+            return value
+
+        url = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+        data = urllib.parse.urlencode({
+            'secret': secret_key,
+            'response': value
+        }).encode('utf-8')
+
+        req = urllib.request.Request(url, data=data)
+        try:
+            with urllib.request.urlopen(req) as response:
+                result = json.loads(response.read().decode())
+                if not result.get('success'):
+                    raise serializers.ValidationError("Bot verification failed. Please try again.")
+        except Exception:
+            raise serializers.ValidationError("Unable to verify Turnstile token. Please try again.")
+
+        return value
 
     def validate_password(self, value):
         try:
@@ -122,6 +153,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         User = get_user_model()
+
+        validated_data.pop('cf_turnstile_response', None)
 
         photos = validated_data.pop('photos')
 

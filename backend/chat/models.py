@@ -28,6 +28,7 @@ class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
     text = models.TextField(blank=True, null=True)
     file = models.FileField(upload_to=user_chat_file_path, blank=True, null=True)
+    is_edited= models.BooleanField(default=False)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

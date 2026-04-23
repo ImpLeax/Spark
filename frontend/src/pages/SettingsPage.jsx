@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ImageCropperModal } from "@/components/ui/ImageCropperModal";
 import {
   Sliders,
   ShieldCheck,
@@ -155,6 +156,7 @@ const ProfileSettings = () => {
   const [isUploadingGallery, setIsUploadingGallery] = useState(false);
 
   const [message, setMessage] = useState(null);
+  const [cropState, setCropState] = useState({ isOpen: false, imageSrc: null, target: null });
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
@@ -210,23 +212,62 @@ const ProfileSettings = () => {
     });
   };
 
-  const handleAvatarUpload = async (e) => {
+const handleAvatarUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setIsUploadingAvatar(true);
-    const formData = new FormData();
-    formData.append("avatar", file);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropState({ isOpen: true, imageSrc: reader.result, target: 'avatar' });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
 
-    try {
-      await api.put("user/profile/avatar/", formData, { headers: { "Content-Type": "multipart/form-data" } });
-      const res = await api.get("user/profile/");
-      setAvatar(res.data.avatar);
-      showMessage("success", "Avatar updated successfully!");
-    } catch (error) {
-      showMessage("error", getErrorMessage(error, "Failed to upload avatar."));
-    } finally {
-      setIsUploadingAvatar(false);
-      e.target.value = "";
+  const handleGalleryUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropState({ isOpen: true, imageSrc: reader.result, target: 'gallery' });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleCropComplete = async (croppedBlob) => {
+    const target = cropState.target;
+    setCropState({ isOpen: false, imageSrc: null, target: null });
+
+    const file = new File([croppedBlob], `${target}.jpg`, { type: "image/jpeg" });
+    const formData = new FormData();
+
+    if (target === 'avatar') {
+      setIsUploadingAvatar(true);
+      formData.append("avatar", file);
+      try {
+        await api.put("user/profile/avatar/", formData, { headers: { "Content-Type": "multipart/form-data" } });
+        const res = await api.get("user/profile/");
+        setAvatar(res.data.avatar);
+        showMessage("success", "Avatar updated successfully!");
+      } catch (error) {
+        showMessage("error", getErrorMessage(error, "Failed to upload avatar."));
+      } finally {
+        setIsUploadingAvatar(false);
+      }
+    }
+    else if (target === 'gallery') {
+      setIsUploadingGallery(true);
+      formData.append("photos", file);
+      try {
+        await api.post("user/profile/gallery/", formData, { headers: { "Content-Type": "multipart/form-data" } });
+        const res = await api.get("user/profile/gallery/");
+        setGallery(res.data);
+        showMessage("success", "Photo added successfully!");
+      } catch (error) {
+        showMessage("error", getErrorMessage(error, "Failed to upload photo."));
+      } finally {
+        setIsUploadingGallery(false);
+      }
     }
   };
 
@@ -240,26 +281,6 @@ const ProfileSettings = () => {
       showMessage("error", "Failed to remove avatar.");
     } finally {
       setIsUploadingAvatar(false);
-    }
-  };
-
-  const handleGalleryUpload = async (e) => {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
-    setIsUploadingGallery(true);
-    const formData = new FormData();
-    files.forEach(file => formData.append("photos", file));
-
-    try {
-      await api.post("user/profile/gallery/", formData, { headers: { "Content-Type": "multipart/form-data" } });
-      const res = await api.get("user/profile/gallery/");
-      setGallery(res.data);
-      showMessage("success", "Photos added successfully!");
-    } catch (error) {
-      showMessage("error", getErrorMessage(error, "Failed to upload photos."));
-    } finally {
-      setIsUploadingGallery(false);
-      e.target.value = "";
     }
   };
 
@@ -413,7 +434,7 @@ const ProfileSettings = () => {
                </div>
             )}
           </div>
-          <input type="file" multiple accept="image/*" ref={galleryInputRef} className="hidden" onChange={handleGalleryUpload} />
+          <input type="file" accept="image/*" ref={galleryInputRef} className="hidden" onChange={handleGalleryUpload} />
         </div>
 
         <div>
@@ -579,6 +600,15 @@ const ProfileSettings = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {cropState.isOpen && (
+        <ImageCropperModal
+          imageSrc={cropState.imageSrc}
+          aspect={cropState.target === 'avatar' ? 1 : 3/4}
+          onComplete={handleCropComplete}
+          onClose={() => setCropState({ isOpen: false, imageSrc: null, target: null })}
+        />
+      )}
     </div>
   );
 };

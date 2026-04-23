@@ -1,12 +1,15 @@
 from rest_framework.pagination import CursorPagination
 from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from .models import ChatRoom, Message
-from django.db.models import Q, Max
+from django.db.models import Q
+from django.db.models.functions import Greatest
+from django.contrib.postgres.search import TrigramSimilarity
 from .serializers import ChatRoomListSerializer
+from recommendations.models import Interactions, Match
 import os
 
 class MessageCursorPagination(CursorPagination):
@@ -16,7 +19,7 @@ class MessageCursorPagination(CursorPagination):
 
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, NotFound
 from .models import Message, ChatRoom
 from .serializers import MessageSerializer
 
@@ -46,20 +49,33 @@ class ChatListView(generics.ListAPIView):
     """A view class for retrieving chats."""
 
     serializer_class = ChatRoomListSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         user = self.request.user
 
-        return ChatRoom.objects.filter(
-            Q(user1=user) | Q(user2=user)
-        ).annotate(
-            last_msg_time=Max('messages__created_at')
-        ).order_by(
-            '-last_msg_time', '-created_at'
-        ).select_related(
-            'user1__profile', 'user2__profile'
-        )
+        qs = ChatRoom.objects.filter(Q(user1=user) | Q(user2=user))
+        search_query = self.request.query_params.get('search', '').strip()
+
+        if search_query:
+            if len(search_query) <= 3:
+                qs = qs.filter(
+                    Q(user1__profile__first_name__icontains=search_query) |
+                    Q(user2__profile__first_name__icontains=search_query)
+                )
+            else:
+                qs = qs.annotate(
+                    similarity=Greatest(
+                        TrigramSimilarity('user1__profile__first_name', search_query),
+                        TrigramSimilarity('user2__profile__first_name', search_query)
+                    )
+                ).filter(
+                    similarity__gt=0.3
+                ).order_by('-similarity')
+        else:
+            qs = qs.order_by('-created_at')
+
+        return qs
 
 
 class MessageUploadView(APIView):
@@ -131,3 +147,99 @@ class MessageUploadView(APIView):
 
         except ChatRoom.DoesNotExist:
             return Response({'error': 'Room not found'}, status=404)
+
+class MessageDetailView(APIView):
+    """View to retrieve, edit, or delete an existing message."""
+
+    permission_classes = (IsAuthenticated, )
+
+    def get_object(self, message_id, user):
+        try:
+            message = Message.objects.get(id=message_id)
+        except Message.DoesNotExist:
+            raise NotFound("Message not found.")
+
+        if message.sender != user:
+            raise PermissionDenied("You can only modify your own messages.")
+
+        return message
+
+    def patch(self, request, message_id):
+        message = self.get_object(message_id, request.user)
+
+        new_text = request.data.get('text', '').strip()
+        if not new_text:
+            return Response({"error": "Message text cannot be empty."}, status=status.HTTP_400_BAD_REQUEST)
+
+        message.text = new_text
+        message.is_edited = True
+        message.save()
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"chat_{message.room.id}",
+            {
+                'type': 'message_edited_event',
+                'msg_id': message.id,
+                'text': message.text,
+            }
+        )
+
+        return Response({"status": "success", "message": "Message updated."}, status=status.HTTP_200_OK)
+
+    def delete(self, request, message_id):
+        message = self.get_object(message_id, request.user)
+
+        room_id = message.room.id
+        msg_id = message.id
+
+        message.delete()
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"chat_{room_id}",
+            {
+                'type': 'message_deleted_event',
+                'msg_id': msg_id,
+            }
+        )
+
+        return Response({"status": "success", "message": "Message deleted."}, status=status.HTTP_204_NO_CONTENT)
+
+
+class ChatDeleteView(APIView):
+    """View to handle chat deletion, unmatching, and unliking."""
+
+    permission_classes = (IsAuthenticated, )
+
+    def delete(self, request, room_id):
+        user = request.user
+
+        try:
+            room = ChatRoom.objects.get(id=room_id)
+        except ChatRoom.DoesNotExist:
+            return Response({"error": "Chat not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if room.user1 != user and room.user2 != user:
+            raise PermissionDenied("You do not have permission to delete this chat.")
+
+        partner = room.user2 if room.user1 == user else room.user1
+
+        Interactions.objects.filter(sender=user, receiver=partner).update(is_like=False)
+
+        Match.objects.filter(
+            Q(user_1=user, user_2=partner) | Q(user_1=partner, user_2=user)
+        ).delete()
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"user_{partner.id}_notifications",
+            {
+                'type': 'chat_deleted_notification',
+                'chat_id': room.id
+            }
+        )
+
+        room.delete()
+
+        return Response({"message": "Chat successfully deleted."}, status=status.HTTP_204_NO_CONTENT)
