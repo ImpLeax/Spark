@@ -1,0 +1,25 @@
+{% extends 'user/emails/base_email.html' %}
+{% load i18n %}
+
+{% block content %}
+    <h2 style="margin-top: 0; color: #18181b; font-size: 24px;">{% trans "Welcome to Spark," %} {{ first_name }}! 👋</h2>
+    
+    <p style="font-size: 16px; line-height: 1.5; color: #52525b; margin-bottom: 30px;">
+        {% trans "We are thrilled to have you here. To start swiping and finding your perfect match, please activate your account by clicking the button below." %}
+    </p>
+    
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td align="center">
+                <a href="{{ action_url }}" style="display: inline-block; padding: 14px 32px; background-color: #ec4899; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 16px; border-radius: 12px;">
+                    {% trans "Activate Account" %}
+                </a>
+            </td>
+        </tr>
+    </table>
+    
+    <p style="font-size: 14px; line-height: 1.5; color: #71717a; margin-top: 30px;">
+        {% trans "If the button doesn't work, copy and paste this link into your browser:" %}<br>
+        <a href="{{ action_url }}" style="color: #ec4899; word-break: break-all;">{{ action_url }}</a>
+    </p>
+{% endblock %}

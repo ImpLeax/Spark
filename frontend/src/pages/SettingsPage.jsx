@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ImageCropperModal } from "@/components/ui/ImageCropperModal";
+import { useTranslation } from "react-i18next";
 import {
   Sliders,
   ShieldCheck,
@@ -25,7 +26,15 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/Card.jsx";
 import { cn } from "@/lib/utils";
 
-const getErrorMessage = (error, defaultMessage) => {
+const intentionKeyMap = {
+  "Still figuring it out": "still_figuring",
+  "Casual dating": "casual_dating",
+  "New friends": "new_friends",
+  "Short-term dating": "short_term",
+  "Long-term relationship": "long_term"
+};
+
+const getErrorMessage = (error, defaultMessageKey) => {
   const data = error.response?.data;
   if (data) {
     const firstKey = Object.keys(data)[0];
@@ -35,7 +44,7 @@ const getErrorMessage = (error, defaultMessage) => {
       return data[firstKey];
     }
   }
-  return defaultMessage;
+  return defaultMessageKey;
 };
 
 const FormMessage = ({ msg }) => (
@@ -60,6 +69,7 @@ const FormMessage = ({ msg }) => (
 );
 
 const SettingsPage = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("profile");
 
   useEffect(() => {
@@ -76,8 +86,8 @@ const SettingsPage = () => {
       className="max-w-5xl mx-auto px-4 py-8 md:p-10 w-full min-h-[101vh]"
     >
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground">Settings</h1>
-        <p className="text-muted-foreground text-lg mt-2">Manage your preferences and account security.</p>
+        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground">{t("settings_page.header.title")}</h1>
+        <p className="text-muted-foreground text-lg mt-2">{t("settings_page.header.subtitle")}</p>
       </div>
 
       <div className="flex flex-col md:flex-row gap-8">
@@ -86,19 +96,19 @@ const SettingsPage = () => {
             active={activeTab === "profile"}
             onClick={() => setActiveTab("profile")}
             icon={<User size={20} />}
-            label="Edit Profile"
+            label={t("settings_page.tabs.profile")}
           />
           <TabButton
             active={activeTab === "discovery"}
             onClick={() => setActiveTab("discovery")}
             icon={<Sliders size={20} />}
-            label="Discovery"
+            label={t("settings_page.tabs.discovery")}
           />
           <TabButton
             active={activeTab === "account"}
             onClick={() => setActiveTab("account")}
             icon={<ShieldCheck size={20} />}
-            label="Account & Security"
+            label={t("settings_page.tabs.account")}
           />
         </div>
 
@@ -127,6 +137,7 @@ const SettingsPage = () => {
 };
 
 const ProfileSettings = () => {
+  const { t } = useTranslation();
   const [profileData, setProfileData] = useState({
     firstName: "", lastName: "", surname: "", bio: "", height: "", weight: "",
   });
@@ -248,9 +259,9 @@ const handleAvatarUpload = (e) => {
         await api.put("user/profile/avatar/", formData, { headers: { "Content-Type": "multipart/form-data" } });
         const res = await api.get("user/profile/");
         setAvatar(res.data.avatar);
-        showMessage("success", "Avatar updated successfully!");
+        showMessage("success", t("settings_page.profile.messages.avatar_success"));
       } catch (error) {
-        showMessage("error", getErrorMessage(error, "Failed to upload avatar."));
+        showMessage("error", t(getErrorMessage(error, "settings_page.profile.messages.avatar_fail")));
       } finally {
         setIsUploadingAvatar(false);
       }
@@ -262,9 +273,9 @@ const handleAvatarUpload = (e) => {
         await api.post("user/profile/gallery/", formData, { headers: { "Content-Type": "multipart/form-data" } });
         const res = await api.get("user/profile/gallery/");
         setGallery(res.data);
-        showMessage("success", "Photo added successfully!");
+        showMessage("success", t("settings_page.profile.messages.gallery_success"));
       } catch (error) {
-        showMessage("error", getErrorMessage(error, "Failed to upload photo."));
+        showMessage("error", t(getErrorMessage(error, "settings_page.profile.messages.gallery_fail")));
       } finally {
         setIsUploadingGallery(false);
       }
@@ -276,9 +287,9 @@ const handleAvatarUpload = (e) => {
     try {
       await api.delete("user/profile/avatar/");
       setAvatar(null);
-      showMessage("success", "Avatar removed.");
+      showMessage("success", t("settings_page.profile.messages.avatar_removed"));
     } catch (error) {
-      showMessage("error", "Failed to remove avatar.");
+      showMessage("error", t(getErrorMessage(error, "settings_page.profile.messages.avatar_remove_fail")));
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -288,9 +299,9 @@ const handleAvatarUpload = (e) => {
     try {
       await api.delete(`user/profile/gallery/${id}/`);
       setGallery(prev => prev.filter(img => img.id !== id));
-      showMessage("success", "Photo deleted.");
+      showMessage("success", t("settings_page.profile.messages.gallery_deleted"));
     } catch (error) {
-      showMessage("error", getErrorMessage(error, "Failed to delete photo."));
+      showMessage("error", t(getErrorMessage(error, "settings_page.profile.messages.gallery_delete_fail")));
     }
   };
 
@@ -298,7 +309,7 @@ const handleAvatarUpload = (e) => {
     e.preventDefault();
 
     if (selectedInterests.length < 2) {
-      return showMessage("error", "Please select at least 2 interests.");
+      return showMessage("error", t("settings_page.profile.messages.min_interests"));
     }
 
     setIsSaving(true);
@@ -325,9 +336,9 @@ const handleAvatarUpload = (e) => {
         api.patch("user/profile/", payload),
         api.patch("user/profile/interests/", { interest_ids: selectedInterests })
       ]);
-      showMessage("success", "Profile info updated successfully!");
+      showMessage("success", t("settings_page.profile.messages.info_success"));
     } catch (error) {
-      showMessage("error", getErrorMessage(error, "Failed to update profile info."));
+      showMessage("error", t(getErrorMessage(error, "settings_page.profile.messages.info_fail")));
     } finally {
       setIsSaving(false);
     }
@@ -341,11 +352,11 @@ const handleAvatarUpload = (e) => {
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
           setIsLocating(false);
-          showMessage("success", "New location ready to be saved.");
+          showMessage("success", t("settings_page.profile.messages.location_success"));
         },
         error => {
           setIsLocating(false);
-          showMessage("error", "Could not get location. Check browser permissions.");
+          showMessage("error", t("settings_page.profile.messages.location_fail"));
         }
       );
     } else {
@@ -360,7 +371,7 @@ const handleAvatarUpload = (e) => {
   return (
     <div className="space-y-6">
       <Card className="p-6 md:p-8 rounded-[2rem] border-border shadow-sm">
-        <h2 className="text-2xl font-bold mb-6">Profile Settings</h2>
+        <h2 className="text-2xl font-bold mb-6">{t("settings_page.profile.title")}</h2>
         <FormMessage msg={message} />
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-10 pb-8 border-b border-border">
@@ -377,15 +388,15 @@ const handleAvatarUpload = (e) => {
             )}
           </div>
           <div>
-            <h3 className="text-lg font-bold">Profile Avatar</h3>
-            <p className="text-sm text-muted-foreground mb-4">This is your main identity photo.</p>
+            <h3 className="text-lg font-bold">{t("settings_page.profile.avatar.title")}</h3>
+            <p className="text-sm text-muted-foreground mb-4">{t("settings_page.profile.avatar.desc")}</p>
             <div className="flex flex-wrap gap-2">
               <Button size="sm" variant="secondary" onClick={() => avatarInputRef.current.click()} disabled={isUploadingAvatar}>
-                <Camera className="w-4 h-4 mr-2" /> Change Avatar
+                <Camera className="w-4 h-4 mr-2" /> {t("settings_page.profile.avatar.change_btn")}
               </Button>
               {avatar && (
                 <Button size="sm" variant="destructive" onClick={handleAvatarDelete} disabled={isUploadingAvatar}>
-                  Remove
+                  {t("settings_page.profile.avatar.remove_btn")}
                 </Button>
               )}
             </div>
@@ -396,8 +407,8 @@ const handleAvatarUpload = (e) => {
         <div className="mb-10 pb-8 border-b border-border">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-4">
             <div>
-              <h3 className="text-lg font-bold">Photo Gallery</h3>
-              <p className="text-sm text-muted-foreground">Add 2 to 4 photos to show off your personality.</p>
+              <h3 className="text-lg font-bold">{t("settings_page.profile.gallery.title")}</h3>
+              <p className="text-sm text-muted-foreground">{t("settings_page.profile.gallery.desc")}</p>
             </div>
             <Button
               size="sm"
@@ -406,7 +417,7 @@ const handleAvatarUpload = (e) => {
               disabled={isUploadingGallery || gallery.length >= 4}
             >
               {isUploadingGallery ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
-              Add Photo
+              {t("settings_page.profile.gallery.add_btn")}
             </Button>
           </div>
 
@@ -430,7 +441,7 @@ const handleAvatarUpload = (e) => {
 
             {gallery.length === 0 && !isUploadingGallery && (
                <div className="col-span-full py-8 text-center border-2 border-dashed rounded-2xl text-muted-foreground">
-                 No photos in gallery.
+                 {t("settings_page.profile.gallery.empty")}
                </div>
             )}
           </div>
@@ -438,37 +449,37 @@ const handleAvatarUpload = (e) => {
         </div>
 
         <div>
-          <h3 className="text-lg font-bold mb-4">Basic Information</h3>
+          <h3 className="text-lg font-bold mb-4">{t("settings_page.profile.basic_info.title")}</h3>
           <form onSubmit={handleSaveInfo} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">First Name</label>
+                <label className="text-sm font-semibold text-muted-foreground">{t("settings_page.profile.basic_info.first_name")}</label>
                 <Input required value={profileData.firstName} onChange={(e) => setProfileData({...profileData, firstName: e.target.value})} className="h-12" />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Last Name</label>
+                <label className="text-sm font-semibold text-muted-foreground">{t("settings_page.profile.basic_info.last_name")}</label>
                 <Input required value={profileData.lastName} onChange={(e) => setProfileData({...profileData, lastName: e.target.value})} className="h-12" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-muted-foreground">Surname (Patronymic)</label>
+              <label className="text-sm font-semibold text-muted-foreground">{t("settings_page.profile.basic_info.surname")}</label>
               <Input value={profileData.surname} onChange={(e) => setProfileData({...profileData, surname: e.target.value})} className="h-12" />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-semibold text-muted-foreground">Bio</label>
+              <label className="text-sm font-semibold text-muted-foreground">{t("settings_page.profile.basic_info.bio")}</label>
               <textarea
                 value={profileData.bio}
                 onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
-                placeholder="Tell a bit about yourself..."
+                placeholder={t("settings_page.profile.basic_info.bio_placeholder")}
                 className="flex min-h-[120px] w-full rounded-xl border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-y"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Intention</label>
+                <label className="text-sm font-semibold text-muted-foreground">{t("settings_page.profile.basic_info.intention")}</label>
                 <Button
                   type="button"
                   variant="outline"
@@ -476,13 +487,13 @@ const handleAvatarUpload = (e) => {
                   className="w-full flex justify-between items-center bg-secondary/20 hover:bg-secondary/40 border-dashed h-12 rounded-xl"
                 >
                   <span className={intention ? "text-foreground font-medium" : "text-muted-foreground"}>
-                    {selectedIntentionObj ? selectedIntentionObj.name : "Select intention..."}
+                    {selectedIntentionObj ? t(`intentions.${intentionKeyMap[selectedIntentionObj.name] || selectedIntentionObj.name.toLowerCase()}`) : t("settings_page.profile.basic_info.select_intention")}
                   </span>
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </Button>
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Interests</label>
+                <label className="text-sm font-semibold text-muted-foreground">{t("settings_page.profile.basic_info.interests")}</label>
                 <Button
                   type="button"
                   variant="outline"
@@ -490,7 +501,7 @@ const handleAvatarUpload = (e) => {
                   className="w-full flex justify-between items-center bg-secondary/20 hover:bg-secondary/40 border-dashed h-12 rounded-xl"
                 >
                   <span className={selectedInterests.length > 0 ? "text-foreground font-medium" : "text-muted-foreground"}>
-                    {selectedInterests.length > 0 ? `${selectedInterests.length} selected` : "Select interests..."}
+                    {selectedInterests.length > 0 ? t("settings_page.profile.basic_info.interests_selected", { count: selectedInterests.length }) : t("settings_page.profile.basic_info.select_interests")}
                   </span>
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </Button>
@@ -499,29 +510,29 @@ const handleAvatarUpload = (e) => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Height (cm)</label>
+                <label className="text-sm font-semibold text-muted-foreground">{t("settings_page.profile.basic_info.height")}</label>
                 <Input type="number" placeholder="180" value={profileData.height} onChange={(e) => setProfileData({...profileData, height: e.target.value})} className="h-12" />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Weight (kg)</label>
+                <label className="text-sm font-semibold text-muted-foreground">{t("settings_page.profile.basic_info.weight")}</label>
                 <Input type="number" placeholder="75" value={profileData.weight} onChange={(e) => setProfileData({...profileData, weight: e.target.value})} className="h-12" />
               </div>
             </div>
 
             <div className="space-y-2 pt-2">
-              <label className="text-sm font-semibold text-muted-foreground">Location</label>
+              <label className="text-sm font-semibold text-muted-foreground">{t("settings_page.profile.basic_info.location")}</label>
               <Button type="button" variant={latitude ? "secondary" : "outline"} onClick={getLocation} disabled={isLocating} className="w-full flex gap-2 h-12 rounded-xl">
                 {isLocating && <Loader2 className="w-4 h-4 animate-spin" />}
                 {!isLocating && !latitude && <MapPin className="w-4 h-4" />}
                 {!isLocating && latitude && <CheckCircle2 className="w-4 h-4 text-green-500" />}
-                {isLocating ? "Getting Location..." : (latitude ? "New Location Pinned" : "Update My Location")}
+                {isLocating ? t("settings_page.profile.basic_info.locating") : (latitude ? t("settings_page.profile.basic_info.location_pinned") : t("settings_page.profile.basic_info.location_update"))}
               </Button>
-              <p className="text-xs text-muted-foreground mt-1">Update this if you have moved to find people closer to you.</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("settings_page.profile.basic_info.location_desc")}</p>
             </div>
 
             <Button type="submit" disabled={isSaving} className="w-full md:w-auto h-12 px-8 rounded-xl text-base mt-4">
               {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
-              Save Information
+              {t("settings_page.profile.basic_info.save_btn")}
             </Button>
           </form>
         </div>
@@ -533,8 +544,8 @@ const handleAvatarUpload = (e) => {
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-card w-full max-w-md rounded-3xl shadow-2xl border border-border flex flex-col max-h-[85vh]">
               <div className="flex items-center justify-between p-6 border-b border-border">
                 <div>
-                  <h2 className="text-2xl font-bold">What are you looking for?</h2>
-                  <p className="text-sm text-muted-foreground mt-1">Select your relationship intention.</p>
+                  <h2 className="text-2xl font-bold">{t("settings_page.profile.modals.intention_title")}</h2>
+                  <p className="text-sm text-muted-foreground mt-1">{t("settings_page.profile.modals.intention_desc")}</p>
                 </div>
                 <button onClick={() => setIsIntentionModalOpen(false)} className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors shrink-0">
                   <X className="w-5 h-5" />
@@ -547,17 +558,17 @@ const handleAvatarUpload = (e) => {
                     const isSelected = intention === el.id.toString();
                     return (
                       <Button key={`modal-intent-${el.id}`} type="button" variant={isSelected ? "default" : "secondary"} onClick={() => setIntention(el.id.toString())} className={cn("w-full transition-all justify-start text-left px-5 py-4 h-auto text-base rounded-xl", !isSelected && "bg-secondary/50 text-foreground hover:bg-secondary")}>
-                        {el.name}
+                        {t(`intentions.${intentionKeyMap[el.name] || el.name.toLowerCase()}`)}
                       </Button>
                     );
                   }) : (
-                    <div className="flex items-center justify-center w-full py-10 text-muted-foreground"><Loader2 className="w-6 h-6 animate-spin mr-2" />Loading...</div>
+                    <div className="flex items-center justify-center w-full py-10 text-muted-foreground"><Loader2 className="w-6 h-6 animate-spin mr-2" />{t("settings_page.profile.modals.loading")}</div>
                   )}
                 </div>
               </div>
 
               <div className="p-6 border-t border-border bg-card/50 rounded-b-3xl">
-                <Button onClick={() => setIsIntentionModalOpen(false)} className="w-full h-12 text-lg rounded-xl">Done</Button>
+                <Button onClick={() => setIsIntentionModalOpen(false)} className="w-full h-12 text-lg rounded-xl">{t("settings_page.profile.modals.done")}</Button>
               </div>
             </motion.div>
           </motion.div>
@@ -570,8 +581,8 @@ const handleAvatarUpload = (e) => {
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="bg-card w-full max-w-2xl rounded-3xl shadow-2xl border border-border flex flex-col max-h-[85vh]">
               <div className="flex items-center justify-between p-6 border-b border-border">
                 <div>
-                  <h2 className="text-2xl font-bold">What are you into?</h2>
-                  <p className="text-sm text-muted-foreground mt-1">Select your interests to find better matches. ({selectedInterests.length}/10)</p>
+                  <h2 className="text-2xl font-bold">{t("settings_page.profile.modals.interests_title")}</h2>
+                  <p className="text-sm text-muted-foreground mt-1">{t("settings_page.profile.modals.interests_desc", { count: selectedInterests.length })}</p>
                 </div>
                 <button onClick={() => setIsInterestsModalOpen(false)} className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors">
                   <X className="w-5 h-5" />
@@ -584,17 +595,17 @@ const handleAvatarUpload = (e) => {
                     const isSelected = selectedInterests.includes(interest.id);
                     return (
                       <Button key={`modal-interest-${interest.id}`} type="button" variant={isSelected ? "default" : "secondary"} onClick={() => handleInterestToggle(interest.id)} className={cn("rounded-full transition-all py-2 px-4 h-auto text-sm", !isSelected && "bg-secondary/50 text-foreground hover:bg-secondary")}>
-                        {interest.name}
+                        {t(`interests.${interest.name.toLowerCase()}`)}
                       </Button>
                     );
                   }) : (
-                    <div className="flex items-center justify-center w-full py-10 text-muted-foreground"><Loader2 className="w-6 h-6 animate-spin mr-2" />Loading interests...</div>
+                    <div className="flex items-center justify-center w-full py-10 text-muted-foreground"><Loader2 className="w-6 h-6 animate-spin mr-2" />{t("settings_page.profile.modals.loading_interests")}</div>
                   )}
                 </div>
               </div>
 
               <div className="p-6 border-t border-border bg-card/50 rounded-b-3xl">
-                <Button onClick={() => setIsInterestsModalOpen(false)} className="w-full h-12 text-lg rounded-xl">Done</Button>
+                <Button onClick={() => setIsInterestsModalOpen(false)} className="w-full h-12 text-lg rounded-xl">{t("settings_page.profile.modals.done")}</Button>
               </div>
             </motion.div>
           </motion.div>
@@ -614,6 +625,7 @@ const handleAvatarUpload = (e) => {
 };
 
 const DiscoverySettings = () => {
+  const { t } = useTranslation();
   const [distance, setDistance] = useState(50);
   const [minAge, setMinAge] = useState(18);
   const [maxAge, setMaxAge] = useState(50);
@@ -646,10 +658,10 @@ const DiscoverySettings = () => {
         min_age: minAge,
         max_age: maxAge
       });
-      setMessage({ type: "success", text: "Discovery settings updated successfully!" });
+      setMessage({ type: "success", text: t("settings_page.discovery.messages.success") });
       setTimeout(() => setMessage(null), 5000);
     } catch (error) {
-      setMessage({ type: "error", text: getErrorMessage(error, "Failed to update settings. Try again.") });
+      setMessage({ type: "error", text: t(getErrorMessage(error, "settings_page.discovery.messages.fail")) });
     } finally {
       setIsSaving(false);
     }
@@ -661,13 +673,13 @@ const DiscoverySettings = () => {
     <div className="space-y-6">
       <Card className="p-6 md:p-8 rounded-[2rem] border-border shadow-sm space-y-8">
         <div>
-          <h2 className="text-2xl font-bold mb-6">Discovery Preferences</h2>
+          <h2 className="text-2xl font-bold mb-6">{t("settings_page.discovery.title")}</h2>
           <FormMessage msg={message} />
 
           <div className="space-y-4 mb-8">
             <div className="flex justify-between items-center">
-              <label className="font-semibold text-lg">Maximum Distance</label>
-              <span className="text-primary font-bold">{distance} km</span>
+              <label className="font-semibold text-lg">{t("settings_page.discovery.max_distance")}</label>
+              <span className="text-primary font-bold">{t("settings_page.discovery.distance_unit", { distance })}</span>
             </div>
             <input
               type="range"
@@ -681,16 +693,16 @@ const DiscoverySettings = () => {
 
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <label className="font-semibold text-lg">Age Range</label>
-              <span className="text-primary font-bold">{minAge} - {maxAge} years</span>
+              <label className="font-semibold text-lg">{t("settings_page.discovery.age_range")}</label>
+              <span className="text-primary font-bold">{t("settings_page.discovery.age_unit", { min: minAge, max: maxAge })}</span>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex-1 space-y-1">
-                <span className="text-xs text-muted-foreground uppercase font-bold">Min Age</span>
+                <span className="text-xs text-muted-foreground uppercase font-bold">{t("settings_page.discovery.min_age")}</span>
                 <Input type="number" min="18" max={maxAge} value={minAge} onChange={(e) => setMinAge(Number(e.target.value))} className="text-lg h-12" />
               </div>
               <div className="flex-1 space-y-1">
-                <span className="text-xs text-muted-foreground uppercase font-bold">Max Age</span>
+                <span className="text-xs text-muted-foreground uppercase font-bold">{t("settings_page.discovery.max_age")}</span>
                 <Input type="number" min={minAge} max="100" value={maxAge} onChange={(e) => setMaxAge(Number(e.target.value))} className="text-lg h-12" />
               </div>
             </div>
@@ -699,7 +711,7 @@ const DiscoverySettings = () => {
 
         <Button onClick={handleSave} disabled={isSaving} className="w-full md:w-auto h-12 px-8 rounded-xl text-base">
           {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
-          Save Preferences
+          {t("settings_page.discovery.save_btn")}
         </Button>
       </Card>
     </div>
@@ -707,6 +719,7 @@ const DiscoverySettings = () => {
 };
 
 const AccountSettings = () => {
+  const { t } = useTranslation();
   const { logout } = useAuth();
   const [loadingAction, setLoadingAction] = useState(null);
   const [accountInfo, setAccountInfo] = useState({ username: "...", email: "..." });
@@ -741,7 +754,7 @@ const AccountSettings = () => {
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     if (passwords.new !== passwords.confirm) {
-      return showMessage(setMsgPassword, "error", "New passwords do not match.");
+      return showMessage(setMsgPassword, "error", t("settings_page.account.messages.pwd_match_fail"));
     }
 
     setLoadingAction("password");
@@ -751,10 +764,10 @@ const AccountSettings = () => {
         new_password: passwords.new,
         new_password_confirm: passwords.confirm
       });
-      showMessage(setMsgPassword, "success", "Password changed successfully. Please log in again.");
+      showMessage(setMsgPassword, "success", t("settings_page.account.messages.pwd_success"));
       setTimeout(() => logout(), 2000);
     } catch (error) {
-      showMessage(setMsgPassword, "error", getErrorMessage(error, "Failed to change password."));
+      showMessage(setMsgPassword, "error", t(getErrorMessage(error, "settings_page.account.messages.pwd_fail")));
     } finally {
       setLoadingAction(null);
     }
@@ -768,10 +781,10 @@ const AccountSettings = () => {
         new_email: emailData.newEmail,
         password: emailData.password
       });
-      showMessage(setMsgEmail, "success", response.data.message);
+      showMessage(setMsgEmail, "success", t(response.data.message || "settings_page.account.messages.email_success"));
       setEmailData({ newEmail: "", password: "" });
     } catch (error) {
-      showMessage(setMsgEmail, "error", getErrorMessage(error, "Failed to request email change."));
+      showMessage(setMsgEmail, "error", t(getErrorMessage(error, "settings_page.account.messages.email_fail")));
     } finally {
       setLoadingAction(null);
     }
@@ -786,7 +799,7 @@ const AccountSettings = () => {
       await api.delete("user/delete/", { data: { password: deletePassword } });
       logout();
     } catch (error) {
-      showMessage(setMsgDelete, "error", getErrorMessage(error, "Failed to delete account."));
+      showMessage(setMsgDelete, "error", t(getErrorMessage(error, "settings_page.account.messages.delete_fail")));
       setLoadingAction(null);
     }
   };
@@ -796,15 +809,15 @@ const AccountSettings = () => {
       <Card className="p-6 md:p-8 rounded-[2rem] border-border shadow-sm bg-secondary/20">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2.5 bg-primary/10 text-primary rounded-xl"><User size={24} /></div>
-          <h2 className="text-xl font-bold">Account Details</h2>
+          <h2 className="text-xl font-bold">{t("settings_page.account.details.title")}</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           <div>
-            <span className="text-sm font-semibold text-muted-foreground">Username</span>
+            <span className="text-sm font-semibold text-muted-foreground">{t("settings_page.account.details.username")}</span>
             <p className="font-medium text-lg mt-1">{accountInfo.username}</p>
           </div>
           <div>
-            <span className="text-sm font-semibold text-muted-foreground">Email Address</span>
+            <span className="text-sm font-semibold text-muted-foreground">{t("settings_page.account.details.email")}</span>
             <p className="font-medium text-lg mt-1">{accountInfo.email}</p>
           </div>
         </div>
@@ -813,17 +826,17 @@ const AccountSettings = () => {
       <Card className="p-6 md:p-8 rounded-[2rem] border-border shadow-sm">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2.5 bg-primary/10 text-primary rounded-xl"><KeyRound size={24} /></div>
-          <h2 className="text-xl font-bold">Change Password</h2>
+          <h2 className="text-xl font-bold">{t("settings_page.account.password.title")}</h2>
         </div>
         <FormMessage msg={msgPassword} />
         <form onSubmit={handlePasswordChange} className="space-y-4">
-          <Input type="password" placeholder="Current Password" required value={passwords.old} onChange={(e) => setPasswords({...passwords, old: e.target.value})} className="h-12" />
+          <Input type="password" placeholder={t("settings_page.account.password.current")} required value={passwords.old} onChange={(e) => setPasswords({...passwords, old: e.target.value})} className="h-12" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input type="password" placeholder="New Password" required value={passwords.new} onChange={(e) => setPasswords({...passwords, new: e.target.value})} className="h-12" />
-            <Input type="password" placeholder="Confirm New Password" required value={passwords.confirm} onChange={(e) => setPasswords({...passwords, confirm: e.target.value})} className="h-12" />
+            <Input type="password" placeholder={t("settings_page.account.password.new")} required value={passwords.new} onChange={(e) => setPasswords({...passwords, new: e.target.value})} className="h-12" />
+            <Input type="password" placeholder={t("settings_page.account.password.confirm")} required value={passwords.confirm} onChange={(e) => setPasswords({...passwords, confirm: e.target.value})} className="h-12" />
           </div>
           <Button type="submit" disabled={loadingAction !== null} className="h-12 px-8 rounded-xl">
-            {loadingAction === "password" ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : "Update Password"}
+            {loadingAction === "password" ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : t("settings_page.account.password.update_btn")}
           </Button>
         </form>
       </Card>
@@ -832,16 +845,16 @@ const AccountSettings = () => {
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2.5 bg-primary/10 text-primary rounded-xl"><Mail size={24} /></div>
           <div>
-            <h2 className="text-xl font-bold">Change Email</h2>
-            <p className="text-sm text-muted-foreground">We will send a confirmation link to the new address.</p>
+            <h2 className="text-xl font-bold">{t("settings_page.account.email.title")}</h2>
+            <p className="text-sm text-muted-foreground">{t("settings_page.account.email.desc")}</p>
           </div>
         </div>
         <FormMessage msg={msgEmail} />
         <form onSubmit={handleEmailChange} className="space-y-4">
-          <Input type="email" placeholder="New Email Address" required value={emailData.newEmail} onChange={(e) => setEmailData({...emailData, newEmail: e.target.value})} className="h-12" />
-          <Input type="password" placeholder="Current Password (to confirm)" required value={emailData.password} onChange={(e) => setEmailData({...emailData, password: e.target.value})} className="h-12" />
+          <Input type="email" placeholder={t("settings_page.account.email.new")} required value={emailData.newEmail} onChange={(e) => setEmailData({...emailData, newEmail: e.target.value})} className="h-12" />
+          <Input type="password" placeholder={t("settings_page.account.email.confirm_pwd")} required value={emailData.password} onChange={(e) => setEmailData({...emailData, password: e.target.value})} className="h-12" />
           <Button type="submit" variant="secondary" disabled={loadingAction !== null} className="h-12 px-8 rounded-xl">
-            {loadingAction === "email" ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : "Request Email Change"}
+            {loadingAction === "email" ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : t("settings_page.account.email.update_btn")}
           </Button>
         </form>
       </Card>
@@ -849,30 +862,30 @@ const AccountSettings = () => {
       <Card className="p-6 md:p-8 rounded-[2rem] border-destructive/20 bg-destructive/5 shadow-sm">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2.5 bg-destructive/10 text-destructive rounded-xl"><AlertTriangle size={24} /></div>
-          <h2 className="text-xl font-bold text-destructive">Danger Zone</h2>
+          <h2 className="text-xl font-bold text-destructive">{t("settings_page.account.danger.title")}</h2>
         </div>
-        <p className="text-muted-foreground mb-6">Once you delete your account, there is no going back. All your matches, messages, and photos will be permanently deleted.</p>
+        <p className="text-muted-foreground mb-6">{t("settings_page.account.danger.desc")}</p>
         <FormMessage msg={msgDelete} />
         <AnimatePresence mode="wait">
           {!showDeleteConfirm ? (
             <motion.div key="delete-btn" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
               <Button onClick={() => setShowDeleteConfirm(true)} variant="destructive" className="h-12 px-8 rounded-xl">
-                <Trash2 className="mr-2 h-4 w-4" /> Delete Account
+                <Trash2 className="mr-2 h-4 w-4" /> {t("settings_page.account.danger.delete_btn")}
               </Button>
             </motion.div>
           ) : (
             <motion.form key="delete-form" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} onSubmit={handleConfirmDelete} className="space-y-4 p-5 bg-destructive/10 rounded-2xl border border-destructive/20">
               <div className="flex gap-2 text-destructive">
                 <AlertTriangle className="h-5 w-5 shrink-0" />
-                <p className="text-sm font-bold">This action is irreversible. Enter your password to confirm deletion.</p>
+                <p className="text-sm font-bold">{t("settings_page.account.danger.warning")}</p>
               </div>
-              <Input type="password" placeholder="Current Password" required value={deletePassword} onChange={(e) => setDeletePassword(e.target.value)} className="h-12 bg-background border-destructive/30 focus-visible:ring-destructive" />
+              <Input type="password" placeholder={t("settings_page.account.password.current")} required value={deletePassword} onChange={(e) => setDeletePassword(e.target.value)} className="h-12 bg-background border-destructive/30 focus-visible:ring-destructive" />
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button type="button" variant="outline" onClick={() => { setShowDeleteConfirm(false); setDeletePassword(""); setMsgDelete(null); }} className="flex-1 h-12 rounded-xl" disabled={loadingAction === "delete"}>
-                  Cancel
+                  {t("settings_page.account.danger.cancel_btn")}
                 </Button>
                 <Button type="submit" variant="destructive" disabled={loadingAction === "delete"} className="flex-1 h-12 rounded-xl">
-                  {loadingAction === "delete" ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : "Permanently Delete"}
+                  {loadingAction === "delete" ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : t("settings_page.account.danger.confirm_btn")}
                 </Button>
               </div>
             </motion.form>

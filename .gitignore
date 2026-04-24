@@ -13,13 +13,8 @@ wheels/
 #env
 .env
 
-#django
-**/migrations/*.py
-!**/migrations/__init__.py
-
 #static
 staticfiles/
-backend/media/
 backend/test_data_db.json
 tests/
 docker-compose.backend.yml

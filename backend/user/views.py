@@ -21,6 +21,9 @@ from django.contrib.auth.tokens import  default_token_generator
 from django.conf import settings
 from django.core.mail import send_mail
 from django.core import signing
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.utils.translation import gettext as _
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -81,7 +84,7 @@ class CustomTokenRefreshView(TokenRefreshView):
 
         if not refresh_token:
             return Response(
-                {"detail": "Refresh token not found in cookies."},
+                {"detail": "backend_messages.invalid_token"},
                 status=status.HTTP_401_UNAUTHORIZED
             )
 
@@ -138,7 +141,7 @@ class LogoutAPIView(APIView):
                 token.blacklist()
 
             response = Response(
-                {'message': 'Successful logout.'},
+                {'message': 'backend_messages.logout_success'},
                 status=status.HTTP_205_RESET_CONTENT
             )
 
@@ -147,7 +150,7 @@ class LogoutAPIView(APIView):
 
         except Exception as e:
             return Response(
-                {'error': 'Invalid token.'},
+                {'error': 'backend_messages.invalid_token'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -166,7 +169,7 @@ class AccountDeleteView(generics.GenericAPIView):
         user.delete()
 
         return Response(
-            {"message": "Your account and all associated data have been successfully deleted."},
+            {"message": "backend_messages.account_deleted"},
             status=status.HTTP_204_NO_CONTENT
         )
 
@@ -188,7 +191,7 @@ class ChangePasswordView(generics.GenericAPIView):
         user.save()
 
         return Response(
-            {"message": "Your password has been successfully changed."},
+            {"message": "backend_messages.password_changed"},
             status=status.HTTP_200_OK
         )
 
@@ -211,12 +214,12 @@ class VerifyEmailView(APIView):
             user.is_active = True
             user.save()
             return Response(
-                {'message': 'Your account has been successfully activated! You can now log in.'},
+                {'message': 'backend_messages.account_activated'},
                 status=status.HTTP_200_OK
             )
         else:
             return Response(
-                {"error": "The link is invalid or has already been used."},
+                {"error": "backend_messages.link_expired"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -324,7 +327,7 @@ class GalleryManageView(APIView):
         serializer.save()
 
         return Response(
-            {"message": "The photos have been successfully added to the gallery."},
+            {"message": "backend_messages.gallery_added"},
             status=status.HTTP_201_CREATED
         )
 
@@ -354,7 +357,7 @@ class GalleryDeleteView(generics.DestroyAPIView):
         self.perform_destroy(instance)
 
         return Response(
-            {'message': 'The photo has been successfully deleted.'},
+            {'message': 'backend_messages.photo_deleted'},
             status=status.HTTP_200_OK
         )
 
@@ -363,8 +366,7 @@ class GalleryDeleteView(generics.DestroyAPIView):
 
         if profile.gallery.count() <= 2:
             raise ValidationError({
-                "error": "The minimum number of photos is 2. "
-                         "First, upload the new photo before deleting the old one."
+                "error": "backend_messages.min_photos_error"
             })
 
         instance.photo.delete(save=False)
@@ -384,7 +386,7 @@ class AvatarView(APIView):
         serializer.save()
 
         return Response(
-            {'message': 'Your avatar has been successfully updated.'},
+            {'message': 'backend_messages.avatar_updated'},
             status=status.HTTP_200_OK
         )
 
@@ -398,12 +400,12 @@ class AvatarView(APIView):
             profile.save()
 
             return Response(
-                {'message': 'The avatar has been successfully deleted.'},
+                {'message': 'backend_messages.avatar_deleted'},
                 status=status.HTTP_200_OK
             )
         else:
             return Response(
-                {'error': "You don't have an avatar set."},
+                {'error': "backend_messages.no_avatar"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -442,16 +444,26 @@ class PasswordResetRequestView(generics.GenericAPIView):
             reset_link = f"{frontend_url}?uid={uidb64}&token={token}"
             print(f'\nClear reset link: {reset_link}\n')
 
+            context = {
+                'action_url': reset_link,
+            }
+
+            html_message = render_to_string('user/emails/reset_password_email.html', context)
+            plain_message = strip_tags(html_message)
+
+            subject = _('Spark: Password Recovery')
+
             send_mail(
-                subject='Password Recovery in Spark',
-                message=f'To reset your password, click the link below:\n{reset_link}',
+                subject=subject,
+                message=plain_message,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[user.email],
+                html_message=html_message,
                 fail_silently=False,
             )
 
         return Response(
-            {"message": "If this email address is registered, we have sent password reset instructions to it."},
+            {"message": "backend_messages.reset_link_sent"},
             status=status.HTTP_200_OK
         )
 
@@ -471,7 +483,7 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         user.save()
 
         return Response(
-            {"message": "Your password has been successfully changed. You can now log in."},
+            {"message": "backend_messages.password_changed"},
             status=status.HTTP_200_OK
         )
 
@@ -515,7 +527,7 @@ class EmailChangeRequestView(generics.GenericAPIView):
         )
 
         return Response(
-            {"message": "An email containing a confirmation link has been sent to your new address."},
+            {"message": "backend_messages.email_confirm_sent"},
             status=status.HTTP_200_OK
         )
 
@@ -539,15 +551,15 @@ class EmailChangeConfirmView(generics.GenericAPIView):
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "backend_messages.user_not_found"}, status=status.HTTP_404_NOT_FOUND)
 
         if User.objects.filter(email=new_email).exists():
-            return Response({"error": "This email address is already taken."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "backend_messages.email_in_use"}, status=status.HTTP_400_BAD_REQUEST)
 
         user.email = new_email
         user.save()
 
-        return Response({"message": "Your email address has been successfully updated."}, status=status.HTTP_200_OK)
+        return Response({"message": "backend_messages.email_updated"}, status=status.HTTP_200_OK)
 
 
 class GoogleAuthView(generics.GenericAPIView):
@@ -570,7 +582,7 @@ class GoogleAuthView(generics.GenericAPIView):
 
         if not response.ok:
             return Response(
-                {"error": "Invalid Google token. Please try again."},
+                {"error": "backend_messages.invalid_google_token"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -586,7 +598,7 @@ class GoogleAuthView(generics.GenericAPIView):
 
             response_data = {
                 "status": "login",
-                "message": "Login successful.",
+                "message": "backend_messages.login_success",
                 "access": str(refresh.access_token)
             }
 
@@ -605,7 +617,7 @@ class GoogleAuthView(generics.GenericAPIView):
         else:
             return Response({
                 "status": "needs_registration",
-                "message": "Account not found. Please complete registration.",
+                "message": "backend_messages.needs_registration",
                 "google_data": {
                     "email": email,
                     "first_name": first_name,

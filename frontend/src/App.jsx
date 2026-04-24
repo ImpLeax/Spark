@@ -17,6 +17,7 @@ import ResetPasswordPage from "@/pages/ResetPasswordPage.jsx";
 import PublicProfilePage from "@/pages/PublicProfilePage.jsx";
 import MessagesPage from "@/pages/MessagesPage.jsx";
 import TeamPage from "@/pages/TeamPage.jsx";
+import NotFoundPage from "@/pages/NotFoundPage.jsx";
 
 const AppContent = () => {
   const { isAuthenticated } = useAuth();
@@ -71,6 +72,7 @@ const AppContent = () => {
             <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
             <Route path="/messages" element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />
             <Route path="/profile/:userId" element={<ProtectedRoute><PublicProfilePage /></ProtectedRoute>} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
       </div>

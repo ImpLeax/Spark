@@ -37,10 +37,10 @@ class ChatMessageListView(generics.ListAPIView):
         try:
             room = ChatRoom.objects.get(id=room_id)
         except ChatRoom.DoesNotExist:
-            raise PermissionDenied("Chat room does not exist.")
+            raise PermissionDenied("backend_messages.chat_not_found")
 
         if room.user1 != user and room.user2 != user:
-            raise PermissionDenied("You do not have permission to view this chat.")
+            raise PermissionDenied("backend_messages.chat_no_permission")
 
         return Message.objects.filter(room_id=room_id)
 
@@ -89,12 +89,12 @@ class MessageUploadView(APIView):
             room = ChatRoom.objects.get(id=room_id)
             user = request.user
             if room.user1 != user and room.user2 != user:
-                raise PermissionDenied("You do not have permission to send files to this chat.")
+                raise PermissionDenied("backend_messages.chat_no_permission")
 
             text = request.data.get('message', '')
             files = request.FILES.getlist('files')
             if not text and not files:
-                return Response({'error': 'Message or file is required'}, status=400)
+                return Response({'error': 'backend_messages.message_or_file_required'}, status=400)
 
             MAX_SIZE_MB = 10
             ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.pdf', '.docx', 'doc']
@@ -102,12 +102,12 @@ class MessageUploadView(APIView):
             for f in files:
                 if f.size > MAX_SIZE_MB * 1024 * 1024:
                     return Response({
-                        'error': f'The file {f.name} is too large. The maximum size is {MAX_SIZE_MB} MB.'
+                        'error': 'backend_messages.file_too_large'
                     }, status=400)
                 ext = os.path.splitext(f.name)[1].lower()
                 if ext not in ALLOWED_EXTENSIONS:
                     return Response({
-                        'error': f'The {ext} file format is not supported.'
+                        'error': 'backend_messages.file_format_unsupported'
                     }, status=400)
 
             channel_layer = get_channel_layer()
@@ -146,7 +146,7 @@ class MessageUploadView(APIView):
             return Response({'status': 'success'}, status=201)
 
         except ChatRoom.DoesNotExist:
-            return Response({'error': 'Room not found'}, status=404)
+            return Response({'error': 'backend_messages.chat_not_found'}, status=404)
 
 class MessageDetailView(APIView):
     """View to retrieve, edit, or delete an existing message."""
@@ -157,10 +157,10 @@ class MessageDetailView(APIView):
         try:
             message = Message.objects.get(id=message_id)
         except Message.DoesNotExist:
-            raise NotFound("Message not found.")
+            raise NotFound("backend_messages.message_not_found")
 
         if message.sender != user:
-            raise PermissionDenied("You can only modify your own messages.")
+            raise PermissionDenied("backend_messages.chat_no_permission")
 
         return message
 
@@ -169,7 +169,7 @@ class MessageDetailView(APIView):
 
         new_text = request.data.get('text', '').strip()
         if not new_text:
-            return Response({"error": "Message text cannot be empty."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "backend_messages.message_or_file_required"}, status=status.HTTP_400_BAD_REQUEST)
 
         message.text = new_text
         message.is_edited = True
@@ -185,7 +185,7 @@ class MessageDetailView(APIView):
             }
         )
 
-        return Response({"status": "success", "message": "Message updated."}, status=status.HTTP_200_OK)
+        return Response({"status": "success", "message": "backend_messages.message_updated"}, status=status.HTTP_200_OK)
 
     def delete(self, request, message_id):
         message = self.get_object(message_id, request.user)
@@ -204,7 +204,7 @@ class MessageDetailView(APIView):
             }
         )
 
-        return Response({"status": "success", "message": "Message deleted."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"status": "success", "message": "backend_messages.message_deleted"}, status=status.HTTP_204_NO_CONTENT)
 
 
 class ChatDeleteView(APIView):
@@ -218,10 +218,10 @@ class ChatDeleteView(APIView):
         try:
             room = ChatRoom.objects.get(id=room_id)
         except ChatRoom.DoesNotExist:
-            return Response({"error": "Chat not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "backend_messages.chat_not_found"}, status=status.HTTP_404_NOT_FOUND)
 
         if room.user1 != user and room.user2 != user:
-            raise PermissionDenied("You do not have permission to delete this chat.")
+            raise PermissionDenied("backend_messages.chat_no_permission")
 
         partner = room.user2 if room.user1 == user else room.user1
 
@@ -242,4 +242,4 @@ class ChatDeleteView(APIView):
 
         room.delete()
 
-        return Response({"message": "Chat successfully deleted."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"message": "backend_messages.chat_deleted"}, status=status.HTTP_204_NO_CONTENT)

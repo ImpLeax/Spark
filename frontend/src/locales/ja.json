@@ -1,0 +1,635 @@
+{
+  "landing": {
+    "hero": {
+      "title": "誰もが簡単・スピーディーに出会える"
+    },
+    "stats": {
+      "active_users": "アクティブユーザー",
+      "matches": "マッチング成功数",
+      "couples": "幸せなカップル",
+      "support": "ライブサポート"
+    },
+    "why_choose": {
+      "title": "Sparkが選ばれる理由",
+      "subtitle": "イノベーションが本物のつながりを生み出します。",
+      "f1": {
+        "title": "スマートマッチング",
+        "desc": "スマートアルゴリズムがあなたの興味を分析し、最適な相手を見つけます。"
+      },
+      "f2": {
+        "title": "安全でプライベート",
+        "desc": "データは暗号化されています。お互いがマッチした後にのみチャットが可能です。"
+      },
+      "f3": {
+        "title": "リアルタイムチャット",
+        "desc": "即時通知とスムーズなメッセージング体験。"
+      },
+      "f4": {
+        "title": "共通の趣味",
+        "desc": "タグシステムで、同じ趣味を持つ人を見つけやすくします。"
+      },
+      "f5": {
+        "title": "継続的な学習",
+        "desc": "あなたの好みに基づいてアルゴリズムが進化します。"
+      },
+      "f6": {
+        "title": "マッチの魔法",
+        "desc": "誰かと気が合った（Sparkした）ら、すぐに通知を受け取ります。"
+      }
+    },
+    "how_it_works": {
+      "title": "使い方",
+      "s1": {
+        "title": "登録",
+        "desc": "数分でアカウントを作成します。"
+      },
+      "s2": {
+        "title": "プロフィール",
+        "desc": "写真を追加して、あなたについて教えてください。"
+      },
+      "s3": {
+        "title": "探す",
+        "desc": "気になったプロフィールに「いいね」をします。"
+      },
+      "s4": {
+        "title": "チャット",
+        "desc": "マッチしたら会話を始めましょう。"
+      }
+    },
+    "footer": {
+      "desc": "テクノロジーで心をつなぐ。いつでもどこでも、あなたのSparkを見つけましょう。",
+      "company": {
+        "title": "会社情報",
+        "about": "私たちについて",
+        "team": "チーム",
+        "careers": "採用情報"
+      },
+      "support": {
+        "title": "サポート",
+        "help": "ヘルプセンター",
+        "safety": "安全性",
+        "contact": "お問い合わせ"
+      },
+      "legal": {
+        "title": "法的情報",
+        "terms": "利用規約",
+        "privacy": "プライバシーポリシー",
+        "cookie": "クッキーポリシー"
+      },
+      "copyright": "© 2026 Spark. All rights reserved."
+    }
+  },
+  "navbar": {
+    "signup": "登録",
+    "login": "ログイン",
+    "offers": "提供するサービス",
+    "about": "概要"
+  },
+  "login_form": {
+    "title": "アカウントにログイン",
+    "description": "ユーザー名またはメールアドレスを入力してログインしてください",
+    "username_label": "ユーザー名 または メールアドレス",
+    "username_placeholder": "ユーザー名 または m@example.com",
+    "password_label": "パスワード",
+    "forgot_password": "パスワードをお忘れですか？",
+    "error_429": "試行回数が多すぎます。1分後にもう一度お試しください。",
+    "error_unauthorized": "ユーザー名またはパスワードが間違っています。",
+    "error_server": "サーバーエラーが発生しました。",
+    "error_google": "Google認証に失敗しました。",
+    "login_button": "ログイン",
+    "google_button": "Googleでログイン",
+    "no_account": "アカウントをお持ちではありませんか？",
+    "sign_up": "登録する"
+  },
+  "signup_form": {
+    "title": "アカウントを作成",
+    "subtitle": "Sparkに参加して、今日最高の相手を見つけましょう。",
+    "sections": {
+      "personal": "個人情報",
+      "dating": "デートプロフィール",
+      "photos": "写真",
+      "photos_desc": "目立つように2〜4枚の写真を追加してください。"
+    },
+    "labels": {
+      "first_name": "名",
+      "last_name": "姓",
+      "surname": "父称 / ミドルネーム",
+      "dob": "生年月日",
+      "username": "ユーザー名",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "confirm_password": "パスワード（確認用）",
+      "gender": "性別",
+      "looking_for": "探しているお相手",
+      "intention": "目的",
+      "interests": "趣味・興味",
+      "location": "位置情報"
+    },
+    "placeholders": {
+      "intention": "目的を選択してください...",
+      "interests": "趣味・興味を選択してください...",
+      "selected": "選択済み",
+      "select_min_2": "最低2つ選択してください"
+    },
+    "location": {
+      "get": "現在地を取得",
+      "locating": "取得中...",
+      "saved": "位置情報が保存されました"
+    },
+    "errors": {
+      "captcha": "ボット認証を完了してください。",
+      "captcha_error": "ボット認証でエラーが発生しました。ページを更新してください。",
+      "photos": "右のボックスに少なくとも2枚の写真をアップロードしてください。",
+      "passwords_match": "パスワードが一致しません。",
+      "dob": "生年月日を選択してください。",
+      "interests": "趣味・興味を少なくとも2つ選択してください。",
+      "location": "位置情報を取得できませんでした。ブラウザでのアクセスを許可してください。",
+      "429": "試行回数が多すぎます。1分後にもう一度お試しください。",
+      "general": "登録に失敗しました。もう一度お試しください。"
+    },
+    "buttons": {
+      "create": "アカウントを作成",
+      "creating": "アカウント作成中..."
+    },
+    "links": {
+      "already_have": "すでにアカウントをお持ちですか？",
+      "login": "ログイン",
+      "back": "メインページに戻る"
+    },
+    "modals": {
+      "intention_title": "何をお探しですか？",
+      "intention_desc": "恋愛の目的を選択してください。",
+      "interests_title": "何に興味がありますか？",
+      "interests_desc": "より良いマッチングのために趣味・興味を選択してください。",
+      "loading": "読み込み中...",
+      "loading_interests": "趣味・興味を読み込み中...",
+      "done": "完了"
+    }
+  },
+  "datepicker": {
+    "pick_a_date": "日付を選択",
+    "change_year": "クリックして年を変更"
+  },
+  "cropper": {
+    "title": "写真を調整",
+    "zoom": "ズーム",
+    "cancel": "キャンセル",
+    "processing": "処理中...",
+    "apply": "適用"
+  },
+  "klipy_picker": {
+    "search_placeholder": "GIFを検索...",
+    "close": "閉じる",
+    "loading": "読み込み中...",
+    "nothing_found": "見つかりませんでした 😕",
+    "api_online": "API オンライン",
+    "powered_by": "Powered by KLIPY"
+  },
+  "sidebar": {
+    "discover": "探す",
+    "messages": "メッセージ",
+    "my_profile": "マイプロフィール",
+    "settings": "設定",
+    "logout": "ログアウト"
+  },
+  "sidebar_profile": {
+    "user": "ユーザー",
+    "na": "N/A",
+    "not_available": "N/A",
+    "gender": "性別",
+    "seeking": "探しているお相手"
+  },
+  "global_error": {
+    "title": "問題が発生しました！",
+    "description": "この問題の修正に取り組んでいます。",
+    "button": "ホームページへ"
+  },
+  "activation_page": {
+    "initial_message": "アカウントを有効化しています...",
+    "success_message": "アカウントが正常に有効化されました！",
+    "error_message": "有効化リンクが無効であるか、期限切れです。もう一度登録をお試しください。",
+    "invalid_format": "有効化リンクの形式が無効です。",
+    "title_loading": "アカウント有効化中",
+    "title_success": "アカウントが有効化されました！",
+    "title_error": "有効化に失敗しました",
+    "wait_message": "詳細を確認しています。しばらくお待ちください...",
+    "button_login": "ログインへ",
+    "button_home": "ホームに戻る"
+  },
+  "email_confirm_page": {
+    "initial_message": "新しいメールアドレスを確認しています...",
+    "success_message": "メールアドレスが正常に更新されました。",
+    "error_message": "確認リンクが無効であるか、期限切れです。新しいリンクをリクエストしてください。",
+    "invalid_request": "無効なリクエストです。URLにトークンが含まれていません。",
+    "title_loading": "メール確認中",
+    "title_success": "メールアドレスが更新されました！",
+    "title_error": "確認に失敗しました",
+    "wait_message": "アカウントを更新しています。しばらくお待ちください...",
+    "button_settings": "設定に戻る",
+    "button_home": "ホームに戻る"
+  },
+  "forgot_password": {
+    "title": "パスワードをお忘れですか？",
+    "description": "メールアドレスを入力すると、パスワードリセットのリンクをお送りします。",
+    "email_label": "メールアドレス",
+    "email_placeholder": "name@example.com",
+    "button_send": "リセットリンクを送信",
+    "button_return_login": "ログインに戻る",
+    "back_to_login": "ログインに戻る",
+    "error_fallback": "リセットリンクの送信に失敗しました。もう一度お試しください。"
+  },
+  "messages_page": {
+    "header": {
+      "title": "メッセージ",
+      "delete_chat_title": "マッチ解除＆チャットを削除"
+    },
+    "search": {
+      "placeholder": "マッチを検索..."
+    },
+    "empty": {
+      "no_messages": "まだメッセージはありません。",
+      "start_swiping": "スワイプを始めてマッチを増やしましょう！",
+      "no_results": "検索条件に一致する結果は見つかりませんでした",
+      "select_conversation": "チャットを始めるには会話を選択してください。",
+      "your_messages": "あなたのメッセージ"
+    },
+    "status": {
+      "online": "オンライン",
+      "offline": "オフライン"
+    },
+    "preview": {
+      "new_match": "新しいマッチです！挨拶しましょう 👋",
+      "gif": "GIF",
+      "media": "📎 メディア"
+    },
+    "message": {
+      "edited": "(編集済み)"
+    },
+    "input": {
+      "placeholder": "メッセージを入力...",
+      "editing": "メッセージを編集中"
+    },
+    "context_menu": {
+      "edit": "編集",
+      "delete": "削除"
+    },
+    "toast": {
+      "new_messages": "新着メッセージ"
+    },
+    "attachment": {
+      "default_name": "添付ファイル"
+    },
+    "alerts": {
+      "delete_chat_confirm": "{{name}} とのマッチを解除してチャットを削除してもよろしいですか？この操作は元に戻せません。",
+      "delete_chat_error": "チャットの削除に失敗しました。もう一度お試しください。",
+      "no_permission": "このチャットを表示する権限がありません。",
+      "delete_message_error": "メッセージの削除に失敗しました。",
+      "edit_message_error": "メッセージの編集に失敗しました。",
+      "upload_error": "ファイルのアップロード中にエラーが発生しました。形式とサイズを確認してください。",
+      "send_file_error": "ファイルの送信に失敗しました: {{error}}"
+    }
+  },
+  "not_found": {
+    "title": "おっと！ページが見つかりません。",
+    "description": "お探しのページは削除されたか、名前が変更されたか、一時的に利用できない可能性があります。",
+    "button": "ホームに戻る"
+  },
+  "profile_page": {
+    "location": {
+      "loading": "位置情報を読み込み中...",
+      "hidden": "位置情報が非表示",
+      "unknown": "不明な場所",
+      "unavailable": "位置情報が利用できません"
+    },
+    "no_photos": "写真なし",
+    "edit_profile": "プロフィールを編集",
+    "about_me": "自己紹介",
+    "no_bio": "このユーザーはまだ自己紹介を書いていません。",
+    "labels": {
+      "intention": "目的",
+      "height": "身長",
+      "weight": "体重",
+      "education": "学歴",
+      "joined": "登録日"
+    },
+    "units": {
+      "cm": "cm",
+      "kg": "kg"
+    },
+    "interests_title": "趣味・興味",
+    "looking_for_title": "探しているお相手",
+    "anyone": "誰でも",
+    "for": "目的:",
+    "joined_date": "2026年4月"
+  },
+  "public_profile": {
+    "location": {
+      "loading": "位置情報を読み込み中...",
+      "hidden": "位置情報が非表示",
+      "unknown": "不明な場所",
+      "unavailable": "位置情報が利用できません"
+    },
+    "no_photos": "写真なし",
+    "buttons": {
+      "back": "戻る",
+      "liked": "いいね済み",
+      "incompatible": "相性が合わない",
+      "like": "いいね"
+    },
+    "not_found": "プロフィールが見つかりません。",
+    "about": "自己紹介",
+    "no_bio": "このユーザーはまだ自己紹介を書いていません。",
+    "labels": {
+      "intention": "目的",
+      "height": "身長",
+      "weight": "体重",
+      "education": "学歴",
+      "joined": "登録日"
+    },
+    "units": {
+      "cm": "cm",
+      "kg": "kg"
+    },
+    "interests": "趣味・興味",
+    "looking_for": "探しているお相手",
+    "anyone": "誰でも",
+    "for": "目的:",
+    "joined_date": "2026年4月",
+    "match": {
+      "title": "マッチしました！",
+      "subtitle": "あなたと {{name}} はお互いに「いいね」しました。",
+      "say_hello": "挨拶する",
+      "close": "閉じる"
+    }
+  },
+  "reset_password_page": {
+    "errors": {
+      "passwords_match": "パスワードが一致しません。",
+      "default_fail": "パスワードのリセットに失敗しました。リンクが無効か期限切れの可能性があります。"
+    },
+    "success_message": "パスワードが正常にリセットされました！",
+    "invalid_link": {
+      "title": "無効なリセットリンク",
+      "desc": "このリンクには必要なパラメーターが不足しています。",
+      "button": "新しいリンクをリクエスト"
+    },
+    "form": {
+      "title": "新しいパスワードを設定",
+      "subtitle": "以下に新しいパスワードを入力してください。",
+      "redirecting": "ログインページにリダイレクト中...",
+      "new_password_label": "新しいパスワード",
+      "new_password_placeholder": "新しいパスワードを入力",
+      "confirm_password_label": "新しいパスワード（確認用）",
+      "confirm_password_placeholder": "新しいパスワードを確認",
+      "button_submit": "パスワードをリセット"
+    }
+  },
+  "team_page": {
+    "title": {
+      "start": "Sparkを支える",
+      "highlight": "開発者",
+      "end": "たち"
+    },
+    "subtitle": "私たちは、クリーンなコード、スケーラブルなアーキテクチャ、そして人々を結びつけるプロダクト構築に情熱を注ぐ3人のエンジニアチームです。",
+    "members": {
+      "volodymyr": {
+        "name": "Volodymyr Bondarchuk",
+        "role": "フルスタックWeb開発者、認証およびプロフィールシステム",
+        "bio": "セキュアなインフラとユーザー認証のスペシャリスト。VolodymyrはSparkのコア認証システムと動的なプロフィール管理を設計しました。データの整合性とスムーズなオンボーディングに焦点を当て、すべてのユーザーの旅が安全で堅牢かつ超高速な体験から始まることを保証します。"
+      },
+      "maxim": {
+        "name": "Maxim Naiduik",
+        "role": "フルスタックWeb開発者、レコメンデーションシステム",
+        "bio": "Sparkのマッチングロジックのアルゴリズムの達人。Maximは、ユーザーの好みを意味のあるつながりに処理する複雑なレコメンデーションエンジンの開発を専門としています。データサイエンスとフルスタックの実行とのギャップを埋めることで、ユーザーがピンポイントの精度で高い互換性のマッチを見つけられるようにします。"
+      },
+      "nazar": {
+        "name": "Nazar Kholonivets",
+        "role": "フルスタックWeb開発者、チャットおよびリアルタイムシステム",
+        "bio": "低遅延通信とリアルタイムの対話性の専門家。Nazarは、高度なWebSocketテクノロジーを使用して、高並行チャットアーキテクチャと即時通知システムを設計しました。彼の仕事は、プラットフォーム上のすべての対話がリアルタイムで行われることを保証し、デジタルなつながりを即座に生きたものに感じさせます。"
+      }
+    }
+  },
+  "recommendations_page": {
+    "profile_card": {
+      "no_photo": "写真なし",
+      "km_away": "{{distance}} km 先",
+      "match_percent": "マッチ度 {{score}}%",
+      "no_bio": "自己紹介はありません。",
+      "looking_for": "探している目的: {{intention}}"
+    },
+    "feed": {
+      "subtitle_likes": "あなたに「いいね」した人",
+      "subtitle_discover": "近くの新しい人を見つける"
+    },
+    "empty_state": {
+      "title": "プロフィールがありません",
+      "desc_likes": "まだ新しい「いいね」を受け取っていません。スワイプを続けましょう！",
+      "desc_discover": "近くにいるすべての人を見ました。検索設定を調整するか、後でもう一度確認してください。",
+      "more_matches_title": "もっとマッチしたいですか？",
+      "more_matches_desc": "検索距離を広げてみてください。現在、{{maxDistance}} km 以内を検索しています。",
+      "adjust_distance_btn": "距離を調整"
+    },
+    "match_modal": {
+      "title": "マッチしました！",
+      "subtitle": "あなたと {{firstName}} はお互いに「いいね」しました。",
+      "say_hello_btn": "挨拶する",
+      "keep_swiping_btn": "スワイプを続ける"
+    }
+  },
+  "settings_page": {
+    "header": {
+      "title": "設定",
+      "subtitle": "設定とアカウントのセキュリティを管理します。"
+    },
+    "tabs": {
+      "profile": "プロフィールを編集",
+      "discovery": "ディスカバリー",
+      "account": "アカウントとセキュリティ"
+    },
+    "profile": {
+      "title": "プロフィール設定",
+      "messages": {
+        "avatar_success": "アバターが正常に更新されました！",
+        "avatar_fail": "アバターのアップロードに失敗しました。",
+        "gallery_success": "写真が正常に追加されました！",
+        "gallery_fail": "写真のアップロードに失敗しました。",
+        "avatar_removed": "アバターが削除されました。",
+        "avatar_remove_fail": "アバターの削除に失敗しました。",
+        "gallery_deleted": "写真が削除されました。",
+        "gallery_delete_fail": "写真の削除に失敗しました。",
+        "min_interests": "趣味・興味を少なくとも2つ選択してください。",
+        "info_success": "プロフィール情報が正常に更新されました！",
+        "info_fail": "プロフィール情報の更新に失敗しました。",
+        "location_success": "新しい位置情報の保存準備ができました。",
+        "location_fail": "位置情報を取得できませんでした。ブラウザの権限を確認してください。"
+      },
+      "avatar": {
+        "title": "プロフィールアバター",
+        "desc": "これはあなたのメインの本人写真です。",
+        "change_btn": "アバターを変更",
+        "remove_btn": "削除"
+      },
+      "gallery": {
+        "title": "フォトギャラリー",
+        "desc": "あなたの個性をアピールするために2〜4枚の写真を追加してください。",
+        "add_btn": "写真を追加",
+        "empty": "ギャラリーに写真がありません。"
+      },
+      "basic_info": {
+        "title": "基本情報",
+        "first_name": "名",
+        "last_name": "姓",
+        "surname": "父称（ミドルネーム）",
+        "bio": "自己紹介",
+        "bio_placeholder": "あなた自身について少し教えてください...",
+        "intention": "目的",
+        "select_intention": "目的を選択...",
+        "interests": "趣味・興味",
+        "interests_selected": "{{count}} 選択済み",
+        "select_interests": "趣味・興味を選択...",
+        "height": "身長 (cm)",
+        "weight": "体重 (kg)",
+        "location": "位置情報",
+        "locating": "位置情報を取得中...",
+        "location_pinned": "新しい位置情報がピン留めされました",
+        "location_update": "位置情報を更新する",
+        "location_desc": "近くの人を見つけるために、引越しなどをした場合はこれを更新してください。",
+        "save_btn": "情報を保存"
+      },
+      "modals": {
+        "intention_title": "何をお探しですか？",
+        "intention_desc": "恋愛の目的を選択してください。",
+        "loading": "読み込み中...",
+        "done": "完了",
+        "interests_title": "何に興味がありますか？",
+        "interests_desc": "より良いマッチングのために趣味・興味を選択してください。({{count}}/10)",
+        "loading_interests": "趣味・興味を読み込み中..."
+      }
+    },
+    "discovery": {
+      "title": "ディスカバリー設定",
+      "messages": {
+        "success": "ディスカバリー設定が正常に更新されました！",
+        "fail": "設定の更新に失敗しました。もう一度お試しください。"
+      },
+      "max_distance": "最大距離",
+      "distance_unit": "{{distance}} km",
+      "age_range": "年齢層",
+      "age_unit": "{{min}} - {{max}} 歳",
+      "min_age": "最小年齢",
+      "max_age": "最大年齢",
+      "save_btn": "設定を保存"
+    },
+    "account": {
+      "messages": {
+        "pwd_match_fail": "新しいパスワードが一致しません。",
+        "pwd_success": "パスワードが正常に変更されました。もう一度ログインしてください。",
+        "pwd_fail": "パスワードの変更に失敗しました。",
+        "email_fail": "メールアドレス変更のリクエストに失敗しました。",
+        "delete_fail": "アカウントの削除に失敗しました。"
+      },
+      "details": {
+        "title": "アカウントの詳細",
+        "username": "ユーザー名",
+        "email": "メールアドレス"
+      },
+      "password": {
+        "title": "パスワードを変更",
+        "current": "現在のパスワード",
+        "new": "新しいパスワード",
+        "confirm": "新しいパスワード（確認用）",
+        "update_btn": "パスワードを更新"
+      },
+      "email": {
+        "title": "メールアドレスを変更",
+        "desc": "新しいアドレスに確認リンクをお送りします。",
+        "new": "新しいメールアドレス",
+        "confirm_pwd": "現在のパスワード（確認用）",
+        "update_btn": "メールアドレスの変更をリクエスト"
+      },
+      "danger": {
+        "title": "デンジャーゾーン",
+        "desc": "アカウントを削除すると、元に戻すことはできません。すべてのマッチ、メッセージ、写真は永久に削除されます。",
+        "delete_btn": "アカウントを削除",
+        "warning": "この操作は元に戻せません。パスワードを入力して削除を確認してください。",
+        "cancel_btn": "キャンセル",
+        "confirm_btn": "完全に削除"
+      }
+    }
+  },
+  "feed_toggle": {
+    "discover": "探す",
+    "likes": "いいね"
+  },
+  "genders": {
+      "male": "男性",
+      "female": "女性"
+  },
+  "interests": {
+    "coffee": "コーヒー",
+    "fashion": "ファッション",
+    "pets": "ペット",
+    "technology": "テクノロジー",
+    "dancing": "ダンス",
+    "art": "アート",
+    "hiking": "ハイキング",
+    "photography": "写真",
+    "reading": "読書",
+    "cooking": "料理",
+    "gaming": "ゲーム",
+    "movies": "映画",
+    "music": "音楽",
+    "fitness": "フィットネス",
+    "travel": "旅行"
+  },
+  "intentions": {
+    "still_figuring": "まだ決めていない",
+    "casual_dating": "カジュアルなデート",
+    "new_friends": "新しい友達",
+    "short_term": "短期的なデート",
+    "long_term": "長期的な関係"
+  },
+  "backend_messages": {
+    "bot_verification_failed": "ボット認証に失敗しました。もう一度お試しください。",
+    "age_under_18": "登録は18歳以上の方に限られています。",
+    "dob_in_future": "生年月日を未来にすることはできません。",
+    "interests_duplicates": "趣味・興味のリストに重複があります。",
+    "interests_min": "少なくとも2つの趣味・興味を選択してください。",
+    "interests_max": "選択できる趣味・興味の最大数（100）に達しました。",
+    "photos_min": "少なくとも2枚の写真をアップロードしてください。",
+    "photos_max": "最大4枚まで写真をアップロードできます。",
+    "gallery_limit_reached": "写真の制限（4枚）に達しました。",
+    "old_password_incorrect": "現在のパスワードが間違っています。",
+    "passwords_mismatch": "パスワードが一致しません。",
+    "min_age_greater_than_max": "最小年齢を最大年齢より高くすることはできません。",
+    "incorrect_password": "パスワードが間違っています。",
+    "email_in_use": "このメールアドレスは既に使用されています。",
+    "email_is_current": "これはあなたの現在のメールアドレスです。",
+    "link_expired": "リンクが無効であるか、期限切れです。",
+    "interact_with_self": "自分自身とやり取りすることはできません。",
+    "logout_success": "ログアウトしました。",
+    "account_deleted": "アカウントおよび関連するすべてのデータが正常に削除されました。",
+    "password_changed": "パスワードが正常に変更されました。",
+    "account_activated": "アカウントが正常に有効化されました！ログインできます。",
+    "gallery_added": "写真がギャラリーに正常に追加されました。",
+    "photo_deleted": "写真が正常に削除されました。",
+    "min_photos_error": "写真の最小枚数は2枚です。古い写真を削除する前に、まず新しい写真をアップロードしてください。",
+    "avatar_updated": "アバターが正常に更新されました。",
+    "avatar_deleted": "アバターが正常に削除されました。",
+    "no_avatar": "アバターが設定されていません。",
+    "reset_link_sent": "このメールアドレスが登録されている場合、パスワードリセットの手順を送信しました。",
+    "email_confirm_sent": "新しいアドレスに確認リンクを含むメールを送信しました。",
+    "chat_not_found": "チャットルームが存在しません。",
+    "chat_no_permission": "このチャットを表示または変更する権限がありません。",
+    "message_or_file_required": "メッセージまたはファイルが必要です。",
+    "file_too_large": "ファイルが大きすぎます。最大サイズは10MBです。",
+    "file_format_unsupported": "サポートされていないファイル形式です。",
+    "message_updated": "メッセージが更新されました。",
+    "message_deleted": "メッセージが削除されました。",
+    "chat_deleted": "チャットが正常に削除されました。"
+  },
+  "theme_toggle": {
+    "light_mode": "ライトモード",
+    "dark_mode": "ダークモード"
+  }
+}

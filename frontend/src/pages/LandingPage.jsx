@@ -3,10 +3,12 @@ import { BubbleBackground, LoginForm } from '@/components/index';
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { Sparkles, Heart, MessageCircle, Shield, Users, TrendingUp } from "lucide-react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 function LandingPage() {
     const { theme } = useTheme();
+    const { t } = useTranslation();
 
     const darkColors = {
         first: '210, 20, 45', second: '250, 210, 50', third: '140, 100, 255',
@@ -33,9 +35,9 @@ function LandingPage() {
                         initial={{ opacity: 0, x: -100 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="w-full text-center lg:text-left text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold leading-tight tracking-tight break-words text-foreground lg:text-white drop-shadow-md lg:drop-shadow-2xl"
+                        className="w-full text-center lg:text-left text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold leading-tight tracking-tight break-words text-foreground lg:text-white drop-shadow-md lg:drop-shadow-2xl uppercase"
                     >
-                        DATING FOR EVERYONE EVERYWHERE ANYHOW
+                        {t('landing.hero.title')}
                     </motion.div>
 
                     <motion.div
@@ -53,10 +55,10 @@ function LandingPage() {
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                         {[
-                            { val: "10K+", lab: "Active Users", color: "text-primary" },
-                            { val: "5K+", lab: "Successful Matches", color: "text-chart-1" },
-                            { val: "95%", lab: "Happy Couples", color: "text-chart-2" },
-                            { val: "24/7", lab: "Live Support", color: "text-chart-3" }
+                            { val: "10K+", lab: t('landing.stats.active_users'), color: "text-primary" },
+                            { val: "5K+", lab: t('landing.stats.matches'), color: "text-chart-1" },
+                            { val: "95%", lab: t('landing.stats.couples'), color: "text-chart-2" },
+                            { val: "24/7", lab: t('landing.stats.support'), color: "text-chart-3" }
                         ].map((stat, i) => (
                             <motion.div key={i} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
                                 <div className={`text-3xl md:text-4xl font-black ${stat.color} mb-2`}>{stat.val}</div>
@@ -69,18 +71,18 @@ function LandingPage() {
 
             <section id="offers" className="py-24 max-w-7xl mx-auto px-6">
                 <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4">Why choose Spark?</h2>
-                    <p className="text-lg md:text-xl text-muted-foreground">Innovation meets real connections.</p>
+                    <h2 className="text-4xl md:text-5xl font-bold mb-4">{t('landing.why_choose.title')}</h2>
+                    <p className="text-lg md:text-xl text-muted-foreground">{t('landing.why_choose.subtitle')}</p>
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[
-                        { icon: Heart, title: "Smart Matching", desc: "Our smart algorithm analyzes your interests to find the most compatible matches.", color: "text-red-500" },
-                        { icon: Shield, title: "Secure & Private", desc: "Your data is encrypted. Chat only after a mutual match.", color: "text-blue-500" },
-                        { icon: MessageCircle, title: "Real-time Chat", desc: "Instant notifications and smooth messaging experience.", color: "text-green-500" },
-                        { icon: Users, title: "Shared Interests", desc: "Tag system helps you find people with the same hobbies.", color: "text-orange-500" },
-                        { icon: TrendingUp, title: "Continuous Learning", desc: "The algorithm evolves based on your preferences.", color: "text-purple-500" },
-                        { icon: Sparkles, title: "Match Magic", desc: "Get notified instantly when someone sparks with you.", color: "text-yellow-500" }
+                        { icon: Heart, title: t('landing.why_choose.f1.title'), desc: t('landing.why_choose.f1.desc'), color: "text-red-500" },
+                        { icon: Shield, title: t('landing.why_choose.f2.title'), desc: t('landing.why_choose.f2.desc'), color: "text-blue-500" },
+                        { icon: MessageCircle, title: t('landing.why_choose.f3.title'), desc: t('landing.why_choose.f3.desc'), color: "text-green-500" },
+                        { icon: Users, title: t('landing.why_choose.f4.title'), desc: t('landing.why_choose.f4.desc'), color: "text-orange-500" },
+                        { icon: TrendingUp, title: t('landing.why_choose.f5.title'), desc: t('landing.why_choose.f5.desc'), color: "text-purple-500" },
+                        { icon: Sparkles, title: t('landing.why_choose.f6.title'), desc: t('landing.why_choose.f6.desc'), color: "text-yellow-500" }
                     ].map((FeatureIcon, i) => (
                         <motion.div
                             key={i}
@@ -97,13 +99,13 @@ function LandingPage() {
 
             <section id="about" className="py-24 bg-card/30 border-y border-border">
                 <div className="max-w-7xl mx-auto px-6">
-                    <h2 className="text-4xl font-bold text-center mb-16">How it works?</h2>
+                    <h2 className="text-4xl font-bold text-center mb-16">{t('landing.how_it_works.title')}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {[
-                            { step: "01", t: "Sign Up", d: "Create your account in minutes.", img: "/images/signup.avif" },
-                            { step: "02", t: "Profile", d: "Add photos and tell your story.", img: "/images/profile.jpg" },
-                            { step: "03", t: "Explore", d: "Like profiles that catch your eye.", img: "/images/recommendations.jpg" },
-                            { step: "04", t: "Chat", d: "Start talking after a match.", img: "/images/chats.jpg" }
+                            { step: "01", t: t('landing.how_it_works.s1.title'), d: t('landing.how_it_works.s1.desc'), img: "/images/signup.avif" },
+                            { step: "02", t: t('landing.how_it_works.s2.title'), d: t('landing.how_it_works.s2.desc'), img: "/images/profile.jpg" },
+                            { step: "03", t: t('landing.how_it_works.s3.title'), d: t('landing.how_it_works.s3.desc'), img: "/images/recommendations.jpg" },
+                            { step: "04", t: t('landing.how_it_works.s4.title'), d: t('landing.how_it_works.s4.desc'), img: "/images/chats.jpg" }
                         ].map((s, i) => (
                             <div key={i} className="group">
                                 <div className="text-5xl font-black text-primary/10 mb-2 group-hover:text-primary/30 transition-colors">{s.step}</div>
@@ -126,36 +128,36 @@ function LandingPage() {
                             <span className="text-2xl font-bold">Spark</span>
                         </div>
                         <p className="text-muted-foreground text-sm leading-loose">
-                            Connecting hearts through technology. Find your spark anywhere, anytime.
+                            {t('landing.footer.desc')}
                         </p>
                     </div>
                     <div>
-                        <h4 className="font-bold mb-4">Company</h4>
+                        <h4 className="font-bold mb-4">{t('landing.footer.company.title')}</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><button className="hover:text-primary transition-colors">About Us</button></li>
-                            <li><Link to="/team" className="hover:text-primary transition-colors">Team</Link></li>
-                            <li><button className="hover:text-primary transition-colors">Careers</button></li>
+                            <li><button className="hover:text-primary transition-colors">{t('landing.footer.company.about')}</button></li>
+                            <li><Link to="/team" className="hover:text-primary transition-colors">{t('landing.footer.company.team')}</Link></li>
+                            <li><button className="hover:text-primary transition-colors">{t('landing.footer.company.careers')}</button></li>
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-bold mb-4">Support</h4>
+                        <h4 className="font-bold mb-4">{t('landing.footer.support.title')}</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><button className="hover:text-primary transition-colors">Help Center</button></li>
-                            <li><button className="hover:text-primary transition-colors">Safety</button></li>
-                            <li><button className="hover:text-primary transition-colors">Contact</button></li>
+                            <li><button className="hover:text-primary transition-colors">{t('landing.footer.support.help')}</button></li>
+                            <li><button className="hover:text-primary transition-colors">{t('landing.footer.support.safety')}</button></li>
+                            <li><button className="hover:text-primary transition-colors">{t('landing.footer.support.contact')}</button></li>
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-bold mb-4">Legal</h4>
+                        <h4 className="font-bold mb-4">{t('landing.footer.legal.title')}</h4>
                         <ul className="space-y-2 text-sm text-muted-foreground">
-                            <li><button className="hover:text-primary transition-colors">Terms of Use</button></li>
-                            <li><button className="hover:text-primary transition-colors">Privacy Policy</button></li>
-                            <li><button className="hover:text-primary transition-colors">Cookie Policy</button></li>
+                            <li><button className="hover:text-primary transition-colors">{t('landing.footer.legal.terms')}</button></li>
+                            <li><button className="hover:text-primary transition-colors">{t('landing.footer.legal.privacy')}</button></li>
+                            <li><button className="hover:text-primary transition-colors">{t('landing.footer.legal.cookie')}</button></li>
                         </ul>
                     </div>
                 </div>
                 <div className="text-center mt-16 text-sm text-muted-foreground">
-                    © 2026 Spark. All rights reserved.
+                    {t('landing.footer.copyright')}
                 </div>
             </footer>
         </div>

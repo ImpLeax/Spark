@@ -5,9 +5,9 @@ import { Mail, ArrowLeft, Loader2, CheckCircle2, AlertTriangle } from "lucide-re
 import api from "@/services/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useTranslation } from "react-i18next";
 
-
-const getErrorMessage = (error, defaultMessage) => {
+const getErrorMessage = (error, defaultMessageKey) => {
   const data = error.response?.data;
   if (data) {
     const firstKey = Object.keys(data)[0];
@@ -17,13 +17,15 @@ const getErrorMessage = (error, defaultMessage) => {
       return data[firstKey];
     }
   }
-  return defaultMessage;
+  return defaultMessageKey;
 };
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
+
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,10 +34,14 @@ const ForgotPasswordPage = () => {
 
     try {
       const response = await api.post("user/password/reset/", { email });
-      setMessage({ type: "success", text: response.data.message });
+      setMessage({ type: "success", text: t(response.data.message) });
       setEmail("");
     } catch (error) {
-      setMessage({ type: "error", text: getErrorMessage(error, "Failed to send reset link. Please try again.") });
+      const errorKey = getErrorMessage(error, 'forgot_password.error_fallback');
+      setMessage({
+        type: "error",
+        text: t(errorKey)
+      });
     } finally {
       setIsLoading(false);
     }
@@ -52,9 +58,9 @@ const ForgotPasswordPage = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
             <Mail size={32} />
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight">Forgot Password?</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">{t('forgot_password.title')}</h1>
           <p className="text-muted-foreground mt-2">
-            Enter your email address and we'll send you a link to reset your password.
+            {t('forgot_password.description')}
           </p>
         </div>
 
@@ -70,7 +76,7 @@ const ForgotPasswordPage = () => {
                 <p className="text-green-600 font-medium">{message.text}</p>
               </div>
               <Button asChild variant="outline" className="w-full h-12 rounded-xl">
-                <Link to="/">Return to Login</Link>
+                <Link to="/">{t('forgot_password.button_return_login')}</Link>
               </Button>
             </motion.div>
           ) : (
@@ -89,10 +95,10 @@ const ForgotPasswordPage = () => {
               )}
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Email Address</label>
+                <label className="text-sm font-semibold text-muted-foreground">{t('forgot_password.email_label')}</label>
                 <Input
                   type="email"
-                  placeholder="name@example.com"
+                  placeholder={t('forgot_password.email_placeholder')}
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -101,12 +107,12 @@ const ForgotPasswordPage = () => {
               </div>
 
               <Button type="submit" disabled={isLoading || !email} className="w-full h-12 rounded-xl text-lg font-bold">
-                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Send Reset Link"}
+                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : t('forgot_password.button_send')}
               </Button>
 
               <div className="text-center pt-2">
                 <Link to="/" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                  <ArrowLeft className="w-4 h-4 mr-2" /> Back to Login
+                  <ArrowLeft className="w-4 h-4 mr-2" /> {t('forgot_password.back_to_login')}
                 </Link>
               </div>
             </motion.form>

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search, X, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const KlipyPicker = ({ apiKey, onGifClick, onClose, userId = "anonymous_user" }) => {
 
   const [gifs, setGifs] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const { t, i18n } = useTranslation();
 
   const fetchGifs = async (query = "") => {
     setLoading(true);
@@ -18,7 +21,7 @@ const KlipyPicker = ({ apiKey, onGifClick, onClose, userId = "anonymous_user" })
         page: 1,
         per_page: 24,
         customer_id: userId,
-        locale: "en",
+        locale: i18n.language?.substring(0, 2) || "en",
       });
 
       let endpoint = "";
@@ -75,7 +78,7 @@ const KlipyPicker = ({ apiKey, onGifClick, onClose, userId = "anonymous_user" })
 
           <input
             type="text"
-            placeholder="Search GIF..."
+            placeholder={t('klipy_picker.search_placeholder')}
             className="w-full bg-background border border-border pl-8 pr-3 py-1.5 rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -86,7 +89,7 @@ const KlipyPicker = ({ apiKey, onGifClick, onClose, userId = "anonymous_user" })
         <button
           onClick={onClose}
           className="p-1.5 hover:bg-muted rounded-full transition-colors"
-          title="Close"
+          title={t('klipy_picker.close')}
         >
           <X className="w-5 h-5 text-muted-foreground" />
         </button>
@@ -97,7 +100,7 @@ const KlipyPicker = ({ apiKey, onGifClick, onClose, userId = "anonymous_user" })
           <div className="col-span-2 flex flex-col items-center justify-center h-full gap-2">
             <Loader2 className="animate-spin text-primary w-8 h-8" />
             <p className="text-xs text-muted-foreground animate-pulse">
-              Loading...
+              {t('klipy_picker.loading')}
             </p>
           </div>
         ) : gifs.length > 0 ? (
@@ -127,7 +130,7 @@ const KlipyPicker = ({ apiKey, onGifClick, onClose, userId = "anonymous_user" })
           })
         ) : (
           <div className="col-span-2 flex items-center justify-center h-full text-muted-foreground text-sm">
-            Nothing found 😕
+            {t('klipy_picker.nothing_found')}
           </div>
         )}
       </div>
@@ -135,9 +138,9 @@ const KlipyPicker = ({ apiKey, onGifClick, onClose, userId = "anonymous_user" })
       <div className="px-3 py-2 bg-muted/30 text-[10px] flex items-center justify-between text-muted-foreground border-t border-border">
         <div className="flex items-center gap-1">
           <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-          API Online
+          {t('klipy_picker.api_online')}
         </div>
-        <span className="font-medium">Powered by KLIPY</span>
+        <span className="font-medium">{t('klipy_picker.powered_by')}</span>
       </div>
     </motion.div>
   );

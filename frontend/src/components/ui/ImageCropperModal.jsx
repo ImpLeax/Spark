@@ -4,12 +4,15 @@ import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { X, Check } from 'lucide-react'
 import getCroppedImg from '@/lib/cropUtils'
+import { useTranslation } from 'react-i18next'
 
 export function ImageCropperModal({ imageSrc, onComplete, onClose, aspect = 3 / 4 }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
   const [isProcessing, setIsProcessing] = useState(false)
+
+  const { t } = useTranslation()
 
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels)
@@ -37,7 +40,7 @@ export function ImageCropperModal({ imageSrc, onComplete, onClose, aspect = 3 / 
         className="bg-card w-full max-w-md rounded-[2rem] shadow-2xl border border-border overflow-hidden flex flex-col h-[70vh] sm:h-[600px]"
       >
         <div className="flex items-center justify-between p-4 border-b border-border shrink-0">
-          <h2 className="text-lg font-bold">Adjust Photo</h2>
+          <h2 className="text-lg font-bold">{t('cropper.title')}</h2>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-muted text-muted-foreground transition-colors">
             <X size={20} />
           </button>
@@ -58,7 +61,7 @@ export function ImageCropperModal({ imageSrc, onComplete, onClose, aspect = 3 / 
 
         <div className="p-6 shrink-0 border-t border-border bg-card">
           <div className="mb-6 flex items-center gap-4">
-            <span className="text-xs font-semibold text-muted-foreground uppercase">Zoom</span>
+            <span className="text-xs font-semibold text-muted-foreground uppercase">{t('cropper.zoom')}</span>
             <input
               type="range"
               value={zoom}
@@ -70,9 +73,11 @@ export function ImageCropperModal({ imageSrc, onComplete, onClose, aspect = 3 / 
             />
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={onClose} className="flex-1 h-12 rounded-xl">Cancel</Button>
+            <Button variant="outline" onClick={onClose} className="flex-1 h-12 rounded-xl">
+              {t('cropper.cancel')}
+            </Button>
             <Button onClick={handleSave} disabled={isProcessing} className="flex-1 h-12 rounded-xl">
-              {isProcessing ? "Processing..." : <><Check className="w-4 h-4 mr-2" /> Apply</>}
+              {isProcessing ? t('cropper.processing') : <><Check className="w-4 h-4 mr-2" /> {t('cropper.apply')}</>}
             </Button>
           </div>
         </div>

@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input"
 
 import { useState } from "react"
+import { useTranslation } from "react-i18next";
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -41,6 +42,7 @@ export function LoginForm({ className, ...props }) {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -59,9 +61,9 @@ export function LoginForm({ className, ...props }) {
       if (error.response?.status === 429) {
         setError429(true);
       } else if (error.response?.status === 401) {
-        setErrorGeneral("Incorrect username or password.");
+        setErrorGeneral(t('login_form.error_unauthorized'));
       } else {
-        setErrorGeneral("A server error has occurred.");
+        setErrorGeneral(t('login_form.error_server'));
       }
     } finally {
       setIsSubmitting(false);
@@ -89,7 +91,7 @@ export function LoginForm({ className, ...props }) {
           navigate('/signup', { state: { googleData: response.data.google_data } });
         }
       } catch (error) {
-        setErrorGeneral("Google authentication failed.");
+        setErrorGeneral(t('login_form.error_google'));
       } finally {
         setIsGoogleLoading(false);
       }
@@ -100,20 +102,22 @@ export function LoginForm({ className, ...props }) {
     <div className={cn("flex flex-col gap-6 w-full max-w-md mx-auto z-50 relative", className)} {...props}>
       <Card className="flex flex-col p-6 shadow-2xl bg-card/45 backdrop-blur-sm border-white/10 dark:border-white/5">
         <CardHeader>
-          <CardTitle className="text-2xl text-foreground">Login to your account</CardTitle>
+          <CardTitle className="text-2xl text-foreground">
+            {t('login_form.title')}
+          </CardTitle>
           <CardDescription className="text-muted-foreground">
-            Enter your username or email below to login to your account
+            {t('login_form.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin}>
             <FieldGroup>
               <Field className="space-y-2">
-                <FieldLabel htmlFor="username">Username or Email</FieldLabel>
+                <FieldLabel htmlFor="username">{t('login_form.username_label')}</FieldLabel>
                 <Input
                   id="username"
-                  type="username"
-                  placeholder="username or m@example.com"
+                  type="text"
+                  placeholder={t('login_form.username_placeholder')}
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -122,11 +126,13 @@ export function LoginForm({ className, ...props }) {
               </Field>
               <Field className="space-y-2 pt-2">
                 <div className="flex items-center justify-between">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <FieldLabel htmlFor="password">{t('login_form.password_label')}</FieldLabel>
                   <Link
                     to="forgot-password/"
                     className="text-sm text-muted-foreground underline-offset-4 hover:underline hover:text-primary transition-colors"
-                  >Forgot password?</Link>
+                  >
+                    {t('login_form.forgot_password')}
+                  </Link>
                 </div>
                 <Input
                   id="password"
@@ -138,11 +144,13 @@ export function LoginForm({ className, ...props }) {
                 />
               </Field>
 
-              {error429 && <p className="text-sm text-destructive font-medium">Too many attempts, try again in a minute</p>}
+              {error429 && <p className="text-sm text-destructive font-medium">{t('login_form.error_429')}</p>}
               {errorGeneral && <p className="text-sm text-destructive font-medium">{errorGeneral}</p>}
 
               <Field className="pt-4 space-y-4">
-                <Button type="submit" className="w-full">Login</Button>
+                <Button type="submit" disabled={isSubmitting} className="w-full">
+                  {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : t('login_form.login_button')}
+                </Button>
                 <Button
                   variant="outline"
                   type="button"
@@ -153,12 +161,12 @@ export function LoginForm({ className, ...props }) {
                   {isGoogleLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                     <>
                       <GoogleIcon />
-                      Login with Google
+                      {t('login_form.google_button')}
                     </>
                   )}
                 </Button>
                 <div className="text-center text-sm text-muted-foreground pt-2">
-                  Don&apos;t have an account? <Link to="/signup" className="text-primary hover:underline font-medium">Sign up</Link>
+                  {t('login_form.no_account')} <Link to="/signup" className="text-primary hover:underline font-medium">{t('login_form.sign_up')}</Link>
                 </div>
               </Field>
             </FieldGroup>

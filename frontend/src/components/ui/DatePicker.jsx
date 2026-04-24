@@ -1,6 +1,8 @@
 import * as React from "react"
 import { format } from "date-fns"
+import { enUS, uk } from "date-fns/locale"
 import { ChevronDownIcon, ChevronLeft, ChevronRight } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -14,6 +16,10 @@ export function DatePicker({ selected, onSelect }) {
   const [month, setMonth] = React.useState(selected || new Date());
   const [isEditingYear, setIsEditingYear] = React.useState(false);
   const [yearInput, setYearInput] = React.useState(month.getFullYear().toString());
+
+  const { t, i18n } = useTranslation();
+
+  const dateLocale = i18n.language?.startsWith('uk') ? uk : enUS;
 
   React.useEffect(() => {
     setYearInput(month.getFullYear().toString());
@@ -59,7 +65,7 @@ export function DatePicker({ selected, onSelect }) {
           data-empty={!selected}
           className="w-[212px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
         >
-          {selected ? format(selected, "PPP") : <span>Pick a date</span>}
+          {selected ? format(selected, "PPP", { locale: dateLocale }) : <span>{t('datepicker.pick_a_date')}</span>}
           <ChevronDownIcon className="ml-auto h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -75,7 +81,7 @@ export function DatePicker({ selected, onSelect }) {
           </Button>
 
           <div className="flex items-center gap-1 text-sm font-medium">
-            <span>{format(month, "LLLL")}</span>
+            <span className="capitalize">{format(month, "LLLL", { locale: dateLocale })}</span>
             {isEditingYear ? (
               <input
                 autoFocus
@@ -90,7 +96,7 @@ export function DatePicker({ selected, onSelect }) {
               <span
                 className="cursor-pointer hover:bg-muted px-1 py-0.5 rounded-md transition-colors"
                 onClick={() => setIsEditingYear(true)}
-                title="Click to change the year"
+                title={t('datepicker.change_year')}
               >
                 {month.getFullYear()}
               </span>
@@ -116,10 +122,10 @@ export function DatePicker({ selected, onSelect }) {
           month={month}
           onMonthChange={setMonth}
           className="mt-0 pt-0"
+          locale={dateLocale}
           components={{
             Caption: () => null,
             MonthCaption: () => null,
-
             Nav: () => null,
           }}
         />

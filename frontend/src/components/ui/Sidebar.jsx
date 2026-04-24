@@ -1,14 +1,115 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import SidebarProfile from "./SidebarProfile";
-import { MessageCircle, Search, Settings, User, LogOut, ChevronLeft, ChevronRight } from "lucide-react";
+import { MessageCircle, Search, Settings, User, LogOut, ChevronLeft, ChevronRight, Globe } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from '@/services/axios';
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { usePresence } from "@/context/PresenceContext";
+import { useTranslation } from "react-i18next";
+
+const SidebarLangSwitcher = ({ isCollapsed }) => {
+  const { t, i18n } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  const langMenuRef = useRef(null);
+
+  const languages = [
+    { code: 'en', label: 'English', short: 'EN' },
+    { code: 'uk', label: 'Українська', short: 'UK' },
+    { code: 'ga', label: 'Галицька', short: 'GA' },
+    { code: 'de', label: 'Deutsch', short: 'DE' },
+    { code: 'fr', label: 'Français', short: 'FR' },
+    { code: 'es', label: 'Español', short: 'ES' },
+    { code: 'ja', label: '日本語', short: 'JA' }
+  ];
+
+  useEffect(() => {
+    if (isCollapsed) setIsOpen(false);
+  }, [isCollapsed]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (langMenuRef.current && !langMenuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const changeLang = (code) => {
+    i18n.changeLanguage(code);
+    setIsOpen(false);
+  };
+
+  const handleMainClick = () => {
+    if (isCollapsed) {
+      const currentIndex = languages.findIndex(l => i18n.language?.startsWith(l.code));
+      const nextLang = languages[(currentIndex + 1) % languages.length];
+      changeLang(nextLang.code);
+    } else {
+      setIsOpen(!isOpen);
+    }
+  };
+
+  const currentLang = languages.find(l => i18n.language?.startsWith(l.code)) || languages[0];
+
+  return (
+    <div className="relative flex flex-col w-full" ref={langMenuRef}>
+      <AnimatePresence>
+        {isOpen && !isCollapsed && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: 10, height: 0 }}
+            className="absolute bottom-full left-0 w-full mb-2 bg-card border border-border rounded-xl shadow-xl overflow-hidden z-50 flex flex-col p-1"
+          >
+            {languages.map((lang) => {
+              const isActive = i18n.language?.startsWith(lang.code);
+              return (
+                <button
+                  key={lang.code}
+                  onClick={() => changeLang(lang.code)}
+                  className={cn(
+                    "w-full text-left px-3 py-2.5 text-sm transition-colors flex items-center justify-between rounded-lg",
+                    isActive
+                      ? "text-primary font-bold bg-primary/5"
+                      : "text-foreground hover:bg-muted"
+                  )}
+                >
+                  {lang.label}
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>}
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <button
+        onClick={handleMainClick}
+        className="flex items-center h-12 w-full text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground rounded-xl transition-colors cursor-pointer overflow-hidden relative"
+      >
+        <div className="min-w-[48px] flex items-center justify-center shrink-0">
+          <Globe size={20} />
+        </div>
+        <motion.div
+          animate={{ opacity: isCollapsed ? 0 : 1 }}
+          transition={{ duration: 0.2 }}
+          className="flex flex-1 items-center justify-between pr-4 whitespace-nowrap"
+        >
+          <span>{currentLang.label}</span>
+          <span className="text-[10px] font-bold bg-muted px-1.5 py-0.5 rounded-md uppercase text-foreground">
+            {currentLang.short}
+          </span>
+        </motion.div>
+      </button>
+    </div>
+  );
+};
 
 const Sidebar = ({ render, isCollapsed, setIsCollapsed }) => {
   const [profile, setProfile] = useState(null);
@@ -16,10 +117,10 @@ const Sidebar = ({ render, isCollapsed, setIsCollapsed }) => {
   const [isExiting, setIsExiting] = useState(false);
 
   const { likesCount, unreadMessagesCount } = usePresence();
-
   const { logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (location.pathname.startsWith("/messages")) {
@@ -37,27 +138,27 @@ const Sidebar = ({ render, isCollapsed, setIsCollapsed }) => {
 
   const menuItems = [
     {
-      name: "Discover",
+      name: t('sidebar.discover', "Discover"),
       path: "/recommendations",
       icon: <Search size={22} />,
       isActive: (pathname) => pathname === "/recommendations" || (pathname.startsWith("/profile/") && pathname !== "/profile"),
       badge: formatBadgeCount(likesCount)
     },
     {
-      name: "Messages",
+      name: t('sidebar.messages', "Messages"),
       path: "/messages",
       icon: <MessageCircle size={22} />,
       isActive: (pathname) => pathname.startsWith("/messages"),
       badge: formatBadgeCount(unreadMessagesCount)
     },
     {
-      name: "My Profile",
+      name: t('sidebar.my_profile', "My Profile"),
       path: "/profile",
       icon: <User size={22} />,
       isActive: (pathname) => pathname === "/profile"
     },
     {
-      name: "Settings",
+      name: t('sidebar.settings', "Settings"),
       path: "/settings",
       icon: <Settings size={22} />,
       isActive: (pathname) => pathname.startsWith("/settings")
@@ -127,7 +228,7 @@ const Sidebar = ({ render, isCollapsed, setIsCollapsed }) => {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
-                className="absolute left-6 text-2xl font-bold bg-linear-to-bl dark:from-red-600 dark:to-chart-1 from-pink-400 to-gray-400 bg-clip-text text-transparent"
+                className="absolute left-6 text-2xl font-bold bg-gradient-to-bl dark:from-red-600 dark:to-chart-1 from-pink-400 to-gray-400 bg-clip-text text-transparent"
               >
                 Spark
               </motion.span>
@@ -205,6 +306,9 @@ const Sidebar = ({ render, isCollapsed, setIsCollapsed }) => {
         </div>
 
         <div className="p-4 border-t border-border mt-auto shrink-0 pb-safe flex flex-col gap-2">
+
+          <SidebarLangSwitcher isCollapsed={isCollapsed} />
+
           <ThemeToggle isCollapsed={isCollapsed} />
           <button
             onClick={handleLogout}
@@ -216,8 +320,9 @@ const Sidebar = ({ render, isCollapsed, setIsCollapsed }) => {
             <motion.span
               animate={{ opacity: isCollapsed ? 0 : 1 }}
               transition={{ duration: 0.2 }}
+              className="whitespace-nowrap"
             >
-              Log out
+              {t('sidebar.logout', "Log out")}
             </motion.span>
           </button>
         </div>

@@ -1,0 +1,635 @@
+{
+  "landing": {
+    "hero": {
+      "title": "DATING FÜR ALLE, EINFACH UND SCHNELL"
+    },
+    "stats": {
+      "active_users": "Aktive Nutzer",
+      "matches": "Erfolgreiche Matches",
+      "couples": "Glückliche Paare",
+      "support": "Live-Support"
+    },
+    "why_choose": {
+      "title": "Warum Spark wählen?",
+      "subtitle": "Innovation trifft auf echte Verbindungen.",
+      "f1": {
+        "title": "Intelligentes Matching",
+        "desc": "Unser intelligenter Algorithmus analysiert deine Interessen, um die besten Übereinstimmungen zu finden."
+      },
+      "f2": {
+        "title": "Sicher & Privat",
+        "desc": "Deine Daten sind verschlüsselt. Chatte erst nach einem beidseitigen Match."
+      },
+      "f3": {
+        "title": "Echtzeit-Chat",
+        "desc": "Sofortige Benachrichtigungen und ein reibungsloses Chat-Erlebnis."
+      },
+      "f4": {
+        "title": "Gemeinsame Interessen",
+        "desc": "Das Tag-System hilft dir, Leute mit den gleichen Hobbys zu finden."
+      },
+      "f5": {
+        "title": "Kontinuierliches Lernen",
+        "desc": "Der Algorithmus entwickelt sich basierend auf deinen Vorlieben weiter."
+      },
+      "f6": {
+        "title": "Match-Magie",
+        "desc": "Werde sofort benachrichtigt, wenn der Funke überspringt."
+      }
+    },
+    "how_it_works": {
+      "title": "Wie es funktioniert?",
+      "s1": {
+        "title": "Registrieren",
+        "desc": "Erstelle dein Konto in wenigen Minuten."
+      },
+      "s2": {
+        "title": "Profil",
+        "desc": "Füge Fotos hinzu und erzähle etwas über dich."
+      },
+      "s3": {
+        "title": "Entdecken",
+        "desc": "Like Profile, die dir ins Auge fallen."
+      },
+      "s4": {
+        "title": "Chatten",
+        "desc": "Beginne nach einem Match zu chatten."
+      }
+    },
+    "footer": {
+      "desc": "Herzen durch Technologie verbinden. Finde deinen Funken überall und jederzeit.",
+      "company": {
+        "title": "Unternehmen",
+        "about": "Über uns",
+        "team": "Team",
+        "careers": "Karriere"
+      },
+      "support": {
+        "title": "Support",
+        "help": "Hilfecenter",
+        "safety": "Sicherheit",
+        "contact": "Kontakt"
+      },
+      "legal": {
+        "title": "Rechtliches",
+        "terms": "Nutzungsbedingungen",
+        "privacy": "Datenschutzerklärung",
+        "cookie": "Cookie-Richtlinie"
+      },
+      "copyright": "© 2026 Spark. Alle Rechte vorbehalten."
+    }
+  },
+  "navbar": {
+    "signup": "Registrieren",
+    "login": "Anmelden",
+    "offers": "Was wir bieten",
+    "about": "Über uns"
+  },
+  "login_form": {
+    "title": "Melde dich bei deinem Konto an",
+    "description": "Gib unten deinen Benutzernamen oder deine E-Mail-Adresse ein, um dich anzumelden",
+    "username_label": "Benutzername oder E-Mail",
+    "username_placeholder": "benutzername oder m@beispiel.de",
+    "password_label": "Passwort",
+    "forgot_password": "Passwort vergessen?",
+    "error_429": "Zu viele Versuche, versuche es in einer Minute noch einmal.",
+    "error_unauthorized": "Benutzername oder Passwort falsch.",
+    "error_server": "Ein Serverfehler ist aufgetreten.",
+    "error_google": "Google-Authentifizierung fehlgeschlagen.",
+    "login_button": "Anmelden",
+    "google_button": "Mit Google anmelden",
+    "no_account": "Noch kein Konto?",
+    "sign_up": "Registrieren"
+  },
+  "signup_form": {
+    "title": "Erstelle dein Konto",
+    "subtitle": "Tritt Spark bei und finde noch heute dein perfektes Match.",
+    "sections": {
+      "personal": "Persönliche Daten",
+      "dating": "Dating-Profil",
+      "photos": "Fotos",
+      "photos_desc": "Füge 2 bis 4 Fotos hinzu, um aufzufallen."
+    },
+    "labels": {
+      "first_name": "Vorname",
+      "last_name": "Nachname",
+      "surname": "Vatersname (optional)",
+      "dob": "Geburtsdatum",
+      "username": "Benutzername",
+      "email": "E-Mail-Adresse",
+      "password": "Passwort",
+      "confirm_password": "Passwort bestätigen",
+      "gender": "Geschlecht",
+      "looking_for": "Sucht nach",
+      "intention": "Absicht",
+      "interests": "Interessen",
+      "location": "Standort"
+    },
+    "placeholders": {
+      "intention": "Wähle deine Absicht...",
+      "interests": "Wähle deine Interessen...",
+      "selected": "ausgewählt",
+      "select_min_2": "Wähle mindestens 2"
+    },
+    "location": {
+      "get": "Aktuellen Standort abrufen",
+      "locating": "Standort wird ermittelt...",
+      "saved": "Standort gespeichert"
+    },
+    "errors": {
+      "captcha": "Bitte schließe die Bot-Überprüfung ab.",
+      "captcha_error": "Fehler bei der Bot-Überprüfung. Bitte lade die Seite neu.",
+      "photos": "Bitte lade mindestens 2 Fotos in die Felder rechts hoch.",
+      "passwords_match": "Die Passwörter stimmen nicht überein.",
+      "dob": "Bitte wähle dein Geburtsdatum aus.",
+      "interests": "Bitte wähle mindestens 2 Interessen aus.",
+      "location": "Standort konnte nicht abgerufen werden. Bitte erlaube den Zugriff in deinem Browser.",
+      "429": "Zu viele Versuche, versuche es in einer Minute noch einmal.",
+      "general": "Registrierung fehlgeschlagen. Bitte versuche es noch einmal."
+    },
+    "buttons": {
+      "create": "Konto erstellen",
+      "creating": "Konto wird erstellt..."
+    },
+    "links": {
+      "already_have": "Du hast bereits ein Konto?",
+      "login": "Anmelden",
+      "back": "Zurück zur Startseite"
+    },
+    "modals": {
+      "intention_title": "Wonach suchst du?",
+      "intention_desc": "Wähle deine Beziehungsabsicht.",
+      "interests_title": "Was magst du?",
+      "interests_desc": "Wähle deine Interessen, um bessere Matches zu finden.",
+      "loading": "Lädt...",
+      "loading_interests": "Interessen werden geladen...",
+      "done": "Fertig"
+    }
+  },
+  "datepicker": {
+    "pick_a_date": "Datum auswählen",
+    "change_year": "Klicken, um das Jahr zu ändern"
+  },
+  "cropper": {
+    "title": "Foto anpassen",
+    "zoom": "Zoom",
+    "cancel": "Abbrechen",
+    "processing": "Wird verarbeitet...",
+    "apply": "Anwenden"
+  },
+  "klipy_picker": {
+    "search_placeholder": "GIF suchen...",
+    "close": "Schließen",
+    "loading": "Lädt...",
+    "nothing_found": "Nichts gefunden 😕",
+    "api_online": "API Online",
+    "powered_by": "Unterstützt von KLIPY"
+  },
+  "sidebar": {
+    "discover": "Entdecken",
+    "messages": "Nachrichten",
+    "my_profile": "Mein Profil",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
+  },
+  "sidebar_profile": {
+    "user": "Benutzer",
+    "na": "k.A.",
+    "not_available": "k.A.",
+    "gender": "Geschlecht",
+    "seeking": "Sucht"
+  },
+  "global_error": {
+    "title": "Etwas ist schiefgelaufen!",
+    "description": "Wir arbeiten daran, dieses Problem zu beheben.",
+    "button": "Zur Startseite"
+  },
+  "activation_page": {
+    "initial_message": "Dein Konto wird aktiviert...",
+    "success_message": "Dein Konto wurde erfolgreich aktiviert!",
+    "error_message": "Aktivierungslink ist ungültig oder abgelaufen. Bitte versuche dich erneut zu registrieren.",
+    "invalid_format": "Ungültiges Aktivierungslink-Format.",
+    "title_loading": "Konto wird aktiviert",
+    "title_success": "Konto aktiviert!",
+    "title_error": "Aktivierung fehlgeschlagen",
+    "wait_message": "Bitte warte, während wir deine Daten überprüfen...",
+    "button_login": "Zum Login",
+    "button_home": "Zurück zur Startseite"
+  },
+  "email_confirm_page": {
+    "initial_message": "Deine neue E-Mail-Adresse wird überprüft...",
+    "success_message": "Deine E-Mail-Adresse wurde erfolgreich aktualisiert.",
+    "error_message": "Der Bestätigungslink ist ungültig oder abgelaufen. Bitte fordere einen neuen an.",
+    "invalid_request": "Ungültige Anfrage. Kein Token in der URL angegeben.",
+    "title_loading": "E-Mail wird bestätigt",
+    "title_success": "E-Mail aktualisiert!",
+    "title_error": "Überprüfung fehlgeschlagen",
+    "wait_message": "Bitte warte, während wir dein Konto aktualisieren...",
+    "button_settings": "Zurück zu den Einstellungen",
+    "button_home": "Zur Startseite"
+  },
+  "forgot_password": {
+    "title": "Passwort vergessen?",
+    "description": "Gib deine E-Mail-Adresse ein und wir senden dir einen Link zum Zurücksetzen deines Passworts.",
+    "email_label": "E-Mail-Adresse",
+    "email_placeholder": "name@beispiel.de",
+    "button_send": "Link zum Zurücksetzen senden",
+    "button_return_login": "Zurück zum Login",
+    "back_to_login": "Zurück zum Login",
+    "error_fallback": "Fehler beim Senden des Links. Bitte versuche es erneut."
+  },
+  "messages_page": {
+    "header": {
+      "title": "Nachrichten",
+      "delete_chat_title": "Match auflösen & Chat löschen"
+    },
+    "search": {
+      "placeholder": "Matches suchen..."
+    },
+    "empty": {
+      "no_messages": "Noch keine Nachrichten.",
+      "start_swiping": "Fange an zu swipen, um Matches zu erhalten!",
+      "no_results": "Keine Ergebnisse für deine Suche gefunden",
+      "select_conversation": "Wähle eine Unterhaltung, um zu chatten.",
+      "your_messages": "Deine Nachrichten"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "preview": {
+      "new_match": "Neues Match! Sag Hallo 👋",
+      "gif": "GIF",
+      "media": "📎 Medien"
+    },
+    "message": {
+      "edited": "(bearbeitet)"
+    },
+    "input": {
+      "placeholder": "Schreibe eine Nachricht...",
+      "editing": "Nachricht bearbeiten"
+    },
+    "context_menu": {
+      "edit": "Bearbeiten",
+      "delete": "Löschen"
+    },
+    "toast": {
+      "new_messages": "Neue Nachrichten"
+    },
+    "attachment": {
+      "default_name": "Anhang"
+    },
+    "alerts": {
+      "delete_chat_confirm": "Bist du sicher, dass du das Match auflösen und den Chat mit {{name}} löschen möchtest? Dies kann nicht rückgängig gemacht werden.",
+      "delete_chat_error": "Fehler beim Löschen des Chats. Bitte versuche es erneut.",
+      "no_permission": "Du hast keine Berechtigung, diesen Chat anzuzeigen.",
+      "delete_message_error": "Fehler beim Löschen der Nachricht.",
+      "edit_message_error": "Fehler beim Bearbeiten der Nachricht.",
+      "upload_error": "Fehler beim Hochladen der Datei. Überprüfe Format und Größe.",
+      "send_file_error": "Fehler beim Senden der Datei: {{error}}"
+    }
+  },
+  "not_found": {
+    "title": "Hoppla! Seite nicht gefunden.",
+    "description": "Die gesuchte Seite wurde möglicherweise entfernt, umbenannt oder ist vorübergehend nicht verfügbar.",
+    "button": "Zurück zur Startseite"
+  },
+  "profile_page": {
+    "location": {
+      "loading": "Standort wird geladen...",
+      "hidden": "Standort verborgen",
+      "unknown": "Unbekannter Standort",
+      "unavailable": "Standort nicht verfügbar"
+    },
+    "no_photos": "Keine Fotos",
+    "edit_profile": "Profil bearbeiten",
+    "about_me": "Über mich",
+    "no_bio": "Dieser Benutzer hat noch keine Biografie geschrieben.",
+    "labels": {
+      "intention": "Absicht",
+      "height": "Größe",
+      "weight": "Gewicht",
+      "education": "Bildung",
+      "joined": "Dabei seit"
+    },
+    "units": {
+      "cm": "cm",
+      "kg": "kg"
+    },
+    "interests_title": "Interessen",
+    "looking_for_title": "Sucht nach",
+    "anyone": "Jedem",
+    "for": "für",
+    "joined_date": "April 2026"
+  },
+  "public_profile": {
+    "location": {
+      "loading": "Standort wird geladen...",
+      "hidden": "Standort verborgen",
+      "unknown": "Unbekannter Standort",
+      "unavailable": "Standort nicht verfügbar"
+    },
+    "no_photos": "Keine Fotos",
+    "buttons": {
+      "back": "Zurück",
+      "liked": "Gefällt dir",
+      "incompatible": "Inkompatibel",
+      "like": "Gefällt mir"
+    },
+    "not_found": "Profil nicht gefunden.",
+    "about": "Über",
+    "no_bio": "Dieser Benutzer hat noch keine Biografie geschrieben.",
+    "labels": {
+      "intention": "Absicht",
+      "height": "Größe",
+      "weight": "Gewicht",
+      "education": "Bildung",
+      "joined": "Dabei seit"
+    },
+    "units": {
+      "cm": "cm",
+      "kg": "kg"
+    },
+    "interests": "Interessen",
+    "looking_for": "Sucht nach",
+    "anyone": "Jedem",
+    "for": "für",
+    "joined_date": "April 2026",
+    "match": {
+      "title": "Es ist ein Match!",
+      "subtitle": "Du und {{name}} mögt euch.",
+      "say_hello": "Sag Hallo",
+      "close": "Schließen"
+    }
+  },
+  "reset_password_page": {
+    "errors": {
+      "passwords_match": "Die Passwörter stimmen nicht überein.",
+      "default_fail": "Fehler beim Zurücksetzen des Passworts. Der Link ist möglicherweise ungültig oder abgelaufen."
+    },
+    "success_message": "Passwort erfolgreich zurückgesetzt!",
+    "invalid_link": {
+      "title": "Ungültiger Link",
+      "desc": "Diesem Link fehlen erforderliche Parameter.",
+      "button": "Neuen Link anfordern"
+    },
+    "form": {
+      "title": "Neues Passwort festlegen",
+      "subtitle": "Bitte gib unten dein neues Passwort ein.",
+      "redirecting": "Weiterleitung zum Login...",
+      "new_password_label": "Neues Passwort",
+      "new_password_placeholder": "Neues Passwort eingeben",
+      "confirm_password_label": "Neues Passwort bestätigen",
+      "confirm_password_placeholder": "Neues Passwort bestätigen",
+      "button_submit": "Passwort zurücksetzen"
+    }
+  },
+  "team_page": {
+    "title": {
+      "start": "Triff die",
+      "highlight": "Köpfe",
+      "end": "hinter Spark"
+    },
+    "subtitle": "Wir sind ein Trio leidenschaftlicher Ingenieure, besessen von sauberem Code, skalierbarer Architektur und dem Bau von Produkten, die Menschen zusammenbringen.",
+    "members": {
+      "volodymyr": {
+        "name": "Volodymyr Bondarchuk",
+        "role": "Full-Stack-Webentwickler, Auth & Profilsysteme",
+        "bio": "Ein Spezialist für sichere Infrastruktur und Benutzeridentität. Volodymyr entwarf die Kernauthentifizierungssysteme und das dynamische Profilmanagement von Spark. Mit Fokus auf Datenintegrität und nahtloses Onboarding stellt er sicher, dass die Reise jedes Benutzers mit einer sicheren, robusten und blitzschnellen Erfahrung beginnt."
+      },
+      "maxim": {
+        "name": "Maxim Naiduik",
+        "role": "Full-Stack-Webentwickler, Empfehlungssystem",
+        "bio": "Das algorithmische Genie hinter der Matching-Logik von Spark. Maxim ist darauf spezialisiert, komplexe Empfehlungs-Engines zu entwickeln, die Benutzereinstellungen in bedeutungsvolle Verbindungen umwandeln. Indem er die Lücke zwischen Data Science und Full-Stack-Ausführung schließt, stellt er sicher, dass unsere Benutzer hochkompatible Matches mit höchster Genauigkeit finden."
+      },
+      "nazar": {
+        "name": "Nazar Kholonivets",
+        "role": "Full-Stack-Webentwickler, Chats & Echtzeitsysteme",
+        "bio": "Der Experte für Kommunikation mit geringer Latenz und Echtzeit-Interaktivität. Nazar entwickelte die hochgradig nebenläufige Chat-Architektur und sofortige Benachrichtigungssysteme unter Verwendung fortschrittlicher WebSocket-Technologie. Seine Arbeit stellt sicher, dass jede Interaktion auf der Plattform in Echtzeit stattfindet, sodass sich digitale Verbindungen sofort und lebendig anfühlen."
+      }
+    }
+  },
+  "recommendations_page": {
+    "profile_card": {
+      "no_photo": "Kein Foto",
+      "km_away": "{{distance}} km entfernt",
+      "match_percent": "{{score}}% Übereinstimmung",
+      "no_bio": "Keine Biografie verfügbar.",
+      "looking_for": "Sucht nach: {{intention}}"
+    },
+    "feed": {
+      "subtitle_likes": "Personen, denen du bereits gefällst",
+      "subtitle_discover": "Entdecke neue Leute in deiner Nähe"
+    },
+    "empty_state": {
+      "title": "Keine Profile mehr übrig",
+      "desc_likes": "Du hast noch keine neuen Likes erhalten. Swipe weiter!",
+      "desc_discover": "Du hast bereits jeden in der Nähe gesehen. Versuche, deine Sucheinstellungen anzupassen, oder schaue später noch einmal vorbei.",
+      "more_matches_title": "Möchtest du mehr Matches?",
+      "more_matches_desc": "Versuche, deine Suchdistanz zu erweitern. Du suchst derzeit in einem Umkreis von {{maxDistance}} km.",
+      "adjust_distance_btn": "Distanz anpassen"
+    },
+    "match_modal": {
+      "title": "Es ist ein Match!",
+      "subtitle": "Du und {{firstName}} mögt euch.",
+      "say_hello_btn": "Sag Hallo",
+      "keep_swiping_btn": "Weiter swipen"
+    }
+  },
+  "settings_page": {
+    "header": {
+      "title": "Einstellungen",
+      "subtitle": "Verwalte deine Einstellungen und Kontosicherheit."
+    },
+    "tabs": {
+      "profile": "Profil bearbeiten",
+      "discovery": "Entdecken",
+      "account": "Konto & Sicherheit"
+    },
+    "profile": {
+      "title": "Profileinstellungen",
+      "messages": {
+        "avatar_success": "Avatar erfolgreich aktualisiert!",
+        "avatar_fail": "Fehler beim Hochladen des Avatars.",
+        "gallery_success": "Foto erfolgreich hinzugefügt!",
+        "gallery_fail": "Fehler beim Hochladen des Fotos.",
+        "avatar_removed": "Avatar entfernt.",
+        "avatar_remove_fail": "Fehler beim Entfernen des Avatars.",
+        "gallery_deleted": "Foto gelöscht.",
+        "gallery_delete_fail": "Fehler beim Löschen des Fotos.",
+        "min_interests": "Bitte wähle mindestens 2 Interessen aus.",
+        "info_success": "Profilinformationen erfolgreich aktualisiert!",
+        "info_fail": "Fehler beim Aktualisieren der Profilinformationen.",
+        "location_success": "Neuer Standort kann nun gespeichert werden.",
+        "location_fail": "Standort konnte nicht abgerufen werden. Überprüfe die Browserberechtigungen."
+      },
+      "avatar": {
+        "title": "Profil-Avatar",
+        "desc": "Dies ist dein Hauptidentitätsfoto.",
+        "change_btn": "Avatar ändern",
+        "remove_btn": "Entfernen"
+      },
+      "gallery": {
+        "title": "Fotogalerie",
+        "desc": "Füge 2 bis 4 Fotos hinzu, um deine Persönlichkeit zu zeigen.",
+        "add_btn": "Foto hinzufügen",
+        "empty": "Keine Fotos in der Galerie."
+      },
+      "basic_info": {
+        "title": "Grundlegende Informationen",
+        "first_name": "Vorname",
+        "last_name": "Nachname",
+        "surname": "Vatersname (optional)",
+        "bio": "Biografie",
+        "bio_placeholder": "Erzähle ein bisschen über dich...",
+        "intention": "Absicht",
+        "select_intention": "Absicht auswählen...",
+        "interests": "Interessen",
+        "interests_selected": "{{count}} ausgewählt",
+        "select_interests": "Interessen auswählen...",
+        "height": "Größe (cm)",
+        "weight": "Gewicht (kg)",
+        "location": "Standort",
+        "locating": "Standort wird ermittelt...",
+        "location_pinned": "Neuer Standort festgelegt",
+        "location_update": "Meinen Standort aktualisieren",
+        "location_desc": "Aktualisiere dies, wenn du umgezogen bist, um Personen in deiner Nähe zu finden.",
+        "save_btn": "Informationen speichern"
+      },
+      "modals": {
+        "intention_title": "Wonach suchst du?",
+        "intention_desc": "Wähle deine Beziehungsabsicht.",
+        "loading": "Lädt...",
+        "done": "Fertig",
+        "interests_title": "Was magst du?",
+        "interests_desc": "Wähle deine Interessen, um bessere Matches zu finden. ({{count}}/10)",
+        "loading_interests": "Interessen werden geladen..."
+      }
+    },
+    "discovery": {
+      "title": "Entdeckungs-Einstellungen",
+      "messages": {
+        "success": "Entdeckungs-Einstellungen erfolgreich aktualisiert!",
+        "fail": "Fehler beim Aktualisieren der Einstellungen. Versuche es erneut."
+      },
+      "max_distance": "Maximale Entfernung",
+      "distance_unit": "{{distance}} km",
+      "age_range": "Altersgruppe",
+      "age_unit": "{{min}} - {{max}} Jahre",
+      "min_age": "Min. Alter",
+      "max_age": "Max. Alter",
+      "save_btn": "Einstellungen speichern"
+    },
+    "account": {
+      "messages": {
+        "pwd_match_fail": "Die neuen Passwörter stimmen nicht überein.",
+        "pwd_success": "Passwort erfolgreich geändert. Bitte melde dich erneut an.",
+        "pwd_fail": "Fehler beim Ändern des Passworts.",
+        "email_fail": "Fehler beim Anfordern der E-Mail-Änderung.",
+        "delete_fail": "Fehler beim Löschen des Kontos."
+      },
+      "details": {
+        "title": "Kontodetails",
+        "username": "Benutzername",
+        "email": "E-Mail-Adresse"
+      },
+      "password": {
+        "title": "Passwort ändern",
+        "current": "Aktuelles Passwort",
+        "new": "Neues Passwort",
+        "confirm": "Neues Passwort bestätigen",
+        "update_btn": "Passwort aktualisieren"
+      },
+      "email": {
+        "title": "E-Mail ändern",
+        "desc": "Wir senden einen Bestätigungslink an die neue Adresse.",
+        "new": "Neue E-Mail-Adresse",
+        "confirm_pwd": "Aktuelles Passwort (zur Bestätigung)",
+        "update_btn": "E-Mail-Änderung anfordern"
+      },
+      "danger": {
+        "title": "Gefahrenzone",
+        "desc": "Sobald du dein Konto löschst, gibt es kein Zurück mehr. Alle deine Matches, Nachrichten und Fotos werden dauerhaft gelöscht.",
+        "delete_btn": "Konto löschen",
+        "warning": "Diese Aktion ist irreversibel. Gib dein Passwort ein, um die Löschung zu bestätigen.",
+        "cancel_btn": "Abbrechen",
+        "confirm_btn": "Dauerhaft löschen"
+      }
+    }
+  },
+  "feed_toggle": {
+    "discover": "Entdecken",
+    "likes": "Likes"
+  },
+  "genders": {
+      "male": "Männlich",
+      "female": "Weiblich"
+  },
+  "interests": {
+    "coffee": "Kaffee",
+    "fashion": "Mode",
+    "pets": "Haustiere",
+    "technology": "Technologie",
+    "dancing": "Tanzen",
+    "art": "Kunst",
+    "hiking": "Wandern",
+    "photography": "Fotografie",
+    "reading": "Lesen",
+    "cooking": "Kochen",
+    "gaming": "Gaming",
+    "movies": "Filme",
+    "music": "Musik",
+    "fitness": "Fitness",
+    "travel": "Reisen"
+  },
+  "intentions": {
+    "still_figuring": "Ich überlege noch",
+    "casual_dating": "Lockeres Dating",
+    "new_friends": "Neue Freunde",
+    "short_term": "Kurzfristiges Dating",
+    "long_term": "Langfristige Beziehung"
+  },
+  "backend_messages": {
+    "bot_verification_failed": "Bot-Verifizierung fehlgeschlagen. Bitte versuche es erneut.",
+    "age_under_18": "Die Registrierung ist auf Personen beschränkt, die mindestens 18 Jahre alt sind.",
+    "dob_in_future": "Das Geburtsdatum darf nicht in der Zukunft liegen.",
+    "interests_duplicates": "Die Interessenliste enthält Duplikate.",
+    "interests_min": "Bitte wähle mindestens 2 Interessen.",
+    "interests_max": "Du hast die maximale Anzahl an Interessen (100) ausgewählt.",
+    "photos_min": "Bitte lade mindestens 2 Fotos hoch.",
+    "photos_max": "Du kannst bis zu 4 Fotos hochladen.",
+    "gallery_limit_reached": "Limit von 4 Fotos erreicht.",
+    "old_password_incorrect": "Das alte Passwort wurde falsch eingegeben.",
+    "passwords_mismatch": "Die Passwörter stimmen nicht überein.",
+    "min_age_greater_than_max": "Das Mindestalter darf nicht größer als das Höchstalter sein.",
+    "incorrect_password": "Falsches Passwort.",
+    "email_in_use": "Diese E-Mail-Adresse wird bereits verwendet.",
+    "email_is_current": "Dies ist deine aktuelle E-Mail-Adresse.",
+    "link_expired": "Der Link ist ungültig oder abgelaufen.",
+    "interact_with_self": "Du kannst nicht mit dir selbst interagieren.",
+    "logout_success": "Erfolgreich abgemeldet.",
+    "account_deleted": "Dein Konto und alle zugehörigen Daten wurden erfolgreich gelöscht.",
+    "password_changed": "Dein Passwort wurde erfolgreich geändert.",
+    "account_activated": "Dein Konto wurde erfolgreich aktiviert! Du kannst dich jetzt anmelden.",
+    "gallery_added": "Die Fotos wurden erfolgreich zur Galerie hinzugefügt.",
+    "photo_deleted": "Das Foto wurde erfolgreich gelöscht.",
+    "min_photos_error": "Die Mindestanzahl an Fotos beträgt 2. Lade zuerst ein neues Foto hoch, bevor du das alte löschst.",
+    "avatar_updated": "Dein Avatar wurde erfolgreich aktualisiert.",
+    "avatar_deleted": "Der Avatar wurde erfolgreich gelöscht.",
+    "no_avatar": "Du hast keinen Avatar eingestellt.",
+    "reset_link_sent": "Wenn diese E-Mail-Adresse registriert ist, haben wir Anweisungen zum Zurücksetzen gesendet.",
+    "email_confirm_sent": "Eine E-Mail mit einem Bestätigungslink wurde an deine neue Adresse gesendet.",
+    "chat_not_found": "Chatraum existiert nicht.",
+    "chat_no_permission": "Du hast keine Berechtigung, diesen Chat zu sehen oder zu bearbeiten.",
+    "message_or_file_required": "Nachricht oder Datei ist erforderlich.",
+    "file_too_large": "Die Datei ist zu groß. Die maximale Größe beträgt 10 MB.",
+    "file_format_unsupported": "Das Dateiformat wird nicht unterstützt.",
+    "message_updated": "Nachricht aktualisiert.",
+    "message_deleted": "Nachricht gelöscht.",
+    "chat_deleted": "Chat erfolgreich gelöscht."
+  },
+  "theme_toggle": {
+    "light_mode": "Heller Modus",
+    "dark_mode": "Dunkler Modus"
+  }
+}

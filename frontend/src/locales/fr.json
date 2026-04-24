@@ -1,0 +1,635 @@
+{
+  "landing": {
+    "hero": {
+      "title": "RENCONTRES POUR TOUS, FACILES ET RAPIDES"
+    },
+    "stats": {
+      "active_users": "Utilisateurs actifs",
+      "matches": "Matchs réussis",
+      "couples": "Couples heureux",
+      "support": "Support en direct"
+    },
+    "why_choose": {
+      "title": "Pourquoi choisir Spark ?",
+      "subtitle": "L'innovation au service des vraies connexions.",
+      "f1": {
+        "title": "Matching intelligent",
+        "desc": "Notre algorithme analyse vos intérêts pour trouver les profils les plus compatibles."
+      },
+      "f2": {
+        "title": "Sûr et privé",
+        "desc": "Vos données sont cryptées. Discutez uniquement après un match mutuel."
+      },
+      "f3": {
+        "title": "Chat en temps réel",
+        "desc": "Notifications instantanées et expérience de messagerie fluide."
+      },
+      "f4": {
+        "title": "Intérêts partagés",
+        "desc": "Le système de tags vous aide à trouver des personnes ayant les mêmes hobbies."
+      },
+      "f5": {
+        "title": "Apprentissage continu",
+        "desc": "L'algorithme évolue en fonction de vos préférences."
+      },
+      "f6": {
+        "title": "Magie du Match",
+        "desc": "Soyez averti instantanément quand quelqu'un flashe sur vous."
+      }
+    },
+    "how_it_works": {
+      "title": "Comment ça marche ?",
+      "s1": {
+        "title": "S'inscrire",
+        "desc": "Créez votre compte en quelques minutes."
+      },
+      "s2": {
+        "title": "Profil",
+        "desc": "Ajoutez des photos et racontez votre histoire."
+      },
+      "s3": {
+        "title": "Explorer",
+        "desc": "Aimez les profils qui attirent votre attention."
+      },
+      "s4": {
+        "title": "Discuter",
+        "desc": "Commencez à parler après un match."
+      }
+    },
+    "footer": {
+      "desc": "Connecter les cœurs grâce à la technologie. Trouvez votre étincelle n'importe où, n'importe quand.",
+      "company": {
+        "title": "Entreprise",
+        "about": "À propos",
+        "team": "Équipe",
+        "careers": "Carrières"
+      },
+      "support": {
+        "title": "Support",
+        "help": "Centre d'aide",
+        "safety": "Sécurité",
+        "contact": "Contact"
+      },
+      "legal": {
+        "title": "Légal",
+        "terms": "Conditions d'utilisation",
+        "privacy": "Politique de confidentialité",
+        "cookie": "Politique de cookies"
+      },
+      "copyright": "© 2026 Spark. Tous droits réservés."
+    }
+  },
+  "navbar": {
+    "signup": "S'inscrire",
+    "login": "Connexion",
+    "offers": "Nos offres",
+    "about": "À propos"
+  },
+  "login_form": {
+    "title": "Connexion à votre compte",
+    "description": "Entrez votre nom d'utilisateur ou email ci-dessous pour vous connecter",
+    "username_label": "Nom d'utilisateur ou Email",
+    "username_placeholder": "utilisateur ou m@exemple.com",
+    "password_label": "Mot de passe",
+    "forgot_password": "Mot de passe oublié ?",
+    "error_429": "Trop de tentatives, réessayez dans une minute.",
+    "error_unauthorized": "Nom d'utilisateur ou mot de passe incorrect.",
+    "error_server": "Une erreur serveur est survenue.",
+    "error_google": "Échec de l'authentification Google.",
+    "login_button": "Se connecter",
+    "google_button": "Se connecter avec Google",
+    "no_account": "Pas encore de compte ?",
+    "sign_up": "S'inscrire"
+  },
+  "signup_form": {
+    "title": "Créez votre compte",
+    "subtitle": "Rejoignez Spark et trouvez votre match idéal dès aujourd'hui.",
+    "sections": {
+      "personal": "Infos personnelles",
+      "dating": "Profil de rencontre",
+      "photos": "Photos",
+      "photos_desc": "Ajoutez 2 à 4 photos pour vous démarquer."
+    },
+    "labels": {
+      "first_name": "Prénom",
+      "last_name": "Nom",
+      "surname": "Nom de famille (Patronyme)",
+      "dob": "Date de naissance",
+      "username": "Nom d'utilisateur",
+      "email": "Adresse Email",
+      "password": "Mot de passe",
+      "confirm_password": "Confirmer le mot de passe",
+      "gender": "Genre",
+      "looking_for": "Je recherche",
+      "intention": "Intention",
+      "interests": "Intérêts",
+      "location": "Localisation"
+    },
+    "placeholders": {
+      "intention": "Sélectionnez votre intention...",
+      "interests": "Sélectionnez vos intérêts...",
+      "selected": "sélectionné(s)",
+      "select_min_2": "Sélectionnez au moins 2"
+    },
+    "location": {
+      "get": "Obtenir ma position",
+      "locating": "Localisation en cours...",
+      "saved": "Position enregistrée"
+    },
+    "errors": {
+      "captcha": "Veuillez compléter la vérification anti-robot.",
+      "captcha_error": "Erreur de vérification. Veuillez rafraîchir la page.",
+      "photos": "Veuillez télécharger au moins 2 photos dans les cases à droite.",
+      "passwords_match": "Les mots de passe ne correspondent pas.",
+      "dob": "Veuillez sélectionner votre date de naissance.",
+      "interests": "Veuillez sélectionner au moins 2 intérêts.",
+      "location": "Impossible d'obtenir la position. Vérifiez les permissions du navigateur.",
+      "429": "Trop de tentatives, réessayez dans une minute.",
+      "general": "Échec de l'inscription. Veuillez réessayer."
+    },
+    "buttons": {
+      "create": "Créer un compte",
+      "creating": "Création du compte..."
+    },
+    "links": {
+      "already_have": "Vous avez déjà un compte ?",
+      "login": "Se connecter",
+      "back": "Retour à la page principale"
+    },
+    "modals": {
+      "intention_title": "Que recherchez-vous ?",
+      "intention_desc": "Sélectionnez votre intention de relation.",
+      "interests_title": "Qu'est-ce qui vous passionne ?",
+      "interests_desc": "Sélectionnez vos intérêts pour de meilleurs matchs. ({{count}}/10)",
+      "loading": "Chargement...",
+      "loading_interests": "Chargement des intérêts...",
+      "done": "Terminé"
+    }
+  },
+  "datepicker": {
+    "pick_a_date": "Choisir une date",
+    "change_year": "Cliquez pour changer l'année"
+  },
+  "cropper": {
+    "title": "Ajuster la photo",
+    "zoom": "Zoom",
+    "cancel": "Annuler",
+    "processing": "Traitement...",
+    "apply": "Appliquer"
+  },
+  "klipy_picker": {
+    "search_placeholder": "Chercher un GIF...",
+    "close": "Fermer",
+    "loading": "Chargement...",
+    "nothing_found": "Rien trouvé 😕",
+    "api_online": "API en ligne",
+    "powered_by": "Propulsé par KLIPY"
+  },
+  "sidebar": {
+    "discover": "Découvrir",
+    "messages": "Messages",
+    "my_profile": "Mon Profil",
+    "settings": "Paramètres",
+    "logout": "Déconnexion"
+  },
+  "sidebar_profile": {
+    "user": "Utilisateur",
+    "na": "N/D",
+    "not_available": "N/A",
+    "gender": "Genre",
+    "seeking": "Recherche"
+  },
+  "global_error": {
+    "title": "Quelque chose s'est mal passé !",
+    "description": "Nous travaillons à la résolution de ce problème.",
+    "button": "Retour à l'accueil"
+  },
+  "activation_page": {
+    "initial_message": "Activation de votre compte...",
+    "success_message": "Votre compte a été activé avec succès !",
+    "error_message": "Le lien d'activation est invalide ou a expiré. Veuillez vous réinscrire.",
+    "invalid_format": "Format de lien d'activation invalide.",
+    "title_loading": "Activation du compte",
+    "title_success": "Compte activé !",
+    "title_error": "Échec de l'activation",
+    "wait_message": "Veuillez patienter pendant que nous vérifions vos informations...",
+    "button_login": "Aller à la connexion",
+    "button_home": "Retour à l'accueil"
+  },
+  "email_confirm_page": {
+    "initial_message": "Vérification de votre nouvelle adresse email...",
+    "success_message": "Votre adresse email a été mise à jour avec succès.",
+    "error_message": "Le lien de confirmation est invalide ou a expiré. Veuillez en demander un nouveau.",
+    "invalid_request": "Requête invalide. Aucun jeton fourni dans l'URL.",
+    "title_loading": "Confirmation de l'email",
+    "title_success": "Email mis à jour !",
+    "title_error": "Échec de la vérification",
+    "wait_message": "Veuillez patienter pendant la mise à jour de votre compte...",
+    "button_settings": "Retour aux paramètres",
+    "button_home": "Retour à l'accueil"
+  },
+  "forgot_password": {
+    "title": "Mot de passe oublié ?",
+    "description": "Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+    "email_label": "Adresse Email",
+    "email_placeholder": "nom@exemple.com",
+    "button_send": "Envoyer le lien",
+    "button_return_login": "Retour à la connexion",
+    "back_to_login": "Retour à la connexion",
+    "error_fallback": "Échec de l'envoi du lien. Veuillez réessayer."
+  },
+  "messages_page": {
+    "header": {
+      "title": "Messages",
+      "delete_chat_title": "Supprimer le match et la discussion"
+    },
+    "search": {
+      "placeholder": "Rechercher des matchs..."
+    },
+    "empty": {
+      "no_messages": "Pas encore de messages.",
+      "start_swiping": "Commencez à swiper pour obtenir des matchs !",
+      "no_results": "Aucun résultat pour votre recherche",
+      "select_conversation": "Sélectionnez une conversation pour commencer à discuter.",
+      "your_messages": "Vos messages"
+    },
+    "status": {
+      "online": "En ligne",
+      "offline": "Hors ligne"
+    },
+    "preview": {
+      "new_match": "Nouveau match ! Dites bonjour 👋",
+      "gif": "GIF",
+      "media": "📎 Média"
+    },
+    "message": {
+      "edited": "(modifié)"
+    },
+    "input": {
+      "placeholder": "Écrivez un message...",
+      "editing": "Modifier le message"
+    },
+    "context_menu": {
+      "edit": "Modifier",
+      "delete": "Supprimer"
+    },
+    "toast": {
+      "new_messages": "Nouveaux messages"
+    },
+    "attachment": {
+      "default_name": "Pièce jointe"
+    },
+    "alerts": {
+      "delete_chat_confirm": "Voulez-vous vraiment supprimer votre match et votre discussion avec {{name}} ? Cette action est irréversible.",
+      "delete_chat_error": "Échec de la suppression de la discussion. Veuillez réessayer.",
+      "no_permission": "Vous n'avez pas la permission de voir cette discussion.",
+      "delete_message_error": "Échec de la suppression du message.",
+      "edit_message_error": "Échec de la modification du message.",
+      "upload_error": "Erreur lors de l'envoi du fichier. Vérifiez le format et la taille.",
+      "send_file_error": "Échec de l'envoi du fichier : {{error}}"
+    }
+  },
+  "not_found": {
+    "title": "Oups ! Page non trouvée.",
+    "description": "La page que vous recherchez a peut-être été supprimée, a changé de nom ou est temporairement indisponible.",
+    "button": "Retour à l'accueil"
+  },
+  "profile_page": {
+    "location": {
+      "loading": "Chargement de la position...",
+      "hidden": "Position masquée",
+      "unknown": "Position inconnue",
+      "unavailable": "Position indisponible"
+    },
+    "no_photos": "Pas de photos",
+    "edit_profile": "Modifier le profil",
+    "about_me": "À propos de moi",
+    "no_bio": "Cet utilisateur n'a pas encore rédigé de bio.",
+    "labels": {
+      "intention": "Intention",
+      "height": "Taille",
+      "weight": "Poids",
+      "education": "Éducation",
+      "joined": "Inscrit depuis"
+    },
+    "units": {
+      "cm": "cm",
+      "kg": "kg"
+    },
+    "interests_title": "Intérêts",
+    "looking_for_title": "Recherche",
+    "anyone": "N'importe qui",
+    "for": "pour",
+    "joined_date": "Avril 2026"
+  },
+  "public_profile": {
+    "location": {
+      "loading": "Chargement de la position...",
+      "hidden": "Position masquée",
+      "unknown": "Position inconnue",
+      "unavailable": "Position indisponible"
+    },
+    "no_photos": "Pas de photos",
+    "buttons": {
+      "back": "Retour",
+      "liked": "Aimé",
+      "incompatible": "Incompatible",
+      "like": "Aimer"
+    },
+    "not_found": "Profil non trouvé.",
+    "about": "À propos",
+    "no_bio": "Cet utilisateur n'a pas encore rédigé de bio.",
+    "labels": {
+      "intention": "Intention",
+      "height": "Taille",
+      "weight": "Poids",
+      "education": "Éducation",
+      "joined": "Inscrit depuis"
+    },
+    "units": {
+      "cm": "cm",
+      "kg": "kg"
+    },
+    "interests": "Intérêts",
+    "looking_for": "Recherche",
+    "anyone": "N'importe qui",
+    "for": "pour",
+    "joined_date": "Avril 2026",
+    "match": {
+      "title": "C'est un Match !",
+      "subtitle": "Vous et {{name}} vous plaisez mutuellement.",
+      "say_hello": "Dire bonjour",
+      "close": "Fermer"
+    }
+  },
+  "reset_password_page": {
+    "errors": {
+      "passwords_match": "Les mots de passe ne correspondent pas.",
+      "default_fail": "Échec de la réinitialisation du mot de passe. Le lien est peut-être invalide ou expiré."
+    },
+    "success_message": "Mot de passe réinitialisé avec succès !",
+    "invalid_link": {
+      "title": "Lien de réinitialisation invalide",
+      "desc": "Il manque des paramètres requis à ce lien.",
+      "button": "Demander un nouveau lien"
+    },
+    "form": {
+      "title": "Nouveau mot de passe",
+      "subtitle": "Veuillez entrer votre nouveau mot de passe ci-dessous.",
+      "redirecting": "Redirection vers la connexion...",
+      "new_password_label": "Nouveau mot de passe",
+      "new_password_placeholder": "Entrez le nouveau mot de passe",
+      "confirm_password_label": "Confirmer le mot de passe",
+      "confirm_password_placeholder": "Confirmez le nouveau mot de passe",
+      "button_submit": "Réinitialiser le mot de passe"
+    }
+  },
+  "team_page": {
+    "title": {
+      "start": "Découvrez les",
+      "highlight": "Esprits",
+      "end": "derrière Spark"
+    },
+    "subtitle": "Nous sommes un trio d'ingénieurs passionnés par le code propre, l'architecture évolutive et la création de produits qui rassemblent les gens.",
+    "members": {
+      "volodymyr": {
+        "name": "Volodymyr Bondarchuk",
+        "role": "Développeur Web Full-stack, Systèmes d'Auth et Profils",
+        "bio": "Spécialiste en infrastructure sécurisée et identité utilisateur. Volodymyr a conçu les systèmes d'authentification de base et la gestion dynamique des profils de Spark. En mettant l'accent sur l'intégrité des données, il garantit à chaque utilisateur une expérience sécurisée, robuste et ultra-rapide."
+      },
+      "maxim": {
+        "name": "Maxim Naiduik",
+        "role": "Développeur Web Full-stack, Système de Recommandation",
+        "bio": "Le cerveau algorithmique derrière la logique de matching de Spark. Maxim se spécialise dans le développement de moteurs de recommandation complexes qui transforment les préférences des utilisateurs en connexions significatives, garantissant ainsi des matchs de haute compatibilité."
+      },
+      "nazar": {
+        "name": "Nazar Kholonivets",
+        "role": "Développeur Web Full-stack, Chats et Systèmes Temps Réel",
+        "bio": "L'expert en communication à faible latence et interactivité temps réel. Nazar a conçu l'architecture de chat à haute concurrence et les systèmes de notifications instantanées utilisant la technologie WebSocket, rendant les connexions numériques vivantes."
+      }
+    }
+  },
+  "recommendations_page": {
+    "profile_card": {
+      "no_photo": "Pas de photo",
+      "km_away": "À {{distance}} km",
+      "match_percent": "Match à {{score}}%",
+      "no_bio": "Aucune bio disponible.",
+      "looking_for": "Recherche : {{intention}}"
+    },
+    "feed": {
+      "subtitle_likes": "Personnes qui vous aiment déjà",
+      "subtitle_discover": "Découvrez de nouvelles personnes autour de vous"
+    },
+    "empty_state": {
+      "title": "Plus de profils disponibles",
+      "desc_likes": "Vous n'avez pas encore reçu de nouveaux likes. Continuez à swiper !",
+      "desc_discover": "Vous avez vu tout le monde à proximité. Essayez de modifier vos paramètres de recherche.",
+      "more_matches_title": "Voulez-vous plus de matchs ?",
+      "more_matches_desc": "Essayez d'augmenter la distance de recherche. Vous cherchez actuellement dans un rayon de {{maxDistance}} km.",
+      "adjust_distance_btn": "Ajuster la distance"
+    },
+    "match_modal": {
+      "title": "C'est un Match !",
+      "subtitle": "Vous et {{firstName}} vous plaisez mutuellement.",
+      "say_hello_btn": "Dire bonjour",
+      "keep_swiping_btn": "Continuer à swiper"
+    }
+  },
+  "settings_page": {
+    "header": {
+      "title": "Paramètres",
+      "subtitle": "Gérez vos préférences et la sécurité de votre compte."
+    },
+    "tabs": {
+      "profile": "Éditer le profil",
+      "discovery": "Découverte",
+      "account": "Compte et Sécurité"
+    },
+    "profile": {
+      "title": "Paramètres du Profil",
+      "messages": {
+        "avatar_success": "Avatar mis à jour avec succès !",
+        "avatar_fail": "Échec de l'envoi de l'avatar.",
+        "gallery_success": "Photo ajoutée avec succès !",
+        "gallery_fail": "Échec de l'envoi de la photo.",
+        "avatar_removed": "Avatar supprimé.",
+        "avatar_remove_fail": "Échec de la suppression de l'avatar.",
+        "gallery_deleted": "Photo supprimée.",
+        "gallery_delete_fail": "Échec de la suppression de la photo.",
+        "min_interests": "Veuillez sélectionner au moins 2 intérêts.",
+        "info_success": "Profil mis à jour avec succès !",
+        "info_fail": "Échec de la mise à jour des infos.",
+        "location_success": "Nouvelle position prête à être enregistrée.",
+        "location_fail": "Position introuvable. Vérifiez les permissions."
+      },
+      "avatar": {
+        "title": "Avatar du Profil",
+        "desc": "C'est votre photo d'identité principale.",
+        "change_btn": "Changer l'avatar",
+        "remove_btn": "Supprimer"
+      },
+      "gallery": {
+        "title": "Galerie Photo",
+        "desc": "Ajoutez 2 à 4 photos pour montrer votre personnalité.",
+        "add_btn": "Ajouter une photo",
+        "empty": "Aucune photo dans la galerie."
+      },
+      "basic_info": {
+        "title": "Informations de Base",
+        "first_name": "Prénom",
+        "last_name": "Nom",
+        "surname": "Nom de famille (Patronyme)",
+        "bio": "Bio",
+        "bio_placeholder": "Racontez-nous en un peu plus sur vous...",
+        "intention": "Intention",
+        "select_intention": "Sélectionner l'intention...",
+        "interests": "Intérêts",
+        "interests_selected": "{{count}} sélectionné(s)",
+        "select_interests": "Sélectionner les intérêts...",
+        "height": "Taille (cm)",
+        "weight": "Poids (kg)",
+        "location": "Localisation",
+        "locating": "Récupération de la position...",
+        "location_pinned": "Nouvelle position épinglée",
+        "location_update": "Mettre à jour ma position",
+        "location_desc": "Mettez à jour ceci si vous avez déménagé pour trouver des personnes plus proches.",
+        "save_btn": "Enregistrer les informations"
+      },
+      "modals": {
+        "intention_title": "Que recherchez-vous ?",
+        "intention_desc": "Sélectionnez votre intention de relation.",
+        "loading": "Chargement...",
+        "done": "Terminé",
+        "interests_title": "Qu'est-ce qui vous passionne ?",
+        "interests_desc": "Sélectionnez vos intérêts ({{count}}/10)",
+        "loading_interests": "Chargement des intérêts..."
+      }
+    },
+    "discovery": {
+      "title": "Préférences de Découverte",
+      "messages": {
+        "success": "Paramètres de découverte mis à jour !",
+        "fail": "Échec de la mise à jour."
+      },
+      "max_distance": "Distance Maximale",
+      "distance_unit": "{{distance}} km",
+      "age_range": "Tranche d'âge",
+      "age_unit": "{{min}} - {{max}} ans",
+      "min_age": "Âge Min",
+      "max_age": "Âge Max",
+      "save_btn": "Enregistrer les préférences"
+    },
+    "account": {
+      "messages": {
+        "pwd_match_fail": "Les nouveaux mots de passe ne correspondent pas.",
+        "pwd_success": "Mot de passe changé avec succès. Veuillez vous reconnecter.",
+        "pwd_fail": "Échec du changement de mot de passe.",
+        "email_fail": "Échec de la demande de changement d'email.",
+        "delete_fail": "Échec de la suppression du compte."
+      },
+      "details": {
+        "title": "Détails du Compte",
+        "username": "Nom d'utilisateur",
+        "email": "Adresse Email"
+      },
+      "password": {
+        "title": "Changer le mot de passe",
+        "current": "Mot de passe actuel",
+        "new": "Nouveau mot de passe",
+        "confirm": "Confirmer le nouveau mot de passe",
+        "update_btn": "Mettre à jour le mot de passe"
+      },
+      "email": {
+        "title": "Changer d'Email",
+        "desc": "Nous enverrons un lien de confirmation à la nouvelle adresse.",
+        "new": "Nouvelle adresse Email",
+        "confirm_pwd": "Mot de passe actuel (pour confirmer)",
+        "update_btn": "Demander le changement d'email"
+      },
+      "danger": {
+        "title": "Zone de Danger",
+        "desc": "Une fois votre compte supprimé, aucun retour en arrière n'est possible. Tous vos matchs, messages et photos seront définitivement effacés.",
+        "delete_btn": "Supprimer le compte",
+        "warning": "Cette action est irréversible. Entrez votre mot de passe pour confirmer.",
+        "cancel_btn": "Annuler",
+        "confirm_btn": "Supprimer définitivement"
+      }
+    }
+  },
+  "feed_toggle": {
+    "discover": "Découvrir",
+    "likes": "Likes"
+  },
+  "genders": {
+      "male": "Homme",
+      "female": "Femme"
+  },
+  "interests": {
+    "coffee": "Café",
+    "fashion": "Mode",
+    "pets": "Animaux",
+    "technology": "Technologie",
+    "dancing": "Danse",
+    "art": "Art",
+    "hiking": "Randonnée",
+    "photography": "Photographie",
+    "reading": "Lecture",
+    "cooking": "Cuisine",
+    "gaming": "Jeux",
+    "movies": "Films",
+    "music": "Musique",
+    "fitness": "Fitness",
+    "travel": "Voyages"
+  },
+  "intentions": {
+    "still_figuring": "Je cherche encore",
+    "casual_dating": "Rencontres décontractées",
+    "new_friends": "Nouveaux amis",
+    "short_term": "Relation à court terme",
+    "long_term": "Relation à long terme"
+  },
+  "backend_messages": {
+    "bot_verification_failed": "La vérification du bot a échoué. Veuillez réessayer.",
+    "age_under_18": "L'inscription est réservée aux personnes âgées d'au moins 18 ans.",
+    "dob_in_future": "La date de naissance ne peut pas être dans le futur.",
+    "interests_duplicates": "La liste des centres d'intérêt contient des doublons.",
+    "interests_min": "Veuillez sélectionner au moins 2 centres d'intérêt.",
+    "interests_max": "Vous avez sélectionné le nombre maximum de centres d'intérêt (100).",
+    "photos_min": "Veuillez télécharger au moins 2 photos.",
+    "photos_max": "Vous pouvez télécharger jusqu'à 4 photos.",
+    "gallery_limit_reached": "Limite de 4 photos atteinte.",
+    "old_password_incorrect": "L'ancien mot de passe a été saisi de manière incorrecte.",
+    "passwords_mismatch": "Les mots de passe ne correspondent pas.",
+    "min_age_greater_than_max": "L'âge minimum ne peut pas être supérieur à l'âge maximum.",
+    "incorrect_password": "Mot de passe incorrect.",
+    "email_in_use": "Cette adresse e-mail est déjà utilisée.",
+    "email_is_current": "Il s'agit de votre adresse e-mail actuelle.",
+    "link_expired": "Le lien est invalide ou a expiré.",
+    "interact_with_self": "Vous ne pouvez pas interagir avec vous-même.",
+    "logout_success": "Déconnexion réussie.",
+    "account_deleted": "Votre compte et toutes les données associées ont été supprimés avec succès.",
+    "password_changed": "Votre mot de passe a été modifié avec succès.",
+    "account_activated": "Votre compte a été activé avec succès ! Vous pouvez maintenant vous connecter.",
+    "gallery_added": "Les photos ont été ajoutées avec succès à la galerie.",
+    "photo_deleted": "La photo a été supprimée avec succès.",
+    "min_photos_error": "Le nombre minimum de photos est de 2. Veuillez d'abord télécharger une nouvelle photo avant de supprimer l'ancienne.",
+    "avatar_updated": "Votre avatar a été mis à jour avec succès.",
+    "avatar_deleted": "L'avatar a été supprimé avec succès.",
+    "no_avatar": "Vous n'avez pas d'avatar configuré.",
+    "reset_link_sent": "Si cette adresse e-mail est enregistrée, nous y avons envoyé des instructions de réinitialisation.",
+    "email_confirm_sent": "Un e-mail contenant un lien de confirmation a été envoyé à votre nouvelle adresse.",
+    "chat_not_found": "La salle de discussion n'existe pas.",
+    "chat_no_permission": "Vous n'avez pas l'autorisation de voir ou de modifier ce chat.",
+    "message_or_file_required": "Un message ou un fichier est requis.",
+    "file_too_large": "Le fichier est trop volumineux. La taille maximale est de 10 Mo.",
+    "file_format_unsupported": "Le format de fichier n'est pas pris en charge.",
+    "message_updated": "Message mis à jour.",
+    "message_deleted": "Message supprimé.",
+    "chat_deleted": "Chat supprimé avec succès."
+  },
+  "theme_toggle": {
+    "light_mode": "Mode Clair",
+    "dark_mode": "Mode Sombre"
+  }
+}

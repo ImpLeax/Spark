@@ -8,6 +8,7 @@ import { useEffect, useState, useRef } from "react";
 import { format } from "date-fns";
 import { Loader2, MapPin, CheckCircle2, Plus, X, ChevronRight } from "lucide-react";
 import { Turnstile } from '@marsidev/react-turnstile';
+import { useTranslation } from "react-i18next";
 
 import {
   Field,
@@ -60,6 +61,8 @@ export function SignupForm({ className, ...props }) {
   const [interestsList, setInterestsList] = useState([]);
   const [cropState, setCropState] = useState({ isOpen: false, imageSrc: null, slotIndex: null });
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     getGenders();
     getIntentions();
@@ -111,7 +114,7 @@ export function SignupForm({ className, ...props }) {
         },
         error => {
           console.error("Location error:", error);
-          setFormError("Could not get location. Please allow access in your browser.");
+          setFormError(t('signup_form.errors.location'));
           setIsLocating(false);
         }
       );
@@ -171,6 +174,7 @@ export function SignupForm({ className, ...props }) {
 
     setCropState({ isOpen: false, imageSrc: null, slotIndex: null });
   };
+
   const handleRemovePhoto = (index, e) => {
     e.stopPropagation();
 
@@ -189,26 +193,26 @@ export function SignupForm({ className, ...props }) {
     setFormError("");
 
     if (!turnstileToken) {
-      setFormError("Please complete the bot verification.");
+      setFormError(t('signup_form.errors.captcha'));
       return;
     }
 
     const validPhotos = photoSlots.filter(photo => photo !== null);
 
     if (validPhotos.length < 2) {
-      setFormError("Please upload at least 2 photos in the boxes on the right.");
+      setFormError(t('signup_form.errors.photos'));
       return;
     }
     if (password !== confirmPassword) {
-      setFormError("Passwords do not match.");
+      setFormError(t('signup_form.errors.passwords_match'));
       return;
     }
     if (!dateOfBirth) {
-      setFormError("Please select your date of birth.");
+      setFormError(t('signup_form.errors.dob'));
       return;
     }
     if (selectedInterests.length < 2) {
-      setFormError("Please select at least 2 interests.");
+      setFormError(t('signup_form.errors.interests'));
       return;
     }
 
@@ -258,8 +262,16 @@ export function SignupForm({ className, ...props }) {
         setError429(true);
         window.setTimeout(() => setError429(false), 60 * 1000);
       } else {
-        const errorMsg = error.response?.data ? Object.values(error.response.data)[0] : "Registration failed. Please try again.";
-        setFormError(String(errorMsg));
+        let errorKey = 'signup_form.errors.general';
+        if (error.response?.data) {
+          const firstVal = Object.values(error.response.data)[0];
+          if (Array.isArray(firstVal)) {
+            errorKey = firstVal[0];
+          } else if (typeof firstVal === 'string') {
+            errorKey = firstVal;
+          }
+        }
+        setFormError(t(errorKey));
       }
     } finally {
       setIsSubmitting(false);
@@ -274,9 +286,9 @@ export function SignupForm({ className, ...props }) {
       <div className="flex flex-col p-6 sm:p-10 lg:p-12 shadow-2xl rounded-[2.5rem] bg-card/95 backdrop-blur-sm border border-border">
 
         <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">Create your account</h1>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">{t('signup_form.title')}</h1>
           <p className="text-muted-foreground mt-2 text-lg">
-            Join Spark and find your perfect match today.
+            {t('signup_form.subtitle')}
           </p>
         </div>
 
@@ -289,36 +301,36 @@ export function SignupForm({ className, ...props }) {
 
                 <div className="flex flex-col h-full">
                   <div className="space-y-6">
-                    <h3 className="text-xl font-semibold border-b pb-2">Personal Info</h3>
+                    <h3 className="text-xl font-semibold border-b pb-2">{t('signup_form.sections.personal')}</h3>
 
                     <div className="grid grid-cols-2 gap-4">
                       <Field>
-                        <FieldLabel htmlFor="firstName">First Name</FieldLabel>
+                        <FieldLabel htmlFor="firstName">{t('signup_form.labels.first_name')}</FieldLabel>
                         <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="John" required />
                       </Field>
                       <Field>
-                        <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
+                        <FieldLabel htmlFor="lastName">{t('signup_form.labels.last_name')}</FieldLabel>
                         <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Doe" required />
                       </Field>
                     </div>
 
                     <Field>
-                      <FieldLabel htmlFor="surname">Surname</FieldLabel>
+                      <FieldLabel htmlFor="surname">{t('signup_form.labels.surname')}</FieldLabel>
                       <Input id="surname" value={surname} onChange={(e) => setSurname(e.target.value)} placeholder="Smith" required />
                     </Field>
 
                     <Field>
-                      <FieldLabel>Date of Birth</FieldLabel>
+                      <FieldLabel>{t('signup_form.labels.dob')}</FieldLabel>
                       <DatePicker selected={dateOfBirth} onSelect={setDateOfBirth} />
                     </Field>
 
                     <Field>
-                      <FieldLabel htmlFor="username">Username</FieldLabel>
+                      <FieldLabel htmlFor="username">{t('signup_form.labels.username')}</FieldLabel>
                       <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="johndoe123" required />
                     </Field>
 
                     <Field>
-                      <FieldLabel htmlFor="email">Email Address</FieldLabel>
+                      <FieldLabel htmlFor="email">{t('signup_form.labels.email')}</FieldLabel>
                       <Input
                           id="email"
                           type="email"
@@ -335,11 +347,11 @@ export function SignupForm({ className, ...props }) {
                   <div className="mt-auto pt-6">
                     <div className="grid grid-cols-2 gap-4">
                       <Field>
-                        <FieldLabel htmlFor="password">Password</FieldLabel>
+                        <FieldLabel htmlFor="password">{t('signup_form.labels.password')}</FieldLabel>
                         <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                       </Field>
                       <Field>
-                        <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
+                        <FieldLabel htmlFor="confirm-password">{t('signup_form.labels.confirm_password')}</FieldLabel>
                         <Input id="confirm-password" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
                       </Field>
                     </div>
@@ -348,10 +360,10 @@ export function SignupForm({ className, ...props }) {
 
                 <div className="flex flex-col h-full">
                   <div className="space-y-6">
-                    <h3 className="text-xl font-semibold border-b pb-2">Dating Profile</h3>
+                    <h3 className="text-xl font-semibold border-b pb-2">{t('signup_form.sections.dating')}</h3>
 
                     <Field>
-                      <FieldLabel className="mb-2">Gender</FieldLabel>
+                      <FieldLabel className="mb-2">{t('signup_form.labels.gender')}</FieldLabel>
                       <div className="grid grid-cols-3 gap-2">
                         {gendersList.length > 0 ? gendersList.map((el) => {
                           const isSelected = gender === el.id.toString();
@@ -363,15 +375,15 @@ export function SignupForm({ className, ...props }) {
                               onClick={() => setGender(el.id.toString())}
                               className={cn("w-full transition-all", !isSelected && "bg-muted text-foreground hover:bg-muted/80")}
                             >
-                              {el.name}
+                              {t(`genders.${el.name}`)}
                             </Button>
                           );
-                        }) : <p className="text-sm text-muted-foreground">Loading...</p>}
+                        }) : <p className="text-sm text-muted-foreground">{t('signup_form.modals.loading')}</p>}
                       </div>
                     </Field>
 
                     <Field>
-                      <FieldLabel className="mb-2">Looking For</FieldLabel>
+                      <FieldLabel className="mb-2">{t('signup_form.labels.looking_for')}</FieldLabel>
                       <div className="grid grid-cols-3 gap-2">
                         {gendersList.length > 0 ? gendersList.map((el) => {
                           const isSelected = lookingFor === el.id.toString();
@@ -383,14 +395,14 @@ export function SignupForm({ className, ...props }) {
                               onClick={() => setLookingFor(el.id.toString())}
                               className={cn("w-full transition-all", !isSelected && "bg-muted text-foreground hover:bg-muted/80")}
                             >
-                              {el.name}
+                              {t(`genders.${el.name}`)}
                             </Button>
                           );
-                        }) : <p className="text-sm text-muted-foreground">Loading...</p>}
+                        }) : <p className="text-sm text-muted-foreground">{t('signup_form.modals.loading')}</p>}
                       </div>
                     </Field>
                   <Field>
-                    <FieldLabel className="mb-2">Intention</FieldLabel>
+                    <FieldLabel className="mb-2">{t('signup_form.labels.intention')}</FieldLabel>
                     <Button
                       type="button"
                       variant="outline"
@@ -398,14 +410,14 @@ export function SignupForm({ className, ...props }) {
                       className="w-full flex justify-between items-center bg-secondary/20 hover:bg-secondary/40 border-dashed"
                     >
                       <span className={intention ? "text-foreground font-medium" : "text-muted-foreground"}>
-                        {selectedIntentionObj ? selectedIntentionObj.name : "Select your intention..."}
+                        {selectedIntentionObj ? t(`intentions.${selectedIntentionObj.name}`) : t('signup_form.placeholders.intention')}
                       </span>
                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     </Button>
                   </Field>
 
                     <Field>
-                      <FieldLabel className="mb-2">Interests</FieldLabel>
+                      <FieldLabel className="mb-2">{t('signup_form.labels.interests')}</FieldLabel>
 
                       <Button
                         type="button"
@@ -415,21 +427,21 @@ export function SignupForm({ className, ...props }) {
                       >
                         <span className={selectedInterests.length > 0 ? "text-foreground font-medium" : "text-muted-foreground"}>
                           {selectedInterests.length > 0
-                            ? `${selectedInterests.length} selected`
-                            : "Select your interests..."}
+                            ? `${selectedInterests.length} ${t('signup_form.placeholders.selected')}`
+                            : t('signup_form.placeholders.interests')}
                         </span>
                         <ChevronRight className="w-4 h-4 text-muted-foreground" />
                       </Button>
 
                       <FieldDescription className="mt-2">
-                        Select at least 2 ({selectedInterests.length}/10)
+                        {t('signup_form.placeholders.select_min_2')} ({selectedInterests.length}/10)
                       </FieldDescription>
                     </Field>
                   </div>
 
                   <div className="mt-auto pt-6">
                     <Field>
-                      <FieldLabel>Location</FieldLabel>
+                      <FieldLabel>{t('signup_form.labels.location')}</FieldLabel>
                       <div className="mt-2">
                         <Button
                           type="button"
@@ -441,7 +453,7 @@ export function SignupForm({ className, ...props }) {
                           {isLocating && <Loader2 className="w-4 h-4 animate-spin" />}
                           {!isLocating && !latitude && <MapPin className="w-4 h-4" />}
                           {!isLocating && latitude && <CheckCircle2 className="w-4 h-4 text-green-500" />}
-                          {isLocating ? "Locating..." : (latitude ? "Location Saved" : "Get Current Location")}
+                          {isLocating ? t('signup_form.location.locating') : (latitude ? t('signup_form.location.saved') : t('signup_form.location.get'))}
                         </Button>
                       </div>
                     </Field>
@@ -452,8 +464,8 @@ export function SignupForm({ className, ...props }) {
 
             <div className="w-full lg:w-[350px] shrink-0">
               <div className="mb-4">
-                <h3 className="text-xl font-semibold border-b pb-2">Photos</h3>
-                <p className="text-sm text-muted-foreground mt-3">Add 2 to 4 photos to stand out.</p>
+                <h3 className="text-xl font-semibold border-b pb-2">{t('signup_form.sections.photos')}</h3>
+                <p className="text-sm text-muted-foreground mt-3">{t('signup_form.sections.photos_desc')}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4 mt-4">
@@ -506,28 +518,28 @@ export function SignupForm({ className, ...props }) {
                   ref={turnstileRef}
                   siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
                   onSuccess={(token) => setTurnstileToken(token)}
-                  onError={() => setFormError("Bot verification encountered an error. Please refresh.")}
+                  onError={() => setFormError(t('signup_form.errors.captcha_error'))}
                 />
             </div>
 
-            {error429 && <p className="text-sm text-destructive font-medium text-center">Too many attempts, try again in a minute.</p>}
+            {error429 && <p className="text-sm text-destructive font-medium text-center">{t('signup_form.errors.429')}</p>}
             {formError && <p className="text-sm text-destructive font-medium text-center bg-destructive/10 p-3 rounded-md w-full">{formError}</p>}
 
             <Button type="submit" className="w-full text-lg h-14 rounded-xl" disabled={isSubmitting}>
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 className="w-5 h-5 animate-spin" /> Creating Account...
+                  <Loader2 className="w-5 h-5 animate-spin" /> {t('signup_form.buttons.creating')}
                 </span>
-              ) : "Create Account"}
+              ) : t('signup_form.buttons.create')}
             </Button>
             <div className="flex flex-col items-center space-y-3">
               <p className="text-muted-foreground font-medium">
-                Already have an account?{" "}
+                {t('signup_form.links.already_have')}{" "}
                 <Link
                   to="/"
                   className="text-primary hover:underline underline-offset-4 transition-all font-bold"
                 >
-                  Log in
+                  {t('signup_form.links.login')}
                 </Link>
               </p>
 
@@ -536,7 +548,7 @@ export function SignupForm({ className, ...props }) {
                 className="text-sm text-muted-foreground/60 hover:text-foreground transition-colors flex items-center gap-1 group"
               >
                 <span className="group-hover:-translate-x-1 transition-transform">←</span>
-                Back to main page
+                {t('signup_form.links.back')}
               </Link>
             </div>
           </div>
@@ -548,9 +560,9 @@ export function SignupForm({ className, ...props }) {
           <div className="bg-card w-full max-w-md rounded-3xl shadow-2xl border border-border flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between p-6 border-b border-border">
               <div>
-                <h2 className="text-2xl font-bold">What are you looking for?</h2>
+                <h2 className="text-2xl font-bold">{t('signup_form.modals.intention_title')}</h2>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Select your relationship intention.
+                  {t('signup_form.modals.intention_desc')}
                 </p>
               </div>
               <button
@@ -576,13 +588,13 @@ export function SignupForm({ className, ...props }) {
                         !isSelected && "bg-secondary/50 text-foreground hover:bg-secondary"
                       )}
                     >
-                      {el.name}
+                      {t(`intentions.${el.name}`)}
                     </Button>
                   );
                 }) : (
                   <div className="flex items-center justify-center w-full py-10 text-muted-foreground">
                     <Loader2 className="w-6 h-6 animate-spin mr-2" />
-                    Loading...
+                    {t('signup_form.modals.loading')}
                   </div>
                 )}
               </div>
@@ -593,7 +605,7 @@ export function SignupForm({ className, ...props }) {
                 onClick={() => setIsIntentionModalOpen(false)}
                 className="w-full h-12 text-lg rounded-xl"
               >
-                Done
+                {t('signup_form.modals.done')}
               </Button>
             </div>
           </div>
@@ -607,9 +619,9 @@ export function SignupForm({ className, ...props }) {
 
             <div className="flex items-center justify-between p-6 border-b border-border">
               <div>
-                <h2 className="text-2xl font-bold">What are you into?</h2>
+                <h2 className="text-2xl font-bold">{t('signup_form.modals.interests_title')}</h2>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Select your interests to find better matches. ({selectedInterests.length}/10)
+                  {t('signup_form.modals.interests_desc')} ({selectedInterests.length}/10)
                 </p>
               </div>
               <button
@@ -635,13 +647,13 @@ export function SignupForm({ className, ...props }) {
                         !isSelected && "bg-secondary/50 text-foreground hover:bg-secondary"
                       )}
                     >
-                      {interest.name}
+                      {t(`interests.${interest.name}`)}
                     </Button>
                   );
                 }) : (
                   <div className="flex items-center justify-center w-full py-10 text-muted-foreground">
                     <Loader2 className="w-6 h-6 animate-spin mr-2" />
-                    Loading interests...
+                    {t('signup_form.modals.loading_interests')}
                   </div>
                 )}
               </div>
@@ -652,7 +664,7 @@ export function SignupForm({ className, ...props }) {
                 onClick={() => setIsInterestsModalOpen(false)}
                 className="w-full h-12 text-lg rounded-xl"
               >
-                Done
+                {t('signup_form.modals.done')}
               </Button>
             </div>
           </div>

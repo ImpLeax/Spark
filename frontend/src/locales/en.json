@@ -1,0 +1,635 @@
+{
+  "landing": {
+    "hero": {
+      "title": "DATING FOR EVERYONE EASY AND FAST"
+    },
+    "stats": {
+      "active_users": "Active Users",
+      "matches": "Successful Matches",
+      "couples": "Happy Couples",
+      "support": "Live Support"
+    },
+    "why_choose": {
+      "title": "Why choose Spark?",
+      "subtitle": "Innovation meets real connections.",
+      "f1": {
+        "title": "Smart Matching",
+        "desc": "Our smart algorithm analyzes your interests to find the most compatible matches."
+      },
+      "f2": {
+        "title": "Secure & Private",
+        "desc": "Your data is encrypted. Chat only after a mutual match."
+      },
+      "f3": {
+        "title": "Real-time Chat",
+        "desc": "Instant notifications and smooth messaging experience."
+      },
+      "f4": {
+        "title": "Shared Interests",
+        "desc": "Tag system helps you find people with the same hobbies."
+      },
+      "f5": {
+        "title": "Continuous Learning",
+        "desc": "The algorithm evolves based on your preferences."
+      },
+      "f6": {
+        "title": "Match Magic",
+        "desc": "Get notified instantly when someone sparks with you."
+      }
+    },
+    "how_it_works": {
+      "title": "How it works?",
+      "s1": {
+        "title": "Sign Up",
+        "desc": "Create your account in minutes."
+      },
+      "s2": {
+        "title": "Profile",
+        "desc": "Add photos and tell your story."
+      },
+      "s3": {
+        "title": "Explore",
+        "desc": "Like profiles that catch your eye."
+      },
+      "s4": {
+        "title": "Chat",
+        "desc": "Start talking after a match."
+      }
+    },
+    "footer": {
+      "desc": "Connecting hearts through technology. Find your spark anywhere, anytime.",
+      "company": {
+        "title": "Company",
+        "about": "About Us",
+        "team": "Team",
+        "careers": "Careers"
+      },
+      "support": {
+        "title": "Support",
+        "help": "Help Center",
+        "safety": "Safety",
+        "contact": "Contact"
+      },
+      "legal": {
+        "title": "Legal",
+        "terms": "Terms of Use",
+        "privacy": "Privacy Policy",
+        "cookie": "Cookie Policy"
+      },
+      "copyright": "© 2026 Spark. All rights reserved."
+    }
+  },
+  "navbar": {
+    "signup": "Sign up",
+    "login": "Login",
+    "offers": "What we offer",
+    "about": "About"
+  },
+  "login_form": {
+    "title": "Login to your account",
+    "description": "Enter your username or email below to login to your account",
+    "username_label": "Username or Email",
+    "username_placeholder": "username or m@example.com",
+    "password_label": "Password",
+    "forgot_password": "Forgot password?",
+    "error_429": "Too many attempts, try again in a minute.",
+    "error_unauthorized": "Incorrect username or password.",
+    "error_server": "A server error has occurred.",
+    "error_google": "Google authentication failed.",
+    "login_button": "Login",
+    "google_button": "Login with Google",
+    "no_account": "Don't have an account?",
+    "sign_up": "Sign up"
+  },
+  "signup_form": {
+    "title": "Create your account",
+    "subtitle": "Join Spark and find your perfect match today.",
+    "sections": {
+      "personal": "Personal Info",
+      "dating": "Dating Profile",
+      "photos": "Photos",
+      "photos_desc": "Add 2 to 4 photos to stand out."
+    },
+    "labels": {
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "surname": "Surname",
+      "dob": "Date of Birth",
+      "username": "Username",
+      "email": "Email Address",
+      "password": "Password",
+      "confirm_password": "Confirm Password",
+      "gender": "Gender",
+      "looking_for": "Looking For",
+      "intention": "Intention",
+      "interests": "Interests",
+      "location": "Location"
+    },
+    "placeholders": {
+      "intention": "Select your intention...",
+      "interests": "Select your interests...",
+      "selected": "selected",
+      "select_min_2": "Select at least 2"
+    },
+    "location": {
+      "get": "Get Current Location",
+      "locating": "Locating...",
+      "saved": "Location Saved"
+    },
+    "errors": {
+      "captcha": "Please complete the bot verification.",
+      "captcha_error": "Bot verification encountered an error. Please refresh.",
+      "photos": "Please upload at least 2 photos in the boxes on the right.",
+      "passwords_match": "Passwords do not match.",
+      "dob": "Please select your date of birth.",
+      "interests": "Please select at least 2 interests.",
+      "location": "Could not get location. Please allow access in your browser.",
+      "429": "Too many attempts, try again in a minute.",
+      "general": "Registration failed. Please try again."
+    },
+    "buttons": {
+      "create": "Create Account",
+      "creating": "Creating Account..."
+    },
+    "links": {
+      "already_have": "Already have an account?",
+      "login": "Log in",
+      "back": "Back to main page"
+    },
+    "modals": {
+      "intention_title": "What are you looking for?",
+      "intention_desc": "Select your relationship intention.",
+      "interests_title": "What are you into?",
+      "interests_desc": "Select your interests to find better matches.",
+      "loading": "Loading...",
+      "loading_interests": "Loading interests...",
+      "done": "Done"
+    }
+  },
+  "datepicker": {
+    "pick_a_date": "Pick a date",
+    "change_year": "Click to change the year"
+  },
+  "cropper": {
+    "title": "Adjust Photo",
+    "zoom": "Zoom",
+    "cancel": "Cancel",
+    "processing": "Processing...",
+    "apply": "Apply"
+  },
+  "klipy_picker": {
+    "search_placeholder": "Search GIF...",
+    "close": "Close",
+    "loading": "Loading...",
+    "nothing_found": "Nothing found 😕",
+    "api_online": "API Online",
+    "powered_by": "Powered by KLIPY"
+  },
+  "sidebar": {
+    "discover": "Discover",
+    "messages": "Messages",
+    "my_profile": "My Profile",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "sidebar_profile": {
+    "user": "User",
+    "na": "NA",
+    "not_available": "N/A",
+    "gender": "Gender",
+    "seeking": "Seeking"
+  },
+  "global_error": {
+    "title": "Something went wrong!",
+    "description": "We are working on fixing this issue.",
+    "button": "Go to Homepage"
+  },
+  "activation_page": {
+    "initial_message": "Activating your account...",
+    "success_message": "Your account has been successfully activated!",
+    "error_message": "Activation link is invalid or has expired. Please try registering again.",
+    "invalid_format": "Invalid activation link format.",
+    "title_loading": "Activating Account",
+    "title_success": "Account Activated!",
+    "title_error": "Activation Failed",
+    "wait_message": "Please wait while we verify your details...",
+    "button_login": "Go to Login",
+    "button_home": "Back to Home"
+  },
+  "email_confirm_page": {
+    "initial_message": "Verifying your new email address...",
+    "success_message": "Your email address has been successfully updated.",
+    "error_message": "The confirmation link is invalid or has expired. Please try requesting a new one.",
+    "invalid_request": "Invalid request. No token provided in the URL.",
+    "title_loading": "Confirming Email",
+    "title_success": "Email Updated!",
+    "title_error": "Verification Failed",
+    "wait_message": "Please wait while we update your account...",
+    "button_settings": "Back to Settings",
+    "button_home": "Return to Home"
+  },
+  "forgot_password": {
+    "title": "Forgot Password?",
+    "description": "Enter your email address and we'll send you a link to reset your password.",
+    "email_label": "Email Address",
+    "email_placeholder": "name@example.com",
+    "button_send": "Send Reset Link",
+    "button_return_login": "Return to Login",
+    "back_to_login": "Back to Login",
+    "error_fallback": "Failed to send reset link. Please try again."
+  },
+  "messages_page": {
+    "header": {
+      "title": "Messages",
+      "delete_chat_title": "Unmatch & Delete Chat"
+    },
+    "search": {
+      "placeholder": "Search matches..."
+    },
+    "empty": {
+      "no_messages": "No messages yet.",
+      "start_swiping": "Start swiping to get matches!",
+      "no_results": "No results found for your query",
+      "select_conversation": "Select a conversation to start chatting.",
+      "your_messages": "Your messages"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "preview": {
+      "new_match": "New match! Say hello 👋",
+      "gif": "GIF",
+      "media": "📎 Media"
+    },
+    "message": {
+      "edited": "(edited)"
+    },
+    "input": {
+      "placeholder": "Write a message...",
+      "editing": "Editing message"
+    },
+    "context_menu": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "toast": {
+      "new_messages": "New messages"
+    },
+    "attachment": {
+      "default_name": "Attachment"
+    },
+    "alerts": {
+      "delete_chat_confirm": "Are you sure you want to unmatch and delete your chat with {{name}}? This cannot be undone.",
+      "delete_chat_error": "Failed to delete chat. Please try again.",
+      "no_permission": "You don't have permission to view this chat.",
+      "delete_message_error": "Failed to delete message.",
+      "edit_message_error": "Failed to edit message.",
+      "upload_error": "Error uploading file. Check format and size.",
+      "send_file_error": "Failed to send file: {{error}}"
+    }
+  },
+  "not_found": {
+    "title": "Oops! Page not found.",
+    "description": "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.",
+    "button": "Go Back Home"
+  },
+  "profile_page": {
+    "location": {
+      "loading": "Loading location...",
+      "hidden": "Location hidden",
+      "unknown": "Unknown Location",
+      "unavailable": "Location unavailable"
+    },
+    "no_photos": "No photos",
+    "edit_profile": "Edit Profile",
+    "about_me": "About Me",
+    "no_bio": "This user hasn't written a bio yet.",
+    "labels": {
+      "intention": "Intention",
+      "height": "Height",
+      "weight": "Weight",
+      "education": "Education",
+      "joined": "Joined"
+    },
+    "units": {
+      "cm": "cm",
+      "kg": "kg"
+    },
+    "interests_title": "Interests",
+    "looking_for_title": "Looking for",
+    "anyone": "Anyone",
+    "for": "for",
+    "joined_date": "April 2026"
+  },
+  "public_profile": {
+    "location": {
+      "loading": "Loading location...",
+      "hidden": "Location hidden",
+      "unknown": "Unknown Location",
+      "unavailable": "Location unavailable"
+    },
+    "no_photos": "No photos",
+    "buttons": {
+      "back": "Back",
+      "liked": "Liked",
+      "incompatible": "Incompatible",
+      "like": "Like"
+    },
+    "not_found": "Profile not found.",
+    "about": "About",
+    "no_bio": "This user hasn't written a bio yet.",
+    "labels": {
+      "intention": "Intention",
+      "height": "Height",
+      "weight": "Weight",
+      "education": "Education",
+      "joined": "Joined"
+    },
+    "units": {
+      "cm": "cm",
+      "kg": "kg"
+    },
+    "interests": "Interests",
+    "looking_for": "Looking for",
+    "anyone": "Anyone",
+    "for": "for",
+    "joined_date": "April 2026",
+    "match": {
+      "title": "It's a Match!",
+      "subtitle": "You and {{name}} liked each other.",
+      "say_hello": "Say Hello",
+      "close": "Close"
+    }
+  },
+  "reset_password_page": {
+    "errors": {
+      "passwords_match": "Passwords do not match.",
+      "default_fail": "Failed to reset password. The link might be invalid or expired."
+    },
+    "success_message": "Password reset successfully!",
+    "invalid_link": {
+      "title": "Invalid Reset Link",
+      "desc": "This link is missing required parameters.",
+      "button": "Request New Link"
+    },
+    "form": {
+      "title": "Set New Password",
+      "subtitle": "Please enter your new password below.",
+      "redirecting": "Redirecting to login...",
+      "new_password_label": "New Password",
+      "new_password_placeholder": "Enter new password",
+      "confirm_password_label": "Confirm New Password",
+      "confirm_password_placeholder": "Confirm new password",
+      "button_submit": "Reset Password"
+    }
+  },
+  "team_page": {
+    "title": {
+      "start": "Meet the",
+      "highlight": "Minds",
+      "end": "Behind Spark"
+    },
+    "subtitle": "We are a trio of passionate engineers obsessed with clean code, scalable architecture, and building products that bring people together.",
+    "members": {
+      "volodymyr": {
+        "name": "Volodymyr Bondarchuk",
+        "role": "Full-stack web developer, Auth & Profiles Systems",
+        "bio": "A specialist in secure infrastructure and user identity. Volodymyr architected the core authentication systems and dynamic profile management of Spark. With a focus on data integrity and seamless onboarding, he ensures that every user's journey starts with a secure, robust, and lightning-fast experience."
+      },
+      "maxim": {
+        "name": "Maxim Naiduik",
+        "role": "Full-stack web developer, Recommendation System",
+        "bio": "The algorithmic mastermind behind Spark's matching logic. Maxim specializes in developing complex recommendation engines that process user preferences into meaningful connections. By bridging the gap between data science and full-stack execution, he ensures our users find high-compatibility matches with pinpoint accuracy."
+      },
+      "nazar": {
+        "name": "Nazar Kholonivets",
+        "role": "Full-stack web developer, Chats & Real-time Systems",
+        "bio": "The expert in low-latency communication and real-time interactivity. Nazar engineered the high-concurrency chat architecture and instant notification systems using advanced WebSocket technology. His work ensures that every interaction on the platform happens in real-time, making digital connections feel instant and alive."
+      }
+    }
+  },
+  "recommendations_page": {
+    "profile_card": {
+      "no_photo": "No Photo",
+      "km_away": "{{distance}} km away",
+      "match_percent": "{{score}}% Match",
+      "no_bio": "No bio available.",
+      "looking_for": "Looking for: {{intention}}"
+    },
+    "feed": {
+      "subtitle_likes": "People who already liked you",
+      "subtitle_discover": "Discover new people around you"
+    },
+    "empty_state": {
+      "title": "No profiles left",
+      "desc_likes": "You haven't received any new likes yet. Keep swiping!",
+      "desc_discover": "You've seen everyone nearby. Try adjusting your search settings or check back later.",
+      "more_matches_title": "Want more matches?",
+      "more_matches_desc": "Try expanding your search distance. You are currently looking within {{maxDistance}} km.",
+      "adjust_distance_btn": "Adjust Distance"
+    },
+    "match_modal": {
+      "title": "It's a Match!",
+      "subtitle": "You and {{firstName}} liked each other.",
+      "say_hello_btn": "Say Hello",
+      "keep_swiping_btn": "Keep Swiping"
+    }
+  },
+  "settings_page": {
+    "header": {
+      "title": "Settings",
+      "subtitle": "Manage your preferences and account security."
+    },
+    "tabs": {
+      "profile": "Edit Profile",
+      "discovery": "Discovery",
+      "account": "Account & Security"
+    },
+    "profile": {
+      "title": "Profile Settings",
+      "messages": {
+        "avatar_success": "Avatar updated successfully!",
+        "avatar_fail": "Failed to upload avatar.",
+        "gallery_success": "Photo added successfully!",
+        "gallery_fail": "Failed to upload photo.",
+        "avatar_removed": "Avatar removed.",
+        "avatar_remove_fail": "Failed to remove avatar.",
+        "gallery_deleted": "Photo deleted.",
+        "gallery_delete_fail": "Failed to delete photo.",
+        "min_interests": "Please select at least 2 interests.",
+        "info_success": "Profile info updated successfully!",
+        "info_fail": "Failed to update profile info.",
+        "location_success": "New location ready to be saved.",
+        "location_fail": "Could not get location. Check browser permissions."
+      },
+      "avatar": {
+        "title": "Profile Avatar",
+        "desc": "This is your main identity photo.",
+        "change_btn": "Change Avatar",
+        "remove_btn": "Remove"
+      },
+      "gallery": {
+        "title": "Photo Gallery",
+        "desc": "Add 2 to 4 photos to show off your personality.",
+        "add_btn": "Add Photo",
+        "empty": "No photos in gallery."
+      },
+      "basic_info": {
+        "title": "Basic Information",
+        "first_name": "First Name",
+        "last_name": "Last Name",
+        "surname": "Surname (Patronymic)",
+        "bio": "Bio",
+        "bio_placeholder": "Tell a bit about yourself...",
+        "intention": "Intention",
+        "select_intention": "Select intention...",
+        "interests": "Interests",
+        "interests_selected": "{{count}} selected",
+        "select_interests": "Select interests...",
+        "height": "Height (cm)",
+        "weight": "Weight (kg)",
+        "location": "Location",
+        "locating": "Getting Location...",
+        "location_pinned": "New Location Pinned",
+        "location_update": "Update My Location",
+        "location_desc": "Update this if you have moved to find people closer to you.",
+        "save_btn": "Save Information"
+      },
+      "modals": {
+        "intention_title": "What are you looking for?",
+        "intention_desc": "Select your relationship intention.",
+        "loading": "Loading...",
+        "done": "Done",
+        "interests_title": "What are you into?",
+        "interests_desc": "Select your interests to find better matches. ({{count}}/10)",
+        "loading_interests": "Loading interests..."
+      }
+    },
+    "discovery": {
+      "title": "Discovery Preferences",
+      "messages": {
+        "success": "Discovery settings updated successfully!",
+        "fail": "Failed to update settings. Try again."
+      },
+      "max_distance": "Maximum Distance",
+      "distance_unit": "{{distance}} km",
+      "age_range": "Age Range",
+      "age_unit": "{{min}} - {{max}} years",
+      "min_age": "Min Age",
+      "max_age": "Max Age",
+      "save_btn": "Save Preferences"
+    },
+    "account": {
+      "messages": {
+        "pwd_match_fail": "New passwords do not match.",
+        "pwd_success": "Password changed successfully. Please log in again.",
+        "pwd_fail": "Failed to change password.",
+        "email_fail": "Failed to request email change.",
+        "delete_fail": "Failed to delete account."
+      },
+      "details": {
+        "title": "Account Details",
+        "username": "Username",
+        "email": "Email Address"
+      },
+      "password": {
+        "title": "Change Password",
+        "current": "Current Password",
+        "new": "New Password",
+        "confirm": "Confirm New Password",
+        "update_btn": "Update Password"
+      },
+      "email": {
+        "title": "Change Email",
+        "desc": "We will send a confirmation link to the new address.",
+        "new": "New Email Address",
+        "confirm_pwd": "Current Password (to confirm)",
+        "update_btn": "Request Email Change"
+      },
+      "danger": {
+        "title": "Danger Zone",
+        "desc": "Once you delete your account, there is no going back. All your matches, messages, and photos will be permanently deleted.",
+        "delete_btn": "Delete Account",
+        "warning": "This action is irreversible. Enter your password to confirm deletion.",
+        "cancel_btn": "Cancel",
+        "confirm_btn": "Permanently Delete"
+      }
+    }
+  },
+  "feed_toggle": {
+    "discover": "Discover",
+    "likes": "Likes"
+  },
+  "genders": {
+      "male": "Male",
+      "female": "Female"
+  },
+  "interests": {
+    "coffee": "Coffee",
+    "fashion": "Fashion",
+    "pets": "Pets",
+    "technology": "Technology",
+    "dancing": "Dancing",
+    "art": "Art",
+    "hiking": "Hiking",
+    "photography": "Photography",
+    "reading": "Reading",
+    "cooking": "Cooking",
+    "gaming": "Gaming",
+    "movies": "Movies",
+    "music": "Music",
+    "fitness": "Fitness",
+    "travel": "Travel"
+  },
+  "intentions": {
+    "still_figuring": "Still figuring it out",
+    "casual_dating": "Casual dating",
+    "new_friends": "New friends",
+    "short_term": "Short-term dating",
+    "long_term": "Long-term relationship"
+  },
+  "backend_messages": {
+    "bot_verification_failed": "Bot verification failed. Please try again.",
+    "age_under_18": "Registration is limited to individuals who are at least 18 years old.",
+    "dob_in_future": "A date of birth cannot be in the future.",
+    "interests_duplicates": "The list of interests contains duplicates.",
+    "interests_min": "Please select at least 2 interests.",
+    "interests_max": "You have selected the maximum number of interests (100).",
+    "photos_min": "Please upload at least 2 photos.",
+    "photos_max": "You can upload up to 4 photos.",
+    "gallery_limit_reached": "Limit of 4 photos. You already have enough.",
+    "old_password_incorrect": "The old password was entered incorrectly.",
+    "passwords_mismatch": "The passwords do not match.",
+    "min_age_greater_than_max": "The minimum age cannot be greater than the maximum age.",
+    "incorrect_password": "Incorrect password.",
+    "email_in_use": "This email address is already in use.",
+    "email_is_current": "This is your current email address.",
+    "link_expired": "The link is invalid or has expired.",
+    "interact_with_self": "You cannot interact with yourself.",
+    "logout_success": "Successful logout.",
+    "account_deleted": "Your account and all associated data have been successfully deleted.",
+    "password_changed": "Your password has been successfully changed.",
+    "account_activated": "Your account has been successfully activated! You can now log in.",
+    "gallery_added": "The photos have been successfully added to the gallery.",
+    "photo_deleted": "The photo has been successfully deleted.",
+    "min_photos_error": "The minimum number of photos is 2. First, upload the new photo before deleting the old one.",
+    "avatar_updated": "Your avatar has been successfully updated.",
+    "avatar_deleted": "The avatar has been successfully deleted.",
+    "no_avatar": "You don't have an avatar set.",
+    "reset_link_sent": "If this email address is registered, we have sent password reset instructions to it.",
+    "email_confirm_sent": "An email containing a confirmation link has been sent to your new address.",
+    "chat_not_found": "Chat room does not exist.",
+    "chat_no_permission": "You do not have permission to view or modify this chat.",
+    "message_or_file_required": "Message or file is required.",
+    "file_too_large": "The file is too large. The maximum size is 10 MB.",
+    "file_format_unsupported": "The file format is not supported.",
+    "message_updated": "Message updated.",
+    "message_deleted": "Message deleted.",
+    "chat_deleted": "Chat successfully deleted."
+  },
+  "theme_toggle": {
+    "light_mode": "Light Mode",
+    "dark_mode": "Dark Mode"
+  }
+}

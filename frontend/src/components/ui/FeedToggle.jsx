@@ -1,8 +1,11 @@
 import React from 'react';
 import { Compass, Heart } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 export function FeedToggle({ isLikesView, setIsLikesView, likesBadge }) {
+  const { t } = useTranslation();
+
   return (
     <div className="relative flex items-center p-1 bg-secondary/50 backdrop-blur-md rounded-full w-72 mx-auto border border-border shadow-inner">
       <div
@@ -19,7 +22,8 @@ export function FeedToggle({ isLikesView, setIsLikesView, likesBadge }) {
           !isLikesView ? "text-primary" : "text-muted-foreground hover:text-foreground"
         )}
       >
-        <Compass size={18} /> Discover
+        <Compass size={18} />
+        {t('feed_toggle.discover')}
       </button>
 
       <button
@@ -30,7 +34,7 @@ export function FeedToggle({ isLikesView, setIsLikesView, likesBadge }) {
         )}
       >
         <Heart size={18} />
-        Likes
+        {t('feed_toggle.likes')}
 
         {likesBadge > 0 && (
           <span className="absolute top-1 right-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white shadow-sm animate-in zoom-in duration-300">

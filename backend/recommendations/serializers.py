@@ -46,7 +46,7 @@ class InteractionSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if self.context['request'].user == data['receiver']:
-            raise serializers.ValidationError("You cannot interact with yourself.")
+            raise serializers.ValidationError("backend_messages.interact_with_self")
         return data
 
 

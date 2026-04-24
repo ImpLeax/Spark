@@ -1,0 +1,76 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-24 21:24+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=5; plural=(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : "
+"4);\n"
+#: user/serializers.py:226
+msgid "Spark: Account Activation"
+msgstr "Spark: Активація конта"
+
+#: user/templates/user/emails/activation_email.html:5
+msgid "Welcome to Spark,"
+msgstr "Просимо до Спарку!"
+
+#: user/templates/user/emails/activation_email.html:8
+msgid ""
+"We are thrilled to have you here. To start swiping and finding your perfect "
+"match, please activate your account by clicking the button below."
+msgstr ""
+"Вельми тішимо сі, же ви до нас завітали. Аби-сьте могли гортати знимки та "
+"знайти собі файну пару, прошу активувати своє конто, тиснучи на ґудзик внизу."
+
+#: user/templates/user/emails/activation_email.html:15
+msgid "Activate Account"
+msgstr "Активувати конто"
+
+#: user/templates/user/emails/activation_email.html:22
+msgid "If the button doesn't work, copy and paste this link into your browser:"
+msgstr ""
+"Якби той ґудзик не фуричив, скопіюйте посилання та вліпіть його в переглядачку:"
+
+#: user/templates/user/emails/base_email.html:29
+msgid "Connecting hearts through technology."
+msgstr "Лучимо серця модерними технологіями."
+
+#: user/templates/user/emails/base_email.html:32
+msgid "All rights reserved."
+msgstr "Всі права застережені."
+
+#: user/templates/user/emails/reset_password_email.html:5
+msgid "Password Reset Request"
+msgstr "Прохання змінити гасло"
+
+#: user/templates/user/emails/reset_password_email.html:8
+msgid ""
+"We received a request to reset the password for your Spark account. If you "
+"didn't make this request, you can safely ignore this email."
+msgstr ""
+"Ми дістали запит на зміну гасла до вашого конта в Спарку. Якшо то не ви таке "
+"втинали, то можете собі тим не мастити голову."
+
+#: user/templates/user/emails/reset_password_email.html:15
+msgid "Reset Password"
+msgstr "Змінити гасло"
+
+#: user/templates/user/emails/reset_password_email.html:22
+msgid "This link will expire soon for your security."
+msgstr "То посилання борзо втратить силу заради вашої ж безпеки."
+
+#: user/views.py:454
+msgid "Spark: Password Recovery"
+msgstr "Spark: Направлення гасла"

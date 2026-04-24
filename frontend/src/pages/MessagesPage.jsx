@@ -8,6 +8,7 @@ import { getAccessToken, API_BASE_URL } from "@/services/axios";
 import { usePresence } from "@/context/PresenceContext";
 import KlipyPicker from "@/components/ui/KlipyPicker";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const getAvatarUrl = (avatarPath, firstName) => {
   if (!avatarPath) return `https://ui-avatars.com/api/?name=${firstName}&background=random&color=fff`;
@@ -23,12 +24,12 @@ const getAttachmentUrl = (url) => {
     return `${cleanBaseUrl}${cleanPath}`;
 };
 
-const getFileNameFromUrl = (url) => {
-    if (!url) return "Attachment";
+const getFileNameFromUrl = (url, fallbackName = "Attachment") => {
+    if (!url) return fallbackName;
     try {
         return decodeURIComponent(url.split('/').pop().split('?')[0]);
     } catch (error) {
-        return "Attachment";
+        return fallbackName;
     }
 };
 
@@ -47,6 +48,8 @@ const sortChats = (chatsArray) => {
 };
 
 const MessagesPage = () => {
+  const { t } = useTranslation();
+
   const {
       onlineUsers,
       newMessageNotification,
@@ -163,7 +166,7 @@ const MessagesPage = () => {
     if (!activeChat) return;
 
     const confirmDelete = window.confirm(
-        `Are you sure you want to unmatch and delete your chat with ${activeChat.partner.first_name}? This cannot be undone.`
+        t('messages_page.alerts.delete_chat_confirm', { name: activeChat.partner.first_name })
     );
 
     if (!confirmDelete) return;
@@ -180,7 +183,7 @@ const MessagesPage = () => {
         setActiveChat(null);
     } catch (error) {
         console.error("Failed to delete chat:", error);
-        alert("Failed to delete chat. Please try again.");
+        alert(t('messages_page.alerts.delete_chat_error'));
     } finally {
         setIsDeletingChat(false);
     }
@@ -482,7 +485,7 @@ const MessagesPage = () => {
     };
 
     ws.current.onclose = (e) => {
-      if (e.code === 4003) alert("You don't have permission to view this chat.");
+      if (e.code === 4003) alert(t('messages_page.alerts.no_permission'));
     };
 
     return () => {
@@ -491,7 +494,7 @@ const MessagesPage = () => {
           ws.current.close();
       }
     };
-  }, [activeChat, flushPendingReads]);
+  }, [activeChat, flushPendingReads, t]);
 
   useEffect(() => {
     const handleClickOutside = () => setContextMenu(null);
@@ -556,7 +559,7 @@ const MessagesPage = () => {
           });
       } catch (error) {
           console.error("Failed to delete message:", error);
-          alert("Failed to delete message.");
+          alert(t('messages_page.alerts.delete_message_error'));
       }
   };
 
@@ -580,7 +583,7 @@ const MessagesPage = () => {
             cancelEditing();
         } catch (error) {
             console.error("Failed to edit message:", error);
-            alert("Failed to edit message.");
+            alert(t('messages_page.alerts.edit_message_error'));
         }
         return;
     }
@@ -607,9 +610,9 @@ const MessagesPage = () => {
             console.error("File upload error: ", error);
             const errorMessage = error.response?.data?.error
                               || error.response?.data?.detail
-                              || "Error uploading file. Check format and size.";
+                              || t('messages_page.alerts.upload_error');
 
-            alert(`Failed to send file: ${errorMessage}`);
+            alert(t('messages_page.alerts.send_file_error', { error: errorMessage }));
         }
     }
     else {
@@ -629,14 +632,14 @@ const MessagesPage = () => {
   };
 
     const getLastMessagePreview = (msg) => {
-      if (!msg) return "New match! Say hello 👋";
+      if (!msg) return t('messages_page.preview.new_match');
 
       if (msg.text) {
-        if (isGifMessage(msg.text)) return "GIF";
+        if (isGifMessage(msg.text)) return t('messages_page.preview.gif');
         return msg.text;
       }
 
-      return "📎 Media";
+      return t('messages_page.preview.media');
     };
 
   const scrollToBottom = (behavior = "smooth") => {
@@ -748,7 +751,7 @@ const MessagesPage = () => {
     <div className="flex h-[100dvh] w-full bg-background overflow-hidden relative">
       <div className="w-full md:w-[320px] lg:w-[380px] flex flex-col border-r border-border bg-card shrink-0 z-10 shadow-sm">
         <div className="p-4 border-b border-border h-[65px] flex items-center shrink-0">
-          <h2 className="text-xl font-bold">Messages</h2>
+          <h2 className="text-xl font-bold">{t('messages_page.header.title')}</h2>
         </div>
 
         <div className="p-3 shrink-0">
@@ -756,7 +759,7 @@ const MessagesPage = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search matches..."
+              placeholder={t('messages_page.search.placeholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-muted/50 pl-9 pr-4 py-2 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-transparent focus:border-border"
@@ -770,12 +773,12 @@ const MessagesPage = () => {
           ) : chats.length === 0 && !searchQuery ? (
             <div className="text-center py-10 text-muted-foreground">
               <MessageCircle className="w-10 h-10 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">No messages yet.<br/>Start swiping to get matches!</p>
+              <p className="text-sm">{t('messages_page.empty.no_messages')}<br/>{t('messages_page.empty.start_swiping')}</p>
             </div>
           ) : chats.length === 0 && searchQuery ? (
             <div className="text-center py-10 text-muted-foreground">
               <Search className="w-8 h-8 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">No results found for your query<br/>"{searchQuery}"</p>
+              <p className="text-sm">{t('messages_page.empty.no_results')}<br/>"{searchQuery}"</p>
             </div>
           ) : (
             chats.map(chat => {
@@ -879,7 +882,7 @@ const MessagesPage = () => {
                     <h3 className="font-semibold text-[15px] leading-tight group-hover:underline decoration-primary underline-offset-2 transition-all">{chatToDisplay.partner.first_name}</h3>
                   </Link>
                   <span className="text-[11px] text-muted-foreground font-medium">
-                      {isOnline(chatToDisplay.partner.id, chatToDisplay.partner.is_online) ? "Online" : "Offline"}
+                      {isOnline(chatToDisplay.partner.id, chatToDisplay.partner.is_online) ? t('messages_page.status.online') : t('messages_page.status.offline')}
                   </span>
                 </div>
               </div>
@@ -888,7 +891,7 @@ const MessagesPage = () => {
                 onClick={handleDeleteChat}
                 disabled={isDeletingChat}
                 className="p-2 text-muted-foreground hover:text-destructive transition-colors rounded-full hover:bg-destructive/10 shrink-0"
-                title="Unmatch & Delete Chat"
+                title={t('messages_page.header.delete_chat_title')}
               >
                 {isDeletingChat ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 className="w-5 h-5" />}
               </button>
@@ -902,7 +905,7 @@ const MessagesPage = () => {
                         className="absolute top-full left-1/2 -translate-x-1/2 z-30 pointer-events-none"
                     >
                         <span className="bg-primary text-primary-foreground text-[11px] font-bold px-4 py-1.5 rounded-full shadow-lg border border-primary-foreground/20 whitespace-nowrap">
-                            New messages
+                            {t('messages_page.toast.new_messages')}
                         </span>
                     </motion.div>
                 )}
@@ -997,7 +1000,7 @@ const MessagesPage = () => {
                                           >
                                               <Paperclip className="w-4 h-4 shrink-0 text-foreground/80" />
                                               <span className="truncate text-[13px] font-medium underline-offset-2 hover:underline">
-                                                  {getFileNameFromUrl(msg.file_url)}
+                                                  {getFileNameFromUrl(msg.file_url, t('messages_page.attachment.default_name'))}
                                               </span>
                                           </a>
                                       )}
@@ -1026,7 +1029,7 @@ const MessagesPage = () => {
                                   </span>
 
                                   {msg.is_edited && (
-                                      <span className="text-[10px] font-medium opacity-80">(edited)</span>
+                                      <span className="text-[10px] font-medium opacity-80">{t('messages_page.message.edited')}</span>
                                   )}
 
                                   {msg.is_mine && (
@@ -1124,7 +1127,7 @@ const MessagesPage = () => {
                         >
                             <div className="flex items-center gap-2 text-primary">
                                 <Edit2 className="w-4 h-4" />
-                                <span className="font-medium">Editing message</span>
+                                <span className="font-medium">{t('messages_page.input.editing')}</span>
                             </div>
                             <button type="button" onClick={cancelEditing} className="text-muted-foreground hover:text-foreground">
                                 <X className="w-4 h-4" />
@@ -1171,7 +1174,7 @@ const MessagesPage = () => {
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Write a message..."
+                    placeholder={t('messages_page.input.placeholder')}
                     className={cn(
                         "flex-1 bg-muted/50 px-4 py-3 rounded-full text-[14px] outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-transparent focus:border-border",
                         editingMessage && "rounded-tl-none border-primary/30 bg-primary/5"
@@ -1204,7 +1207,7 @@ const MessagesPage = () => {
                                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors text-left"
                             >
                                 <Edit2 className="w-4 h-4 text-muted-foreground" />
-                                Edit
+                                {t('messages_page.context_menu.edit')}
                             </button>
                         )}
                         <button
@@ -1212,7 +1215,7 @@ const MessagesPage = () => {
                             className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-destructive/10 text-destructive transition-colors text-left"
                         >
                             <Trash2 className="w-4 h-4" />
-                            Delete
+                            {t('messages_page.context_menu.delete')}
                         </button>
                     </motion.div>
                 )}
@@ -1227,8 +1230,8 @@ const MessagesPage = () => {
           <div className="w-20 h-20 bg-muted/50 rounded-full flex items-center justify-center mb-4">
             <MessageCircle className="w-10 h-10 opacity-40" />
           </div>
-          <h3 className="text-lg font-semibold text-foreground/80">Your messages</h3>
-          <p className="text-sm">Select a conversation to start chatting.</p>
+          <h3 className="text-lg font-semibold text-foreground/80">{t('messages_page.empty.your_messages')}</h3>
+          <p className="text-sm">{t('messages_page.empty.select_conversation')}</p>
         </div>
       )}
     </div>

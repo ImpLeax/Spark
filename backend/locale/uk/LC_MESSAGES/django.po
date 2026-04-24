@@ -1,0 +1,78 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-24 21:24+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != "
+"11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % "
+"100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || "
+"(n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
+#: user/serializers.py:226
+msgid "Spark: Account Activation"
+msgstr "Spark: Активація облікового запису"
+
+#: user/templates/user/emails/activation_email.html:5
+msgid "Welcome to Spark,"
+msgstr "Ласкаво просимо до Spark!"
+
+#: user/templates/user/emails/activation_email.html:8
+msgid ""
+"We are thrilled to have you here. To start swiping and finding your perfect "
+"match, please activate your account by clicking the button below."
+msgstr ""
+"Ми щиро раді вітати вас! Щоб почати гортати профілі та знайти свою ідеальну "
+"пару, будь ласка, активуйте свій обліковий запис, натиснувши кнопку нижче."
+
+#: user/templates/user/emails/activation_email.html:15
+msgid "Activate Account"
+msgstr "Активувати обліковий запис"
+
+#: user/templates/user/emails/activation_email.html:22
+msgid "If the button doesn't work, copy and paste this link into your browser:"
+msgstr ""
+"Якщо кнопка не працює, скопіюйте та вставте це посилання у ваш браузер:"
+
+#: user/templates/user/emails/base_email.html:29
+msgid "Connecting hearts through technology."
+msgstr "Поєднуємо серця за допомогою технологій."
+
+#: user/templates/user/emails/base_email.html:32
+msgid "All rights reserved."
+msgstr "Усі права захищені."
+
+#: user/templates/user/emails/reset_password_email.html:5
+msgid "Password Reset Request"
+msgstr "Запит на скидання пароля"
+
+#: user/templates/user/emails/reset_password_email.html:8
+msgid ""
+"We received a request to reset the password for your Spark account. If you "
+"didn't make this request, you can safely ignore this email."
+msgstr ""
+"Ми отримали запит на скидання пароля для вашого облікового запису Spark. "
+"Якщо ви не робили цього запиту, можете просто ігнорувати цей лист."
+
+#: user/templates/user/emails/reset_password_email.html:15
+msgid "Reset Password"
+msgstr "Скинути пароль"
+
+#: user/templates/user/emails/reset_password_email.html:22
+msgid "This link will expire soon for your security."
+msgstr "З міркувань безпеки термін дії цього посилання скоро закінчиться."
+
+#: user/views.py:454
+msgid "Spark: Password Recovery"
+msgstr "Spark: Відновлення пароля"

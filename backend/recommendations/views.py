@@ -28,7 +28,7 @@ class RecommendationListView(generics.ListAPIView):
         try:
             profile = Profile.objects.select_related('additional_info').get(user=request_user)
         except Profile.DoesNotExist:
-            raise NotFound("Profile not found.")
+            raise NotFound("public_profile.not_found")
 
         setting = getattr(profile, 'settings', None)
 

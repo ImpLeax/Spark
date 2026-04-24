@@ -1,0 +1,78 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-24 21:25+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+#: user/serializers.py:226
+msgid "Spark: Account Activation"
+msgstr "Spark : Activation du compte"
+
+#: user/templates/user/emails/activation_email.html:5
+msgid "Welcome to Spark,"
+msgstr "Bienvenue sur Spark,"
+
+#: user/templates/user/emails/activation_email.html:8
+msgid ""
+"We are thrilled to have you here. To start swiping and finding your perfect "
+"match, please activate your account by clicking the button below."
+msgstr ""
+"Nous sommes ravis de vous accueillir. Pour commencer à swiper et trouver "
+"votre partenaire idéal, veuillez activer votre compte en cliquant sur le "
+"bouton ci-dessous."
+
+#: user/templates/user/emails/activation_email.html:15
+msgid "Activate Account"
+msgstr "Activer le compte"
+
+#: user/templates/user/emails/activation_email.html:22
+msgid "If the button doesn't work, copy and paste this link into your browser:"
+msgstr ""
+"Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre "
+"navigateur :"
+
+#: user/templates/user/emails/base_email.html:29
+msgid "Connecting hearts through technology."
+msgstr "Relier les cœurs grâce à la technologie."
+
+#: user/templates/user/emails/base_email.html:32
+msgid "All rights reserved."
+msgstr "Tous droits réservés."
+
+#: user/templates/user/emails/reset_password_email.html:5
+msgid "Password Reset Request"
+msgstr "Demande de réinitialisation de mot de passe"
+
+#: user/templates/user/emails/reset_password_email.html:8
+msgid ""
+"We received a request to reset the password for your Spark account. If you "
+"didn't make this request, you can safely ignore this email."
+msgstr ""
+"Nous avons reçu une demande de réinitialisation de mot de passe для votre "
+"compte Spark. Si vous n'avez pas effectué cette demande, vous pouvez ignorer "
+"cet e-mail en toute sécurité."
+
+#: user/templates/user/emails/reset_password_email.html:15
+msgid "Reset Password"
+msgstr "Réinitialiser le mot de passe"
+
+#: user/templates/user/emails/reset_password_email.html:22
+msgid "This link will expire soon for your security."
+msgstr "Ce lien expirera bientôt pour votre sécurité."
+
+#: user/views.py:454
+msgid "Spark: Password Recovery"
+msgstr "Spark : Récupération de mot de passe"

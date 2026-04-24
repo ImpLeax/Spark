@@ -19,13 +19,25 @@ import { Badge } from "@/components/ui/badge.jsx";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/Card.jsx";
+import { useTranslation } from "react-i18next";
+
+const intentionKeyMap = {
+  "Still figuring it out": "still_figuring",
+  "Casual dating": "casual_dating",
+  "New friends": "new_friends",
+  "Short-term dating": "short_term",
+  "Long-term relationship": "long_term"
+};
 
 const ProfilePage = () => {
   const [profile, setProfile] = useState(null);
   const [gallery, setGallery] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
-  const [cityName, setCityName] = useState("Loading location...");
+
+  const [locationData, setLocationData] = useState({ status: "loading", city: null });
+
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -49,33 +61,63 @@ const ProfilePage = () => {
     const getCity = async () => {
       const coords = parseLocation(profile?.location);
       if (!coords) {
-        setCityName("Location hidden");
+        setLocationData({ status: "hidden", city: null });
         return;
       }
 
       try {
+        const currentLang = i18n.language?.substring(0, 2) || "en";
+
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${coords.lat}&lon=${coords.lng}&accept-language=en`
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${coords.lat}&lon=${coords.lng}&accept-language=${currentLang}`
         );
         const data = await response.json();
         const city = data.address.city || data.address.town || data.address.village || data.address.state;
-        setCityName(city || "Unknown Location");
+
+        if (city) {
+          setLocationData({ status: "success", city });
+        } else {
+          setLocationData({ status: "unknown", city: null });
+        }
       } catch (error) {
-        setCityName("Location unavailable");
+        setLocationData({ status: "unavailable", city: null });
       }
     };
 
     if (profile?.location) {
       getCity();
+    } else if (profile && !profile.location) {
+      setLocationData({ status: "hidden", city: null });
     }
-  }, [profile]);
+  }, [profile, i18n.language]);
 
   const nextPhoto = () => setActivePhotoIndex((prev) => (prev + 1) % gallery.length);
   const prevPhoto = () => setActivePhotoIndex((prev) => (prev - 1 + gallery.length) % gallery.length);
 
+  const getDisplayLocation = () => {
+    switch (locationData.status) {
+      case "loading": return t('profile_page.location.loading');
+      case "hidden": return t('profile_page.location.hidden');
+      case "unknown": return t('profile_page.location.unknown');
+      case "unavailable": return t('profile_page.location.unavailable');
+      case "success": return locationData.city;
+      default: return "";
+    }
+  };
+
   if (loading) return <ProfileSkeleton />;
 
   const age = calculateAge(profile?.additional_info?.birth_date);
+
+  const translatedLookingFor = profile?.looking_for
+    ? t(`genders.${profile.looking_for.toLowerCase()}`)
+    : t('profile_page.anyone');
+
+  const translatedIntention = profile?.intention?.name
+    ? t(`intentions.${intentionKeyMap[profile.intention.name] || profile.intention.name.toLowerCase()}`)
+    : '';
+
+  const showForText = profile?.intention?.name && profile.intention.name !== "Still figuring it out";
 
   return (
       <motion.div
@@ -121,12 +163,12 @@ const ProfilePage = () => {
                   </div>
                 </>
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-muted-foreground">No photos</div>
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground">{t('profile_page.no_photos')}</div>
               )}
             </div>
 
             <Button className="w-full h-12 md:h-14 rounded-2xl text-base md:text-lg font-bold shadow-sm" variant="outline" onClick={() => window.location.href = '/settings'}>
-              <Settings2 className="mr-2 h-5 w-5" /> Edit Profile
+              <Settings2 className="mr-2 h-5 w-5" /> {t('profile_page.edit_profile')}
             </Button>
           </div>
         </div>
@@ -138,13 +180,15 @@ const ProfilePage = () => {
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-foreground">
                 {profile?.first_name}, <span className="text-muted-foreground font-medium">{age}</span>
               </h1>
-              <Badge variant="secondary" className="text-xs sm:text-sm px-3 py-1 capitalize bg-primary/10 text-primary border-none font-bold">
-                {profile?.gender}
-              </Badge>
+              {profile?.gender && (
+                <Badge variant="secondary" className="text-xs sm:text-sm px-3 py-1 capitalize bg-primary/10 text-primary border-none font-bold">
+                  {t(`genders.${profile.gender.toLowerCase()}`)}
+                </Badge>
+              )}
             </div>
             <div className="flex items-center text-muted-foreground text-base sm:text-lg font-medium">
               <MapPin className="mr-2 h-5 w-5 text-primary" />
-              <span>{cityName}</span>
+              <span>{getDisplayLocation()}</span>
             </div>
           </div>
 
@@ -152,41 +196,61 @@ const ProfilePage = () => {
 
           <section className="space-y-3">
             <h3 className="text-lg sm:text-xl font-bold flex items-center gap-2">
-              <User className="h-5 w-5 text-primary" /> About Me
+              <User className="h-5 w-5 text-primary" /> {t('profile_page.about_me')}
             </h3>
             <p className="text-muted-foreground leading-relaxed text-base sm:text-lg">
-              {profile?.additional_info?.bio || "This user hasn't written a bio yet."}
+              {profile?.additional_info?.bio || t('profile_page.no_bio')}
             </p>
           </section>
 
           <section className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <InfoCard icon={<Heart />} label="Intention" value={profile?.intention?.name} />
-            <InfoCard icon={<Ruler />} label="Height" value={profile?.additional_info?.height ? `${profile.additional_info.height} cm` : null} />
-            <InfoCard icon={<Weight />} label="Weight" value={profile?.additional_info?.weight ? `${profile.additional_info.weight} kg` : null} />
-            <InfoCard icon={<GraduationCap />} label="Education" value={profile?.additional_info?.education} />
-            <InfoCard icon={<Calendar />} label="Joined" value="April 2026" />
+            <InfoCard
+              icon={<Heart />}
+              label={t('profile_page.labels.intention')}
+              value={translatedIntention}
+            />
+            <InfoCard
+              icon={<Ruler />}
+              label={t('profile_page.labels.height')}
+              value={profile?.additional_info?.height ? `${profile.additional_info.height} ${t('profile_page.units.cm')}` : null}
+            />
+            <InfoCard
+              icon={<Weight />}
+              label={t('profile_page.labels.weight')}
+              value={profile?.additional_info?.weight ? `${profile.additional_info.weight} ${t('profile_page.units.kg')}` : null}
+            />
+            <InfoCard
+              icon={<GraduationCap />}
+              label={t('profile_page.labels.education')}
+              value={profile?.additional_info?.education}
+            />
+            <InfoCard
+              icon={<Calendar />}
+              label={t('profile_page.labels.joined')}
+              value={t('profile_page.joined_date')}
+            />
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-lg font-bold">Interests</h3>
+            <h3 className="text-lg font-bold">{t('profile_page.interests_title')}</h3>
             <div className="flex flex-wrap gap-2">
               {profile?.interests?.map((interest) => (
                 <Badge key={interest.id} className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold bg-secondary/80 text-foreground border-none">
-                  {interest.name}
+                  {t(`interests.${interest.name.toLowerCase()}`)}
                 </Badge>
               ))}
             </div>
           </section>
 
-          <Card className="p-5 sm:p-6 bg-linear-to-br from-primary/5 to-secondary/30 border-dashed border-2 rounded-[1.5rem] sm:rounded-[2rem]">
+          <Card className="p-5 sm:p-6 bg-gradient-to-br from-primary/5 to-secondary/30 border-dashed border-2 rounded-[1.5rem] sm:rounded-[2rem]">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-2xl bg-primary/10 text-primary shrink-0">
                 <Heart className="h-6 w-6 fill-current" />
               </div>
               <div className="min-w-0">
-                <h4 className="font-bold text-base sm:text-lg">Looking for</h4>
+                <h4 className="font-bold text-base sm:text-lg">{t('profile_page.looking_for_title')}</h4>
                 <p className="text-muted-foreground text-sm sm:text-base capitalize truncate">
-                  {profile?.looking_for || "Anyone"} {profile?.intention?.name?.toLowerCase() === "still figuring it out." ? "" : `for ${profile?.intention?.name?.toLowerCase()}`}
+                  {translatedLookingFor} {showForText ? `${t('profile_page.for')} ${translatedIntention.toLowerCase()}` : ""}
                 </p>
               </div>
             </div>

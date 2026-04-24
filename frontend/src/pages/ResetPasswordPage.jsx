@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { KeyRound, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import api from "@/services/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-const getErrorMessage = (error, defaultMessage) => {
+const getErrorMessage = (error, defaultMessageKey) => {
   const data = error.response?.data;
   if (data) {
     const firstKey = Object.keys(data)[0];
@@ -16,10 +17,11 @@ const getErrorMessage = (error, defaultMessage) => {
       return data[firstKey];
     }
   }
-  return defaultMessage;
+  return defaultMessageKey;
 };
 
 const ResetPasswordPage = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -34,7 +36,7 @@ const ResetPasswordPage = () => {
     e.preventDefault();
 
     if (passwords.new !== passwords.confirm) {
-      return setMessage({ type: "error", text: "Passwords do not match." });
+      return setMessage({ type: "error", text: t("reset_password_page.errors.passwords_match") });
     }
 
     setIsLoading(true);
@@ -48,12 +50,13 @@ const ResetPasswordPage = () => {
         new_password_confirm: passwords.confirm,
       });
 
-      setMessage({ type: "success", text: response.data.message || "Password reset successfully!" });
+      setMessage({ type: "success", text: t(response.data.message || "reset_password_page.success_message") });
 
       setTimeout(() => navigate("/"), 3000);
 
     } catch (error) {
-      setMessage({ type: "error", text: getErrorMessage(error, "Failed to reset password. The link might be invalid or expired.") });
+      const errorKey = getErrorMessage(error, "reset_password_page.errors.default_fail");
+      setMessage({ type: "error", text: t(errorKey) });
     } finally {
       setIsLoading(false);
     }
@@ -64,10 +67,10 @@ const ResetPasswordPage = () => {
       <div className="min-h-[80vh] flex items-center justify-center px-4">
         <div className="text-center space-y-4">
           <AlertTriangle className="w-12 h-12 text-destructive mx-auto" />
-          <h2 className="text-2xl font-bold">Invalid Reset Link</h2>
-          <p className="text-muted-foreground">This link is missing required parameters.</p>
+          <h2 className="text-2xl font-bold">{t("reset_password_page.invalid_link.title")}</h2>
+          <p className="text-muted-foreground">{t("reset_password_page.invalid_link.desc")}</p>
           <Button asChild variant="outline" className="mt-4">
-            <Link to="/forgot-password">Request New Link</Link>
+            <Link to="/forgot-password">{t("reset_password_page.invalid_link.button")}</Link>
           </Button>
         </div>
       </div>
@@ -85,9 +88,9 @@ const ResetPasswordPage = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
             <KeyRound size={32} />
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight">Set New Password</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">{t("reset_password_page.form.title")}</h1>
           <p className="text-muted-foreground mt-2">
-            Please enter your new password below.
+            {t("reset_password_page.form.subtitle")}
           </p>
         </div>
 
@@ -101,7 +104,7 @@ const ResetPasswordPage = () => {
               <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-2xl flex flex-col items-center gap-3">
                 <CheckCircle2 className="w-8 h-8 text-green-500" />
                 <p className="text-green-600 font-medium">{message.text}</p>
-                <p className="text-sm text-green-600/80">Redirecting to login...</p>
+                <p className="text-sm text-green-600/80">{t("reset_password_page.form.redirecting")}</p>
               </div>
             </motion.div>
           ) : (
@@ -120,10 +123,12 @@ const ResetPasswordPage = () => {
               )}
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">New Password</label>
+                <label className="text-sm font-semibold text-muted-foreground">
+                  {t("reset_password_page.form.new_password_label")}
+                </label>
                 <Input
                   type="password"
-                  placeholder="Enter new password"
+                  placeholder={t("reset_password_page.form.new_password_placeholder")}
                   required
                   value={passwords.new}
                   onChange={(e) => setPasswords({...passwords, new: e.target.value})}
@@ -132,10 +137,12 @@ const ResetPasswordPage = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-muted-foreground">Confirm New Password</label>
+                <label className="text-sm font-semibold text-muted-foreground">
+                  {t("reset_password_page.form.confirm_password_label")}
+                </label>
                 <Input
                   type="password"
-                  placeholder="Confirm new password"
+                  placeholder={t("reset_password_page.form.confirm_password_placeholder")}
                   required
                   value={passwords.confirm}
                   onChange={(e) => setPasswords({...passwords, confirm: e.target.value})}
@@ -144,7 +151,7 @@ const ResetPasswordPage = () => {
               </div>
 
               <Button type="submit" disabled={isLoading || !passwords.new || !passwords.confirm} className="w-full h-12 rounded-xl text-lg font-bold mt-2">
-                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Reset Password"}
+                {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : t("reset_password_page.form.button_submit")}
               </Button>
             </motion.form>
           )}

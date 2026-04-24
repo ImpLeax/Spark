@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, X, Info, MapPin, Sparkles, MessageCircle, User, Sliders } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import api from "@/services/axios";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,14 @@ const playMatchSound = () => {
   const audio = new Audio('/sounds/match.mp3');
   audio.volume = 0.5;
   audio.play().catch(e => console.log('Audio play blocked by browser:', e));
+};
+
+const intentionKeyMap = {
+  "Still figuring it out": "still_figuring",
+  "Casual dating": "casual_dating",
+  "New friends": "new_friends",
+  "Short-term dating": "short_term",
+  "Long-term relationship": "long_term"
 };
 
 const CardSkeleton = () => (
@@ -54,6 +63,7 @@ const SwipeFeedback = ({ type }) => {
 };
 
 const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
+  const { t } = useTranslation();
   const [gallery, setGallery] = useState([]);
   const [photoIndex, setPhotoIndex] = useState(0);
 
@@ -80,6 +90,10 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
   };
 
   const currentPhoto = gallery.length > 0 ? gallery[photoIndex]?.photo : profile.avatar;
+
+  const translatedIntention = profile.intention
+    ? t(`intentions.${intentionKeyMap[profile.intention] || profile.intention.toLowerCase()}`)
+    : '';
 
   return (
     <motion.div
@@ -122,7 +136,7 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center bg-secondary/50 text-muted-foreground">
             <User size={64} className="mb-4 opacity-50" />
-            <span className="font-medium">No Photo</span>
+            <span className="font-medium">{t("recommendations_page.profile_card.no_photo")}</span>
           </div>
         )}
 
@@ -135,13 +149,13 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
 
         {profile.distance_km !== undefined && profile.distance_km !== null && (
           <div className="absolute top-6 left-4 px-3 py-1.5 bg-black/40 backdrop-blur-md text-white rounded-full text-xs font-bold flex items-center gap-1.5 z-20 pointer-events-none">
-            <MapPin size={14} /> {profile.distance_km} km away
+            <MapPin size={14} /> {t("recommendations_page.profile_card.km_away", { distance: profile.distance_km })}
           </div>
         )}
 
         {profile.shared_interests_score !== undefined && (
           <div className="absolute top-6 right-4 px-3 py-1.5 bg-primary/90 backdrop-blur-md text-white rounded-full text-xs font-black flex items-center gap-1.5 shadow-lg z-20 pointer-events-none">
-            <Sparkles size={14} /> {profile.shared_interests_score}% Match
+            <Sparkles size={14} /> {t("recommendations_page.profile_card.match_percent", { score: profile.shared_interests_score })}
           </div>
         )}
       </div>
@@ -153,7 +167,7 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
               {profile.first_name}, {profile.age}
             </h2>
             <p className="text-white/80 font-medium text-sm mt-1 drop-shadow-md line-clamp-2">
-              {profile.bio || "No bio available."}
+              {profile.bio || t("recommendations_page.profile_card.no_bio")}
             </p>
           </div>
 
@@ -169,7 +183,7 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
 
         {profile.intention && (
           <Badge variant="secondary" className="bg-white/20 text-white border-0 backdrop-blur-sm pointer-events-auto">
-            Looking for: {profile.intention}
+            {t("recommendations_page.profile_card.looking_for", { intention: translatedIntention })}
           </Badge>
         )}
       </div>
@@ -178,6 +192,7 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
 };
 
 const RecommendationsPage = () => {
+  const { t } = useTranslation();
   const [isLikesView, setIsLikesView] = useState(false);
   const [profiles, setProfiles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -311,8 +326,8 @@ const RecommendationsPage = () => {
 
         <p className="text-sm text-muted-foreground font-medium">
           {isLikesView
-            ? "People who already liked you"
-            : "Discover new people around you"}
+            ? t("recommendations_page.feed.subtitle_likes")
+            : t("recommendations_page.feed.subtitle_discover")}
         </p>
       </div>
 
@@ -328,11 +343,11 @@ const RecommendationsPage = () => {
               <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mx-auto mb-6">
                 <Sparkles className="w-10 h-10 text-muted-foreground" />
               </div>
-              <h3 className="text-2xl font-bold">No profiles left</h3>
+              <h3 className="text-2xl font-bold">{t("recommendations_page.empty_state.title")}</h3>
               <p className="text-muted-foreground">
                 {isLikesView
-                  ? "You haven't received any new likes yet. Keep swiping!"
-                  : "You've seen everyone nearby. Try adjusting your search settings or check back later."}
+                  ? t("recommendations_page.empty_state.desc_likes")
+                  : t("recommendations_page.empty_state.desc_discover")}
               </p>
 
               {!isLikesView && maxDistance !== null && maxDistance < 5000 && (
@@ -347,16 +362,16 @@ const RecommendationsPage = () => {
                       <MapPin size={18} />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground">Want more matches?</h4>
+                      <h4 className="font-semibold text-foreground">{t("recommendations_page.empty_state.more_matches_title")}</h4>
                       <p className="text-sm text-muted-foreground mt-1 mb-4">
-                        Try expanding your search distance. You are currently looking within {maxDistance} km.
+                        {t("recommendations_page.empty_state.more_matches_desc", { maxDistance })}
                       </p>
                       <Button
                         onClick={() => navigate('/settings')}
                         variant="default"
                         className="w-full rounded-xl shadow-sm"
                       >
-                        <Sliders className="w-4 h-4 mr-2" /> Adjust Distance
+                        <Sliders className="w-4 h-4 mr-2" /> {t("recommendations_page.empty_state.adjust_distance_btn")}
                       </Button>
                     </div>
                   </div>
@@ -420,9 +435,11 @@ const RecommendationsPage = () => {
             >
               <div className="space-y-2">
                 <h2 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 animate-pulse">
-                  It's a Match!
+                  {t("recommendations_page.match_modal.title")}
                 </h2>
-                <p className="text-lg text-white/70">You and {matchData.first_name} liked each other.</p>
+                <p className="text-lg text-white/70">
+                  {t("recommendations_page.match_modal.subtitle", { firstName: matchData.first_name })}
+                </p>
               </div>
 
               <div className="relative w-40 h-40 mx-auto">
@@ -449,7 +466,7 @@ const RecommendationsPage = () => {
                   }}
                   className="w-full h-14 rounded-2xl bg-white text-black hover:bg-white/90 text-lg font-bold"
                 >
-                  <MessageCircle className="mr-2 h-5 w-5" /> Say Hello
+                  <MessageCircle className="mr-2 h-5 w-5" /> {t("recommendations_page.match_modal.say_hello_btn")}
                 </Button>
 
                 <Button
@@ -457,7 +474,7 @@ const RecommendationsPage = () => {
                   variant="ghost"
                   className="w-full h-14 rounded-2xl text-white/70 hover:text-white hover:bg-white/10 text-lg"
                 >
-                  Keep Swiping
+                  {t("recommendations_page.match_modal.keep_swiping_btn")}
                 </Button>
               </div>
             </motion.div>

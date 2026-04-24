@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Sun, Moon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 export function ThemeToggle({ isCollapsed = false }) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => setMounted(true), []);
 
@@ -54,7 +56,7 @@ export function ThemeToggle({ isCollapsed = false }) {
 
       {!isCollapsed && (
         <span className="ml-4 text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors truncate">
-          {isDark ? "Dark Mode" : "Light Mode"}
+          {isDark ? t('theme_toggle.dark_mode') : t('theme_toggle.light_mode')}
         </span>
       )}
     </div>

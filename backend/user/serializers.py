@@ -17,6 +17,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.core import signing
 from psycopg2.extras import NumericRange
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.utils.translation import gettext as _
 
 from recommendations.models import Interactions
 from .models import Profile, Info, Gender, Interest, ProfileInterest, RelationshipIntention, Photo, Setting
@@ -33,7 +36,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     cf_turnstile_response = serializers.CharField(
         write_only=True,
         required=True,
-        error_messages={'required': 'Please complete the bot verification.'}
+        error_messages={'required': 'backend_messages.bot_verification_failed'}
     )
 
     first_name = serializers.CharField(
@@ -75,8 +78,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         min_length=2,
         max_length=100,
         error_messages={
-            'min_length': 'Please select at least 2 interests.',
-            'max_length': 'You have selected the maximum number of interests (100).'
+            'min_length': 'backend_messages.interests_min',
+            'max_length': 'backend_messages.interests_max'
         }
     )
 
@@ -86,8 +89,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         min_length=2,
         max_length=4,
         error_messages={
-            'min_length': 'Please upload at least 2 photos.',
-            'max_length': 'You can upload up to 4 photos.',
+            'min_length': 'backend_messages.photos_min',
+            'max_length': 'backend_messages.photos_max',
         }
     )
 
@@ -117,9 +120,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             with urllib.request.urlopen(req) as response:
                 result = json.loads(response.read().decode())
                 if not result.get('success'):
-                    raise serializers.ValidationError("Bot verification failed. Please try again.")
+                    raise serializers.ValidationError("backend_messages.bot_verification_failed")
         except Exception:
-            raise serializers.ValidationError("Unable to verify Turnstile token. Please try again.")
+            raise serializers.ValidationError("backend_messages.bot_verification_failed")
 
         return value
 
@@ -137,16 +140,16 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         age = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
 
         if age < 18:
-            raise serializers.ValidationError("Registration is limited to individuals who are at least 18 years old.")
+            raise serializers.ValidationError("backend_messages.age_under_18")
 
         if value > today:
-            raise serializers.ValidationError("A date of birth cannot be in the future.")
+            raise serializers.ValidationError("backend_messages.dob_in_future")
 
         return value
 
     def validate_interests(self, value):
         if len(value) != len(set(value)):
-            raise serializers.ValidationError("The list of interests contains duplicates.")
+            raise serializers.ValidationError("backend_messages.interests_duplicates")
 
         return value
 
@@ -203,8 +206,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             for image in photos
         ])
 
-        #The email account activation process
-
         uid = urlsafe_base64_encode(force_bytes(user.pk))
 
         token = default_token_generator.make_token(user)
@@ -214,11 +215,23 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
         print(f"\n\nClear activation link: {activation_link}\n\n")
 
+        context = {
+            'first_name': first_name,
+            'action_url': activation_link,
+        }
+
+        html_message = render_to_string('user/emails/activation_email.html', context)
+        plain_message = strip_tags(html_message)
+
+        subject = _("Spark: Account Activation")
+
         send_mail(
-            subject="Spark account activation",
-            message=f"Hi, {first_name}! Click the link below to activate your account:\n{activation_link}",
-            from_email="noreply@spark.com",
+            subject=subject,
+            message=plain_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
+            html_message=html_message,
+            fail_silently=False,
         )
 
         return user
@@ -240,13 +253,13 @@ class ChangePasswordSerializer(serializers.Serializer):
         user = self.context['request'].user
 
         if not user.check_password(value):
-            raise serializers.ValidationError("The old password was entered incorrectly.")
+            raise serializers.ValidationError("backend_messages.old_password_incorrect")
         return value
 
     def validate(self, attrs):
         if attrs['new_password'] != attrs['new_password_confirm']:
             raise serializers.ValidationError(
-                {"new_password_confirm": "The new passwords do not match."}
+                {"new_password_confirm": "backend_messages.passwords_mismatch"}
             )
         return attrs
 
@@ -412,14 +425,14 @@ class ProfileInterestsUpdateSerializer(serializers.Serializer):
         min_length=2,
         max_length=100,
         error_messages={
-            'min_length': 'Select at least 2 interests.',
-            'max_length': 'You can select up to 100 interests.'
+            'min_length': 'backend_messages.interests_min',
+            'max_length': 'backend_messages.interests_max'
         }
     )
 
     def validate_interest_ids(self, value):
         if len(value) != len(set(value)):
-            raise serializers.ValidationError("The list of interests contains duplicates.")
+            raise serializers.ValidationError("backend_messages.interests_duplicates")
         return value
 
     def update(self, instance, validated_data):
@@ -459,11 +472,7 @@ class GalleryAddSerializer(serializers.Serializer):
         new_count = len(value)
 
         if current_count + new_count > 4:
-            allowed_to_add = 4 - current_count
-            raise DjangoValidationError(
-                f"Limit of 4 photos. You already have {current_count}. "
-                f"You can add up to {allowed_to_add}."
-            )
+            raise DjangoValidationError("backend_messages.gallery_limit_reached")
         return value
 
     def create(self, validated_data):
@@ -542,7 +551,7 @@ class SettingsSerializer(serializers.ModelSerializer):
 
             if new_min > new_max:
                 raise serializers.ValidationError({
-                    'min_age': 'The minimum age cannot be greater than the maximum age.'
+                    'min_age': 'backend_messages.min_age_greater_than_max'
                 })
 
             instance.age_range = NumericRange(new_min, new_max + 1)
@@ -561,7 +570,7 @@ class AccountDeleteSerializer(serializers.Serializer):
         user = self.context['request'].user
 
         if not user.check_password(value):
-            raise serializers.ValidationError("Incorrect password. Deletion canceled.")
+            raise serializers.ValidationError("backend_messages.incorrect_password")
         return value
 
 
@@ -592,7 +601,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
 
         if attrs['new_password'] != attrs['new_password_confirm']:
             raise serializers.ValidationError(
-                {"new_password_confirm": "The passwords do not match."}
+                {"new_password_confirm": "backend_messages.passwords_mismatch"}
             )
 
         try:
@@ -600,11 +609,11 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             raise serializers.ValidationError(
-                {"uidb64": "Invalid user ID."}
+                {"uidb64": "backend_messages.link_expired"}
             )
 
         if not default_token_generator.check_token(user, attrs['token']):
-            raise serializers.ValidationError({"token": "The token is invalid or has expired."})
+            raise serializers.ValidationError({"token": "backend_messages.link_expired"})
 
         self.context['user'] = user
         return attrs
@@ -619,17 +628,17 @@ class EmailChangeRequestSerializer(serializers.Serializer):
     def validate_password(self, value):
         user = self.context['request'].user
         if not user.check_password(value):
-            raise serializers.ValidationError("Incorrect password.")
+            raise serializers.ValidationError("backend_messages.incorrect_password")
         return value
 
     def validate_new_email(self, value):
         User = get_user_model()
 
         if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("This email address is already in use.")
+            raise serializers.ValidationError("backend_messages.email_in_use")
 
         if value == self.context['request'].user.email:
-            raise serializers.ValidationError("This is your current email address.")
+            raise serializers.ValidationError("backend_messages.email_is_current")
         return value
 
 
@@ -643,9 +652,9 @@ class EmailChangeConfirmSerializer(serializers.Serializer):
             data = signing.loads(value, salt='email-change', max_age=86400)
             return data
         except signing.SignatureExpired:
-            raise serializers.ValidationError("The link has expired. Please try again.")
+            raise serializers.ValidationError("backend_messages.link_expired")
         except signing.BadSignature:
-            raise serializers.ValidationError("Invalid link.")
+            raise serializers.ValidationError("backend_messages.link_expired")
 
 
 class GoogleAuthSerializer(serializers.Serializer):
