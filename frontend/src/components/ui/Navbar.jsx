@@ -85,7 +85,8 @@ const Navbar = ({ onLoginClick }) => {
     { code: 'de', label: 'Deutsch' },
     { code: 'fr', label: 'Français' },
     { code: 'es', label: 'Español' },
-    { code: 'ja', label: '日本語' }
+    { code: 'ja', label: '日本語' },
+    { code: 'cz', label: 'Česká' }
   ];
 
   const changeLang = (code) => {
@@ -148,12 +149,16 @@ const Navbar = ({ onLoginClick }) => {
       <div className="max-w-7xl mx-auto px-5 py-3 flex justify-between items-center">
 
         <div className="flex items-center gap-4">
-          <Link to="/">
-            <h1 className="leading-none flex items-center">
-              <span className="text-3xl md:text-4xl text-transparent font-bold bg-gradient-to-bl dark:from-red-600 dark:to-chart-1 from-pink-400 to-gray-400 bg-clip-text">
-                Spark
-              </span>
-            </h1>
+          <Link to="/" className="flex items-center gap-2">
+            <img
+              src="/spark.png"
+              alt="Spark logo"
+              className="w-8 h-8 md:w-10 md:h-10 object-contain"
+            />
+
+            <span className="text-3xl md:text-4xl font-bold text-transparent bg-gradient-to-bl dark:from-red-600 dark:to-chart-1 from-pink-400 to-gray-400 bg-clip-text">
+              Spark
+            </span>
           </Link>
         </div>
 
@@ -213,7 +218,7 @@ const Navbar = ({ onLoginClick }) => {
       </div>
 
       <AnimatePresence>
-        {isOpen && isLandingPage && (
+        {isOpen && (isLandingPage || isTeamPage) && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -221,32 +226,36 @@ const Navbar = ({ onLoginClick }) => {
             className="md:hidden border-t overflow-hidden bg-primary-foreground dark:bg-background"
           >
             <div className="flex flex-col px-5 py-6 gap-6 shadow-inner">
-              <a
-                href="#offers"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollTo("offers");
-                }}
-                className="text-xl font-medium cursor-pointer hover:text-primary transition-colors"
-              >
-                {t('navbar.offers', 'What we offer')}
-              </a>
-              <a
-                href="#about"
-                onClick={(e) => {
-                  e.preventDefault();
-                  scrollTo("about");
-                }}
-                className="text-xl font-medium cursor-pointer hover:text-primary transition-colors"
-              >
-                {t('navbar.about', 'About')}
-              </a>
+              {!isTeamPage && (
+                <>
+                <a
+                  href="#offers"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollTo("offers");
+                  }}
+                  className="text-xl font-medium cursor-pointer hover:text-primary transition-colors"
+                >
+                  {t('navbar.offers', 'What we offer')}
+                </a>
+                <a
+                  href="#about"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollTo("about");
+                  }}
+                  className="text-xl font-medium cursor-pointer hover:text-primary transition-colors"
+                >
+                  {t('navbar.about', 'About')}
+                </a>
+                </>
+              )}
 
               <div className="flex flex-col gap-3 mt-2">
                 <span className="text-sm text-muted-foreground font-semibold uppercase tracking-wider">
                   {t('navbar.language', 'Language')}
                 </span>
-                <div className="flex gap-2 p-1 bg-muted/50 rounded-xl border border-border/50">
+                <div className="grid grid-cols-2 gap-2 p-2 bg-muted/50 rounded-xl border border-border/50">
                   {languages.map((lang) => {
                     const isActive = i18n.language?.startsWith(lang.code);
                     return (
@@ -254,13 +263,13 @@ const Navbar = ({ onLoginClick }) => {
                         key={lang.code}
                         onClick={() => changeLang(lang.code)}
                         className={cn(
-                          "flex-1 py-2.5 rounded-lg text-sm font-medium transition-all",
+                          "w-full py-2.5 px-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center text-center",
                           isActive
                             ? "bg-background shadow-sm text-primary"
-                            : "text-muted-foreground hover:text-foreground"
+                            : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                         )}
                       >
-                        {lang.label}
+                        <span className="truncate">{lang.label}</span>
                       </button>
                     );
                   })}
@@ -273,9 +282,10 @@ const Navbar = ({ onLoginClick }) => {
                     {t('navbar.signup', 'Sign up')}
                   </Button>
                 </Link>
-                <Button onClick={handleLoginClick} className="w-full text-lg py-6">
-                  {t('navbar.login', 'Login')}
-                </Button>
+                {isTeamPage
+                  ? (<Link to="/"><Button className="w-full text-lg py-6">{t('navbar.login', 'Login')}</Button></Link>)
+                  : (<Button onClick={handleLoginClick} className="w-full text-lg py-6">{t('navbar.login', 'Login')}</Button>)
+                }
               </div>
             </div>
           </motion.div>

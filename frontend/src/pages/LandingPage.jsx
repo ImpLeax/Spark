@@ -5,8 +5,10 @@ import { useTheme } from "next-themes";
 import { Sparkles, Heart, MessageCircle, Shield, Users, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useTitle } from "@/hooks/useTitle.js"
 
 function LandingPage() {
+    useTitle();
     const { theme } = useTheme();
     const { t } = useTranslation();
 

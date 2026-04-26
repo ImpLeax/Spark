@@ -1,4 +1,16 @@
 {
+  "activate_account": "Activate account",
+  "confirm_email_change": "Confirm Email Change",
+  "title_forgot_password": "Forgot Password",
+  "messages": "Messages",
+  "page_not_found": "Page Not Found",
+  "my_profile": "My Profile",
+  "profile": "Profile",
+  "settings": "Settings",
+  "team": "Team",
+  "recommendations": "Recommendations",
+  "reset_password": "Reset Password",
+  "sign_up": "Sign Up",
   "landing": {
     "hero": {
       "title": "DATING FOR EVERYONE EASY AND FAST"
@@ -83,7 +95,8 @@
     "signup": "Sign up",
     "login": "Login",
     "offers": "What we offer",
-    "about": "About"
+    "about": "About",
+    "language": "Language"
   },
   "login_form": {
     "title": "Login to your account",
@@ -631,5 +644,12 @@
   "theme_toggle": {
     "light_mode": "Light Mode",
     "dark_mode": "Dark Mode"
+  },
+  "success_page": {
+    "title": "Check your email!",
+    "description": "We've sent a verification link to your email address. Please click it to activate your account.",
+    "spam_notice": "If you don't see the email in your inbox, please check your Spam or Promotions folder.",
+    "open_mail_app": "Open Mail App",
+    "back_to_home": "Return to Home"
   }
 }

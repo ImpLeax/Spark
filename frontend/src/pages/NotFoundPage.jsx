@@ -2,8 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Ghost } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import {useTitle} from "@/hooks/useTitle.js";
 
 const NotFoundPage = () => {
+  useTitle("page_not_found");
   const { t } = useTranslation();
 
   return (

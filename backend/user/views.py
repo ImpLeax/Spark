@@ -491,6 +491,7 @@ class PasswordResetConfirmView(generics.GenericAPIView):
 class EmailChangeRequestView(generics.GenericAPIView):
     """View class for email change requests."""
 
+    throttle_classes = []
     throttle_scope = 'email_change'
     permission_classes = (IsAuthenticated, )
     serializer_class = EmailChangeRequestSerializer
@@ -499,12 +500,20 @@ class EmailChangeRequestView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
+        user = request.user
+        new_email = serializer.validated_data['new_email']
+
+        if new_email == user.email:
+            return Response(
+                {"message": "Email is the same"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         throttle = ScopedRateThrottle()
+
         if not throttle.allow_request(request, self):
             raise Throttled(wait=throttle.wait())
 
-        user = request.user
-        new_email = serializer.validated_data['new_email']
 
         payload = {
             'user_id': user.id,
@@ -518,11 +527,19 @@ class EmailChangeRequestView(generics.GenericAPIView):
 
         print(f'\nClear confirm link: {confirm_link}\n')
 
+        context = {
+            "user": user,
+            "confirmation_url": confirm_link
+        }
+
+        html_message = render_to_string('user/emails/change_email.html', context)
+
         send_mail(
-            subject='Verifying a new email address in Spark',
+            subject=_('Verifying a new email address in Spark'),
             message=f"You have requested a change of email address. To confirm, please click the link below:\n{confirm_link}\n\nIf this wasn't you, please ignore this email.",
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[new_email],
+            html_message=html_message,
             fail_silently=False,
         )
 

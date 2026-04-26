@@ -23,7 +23,8 @@ const SidebarLangSwitcher = ({ isCollapsed }) => {
     { code: 'de', label: 'Deutsch', short: 'DE' },
     { code: 'fr', label: 'Français', short: 'FR' },
     { code: 'es', label: 'Español', short: 'ES' },
-    { code: 'ja', label: '日本語', short: 'JA' }
+    { code: 'ja', label: '日本語', short: 'JA' },
+    { code: 'cz', label: 'Česká', short: 'CZ' }
   ];
 
   useEffect(() => {
@@ -224,14 +225,18 @@ const Sidebar = ({ render, isCollapsed, setIsCollapsed }) => {
         <div className="flex items-center h-[65px] px-4 shrink-0 relative overflow-hidden">
           <AnimatePresence>
             {!isCollapsed && (
-              <motion.span
+              <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
-                className="absolute left-6 text-2xl font-bold bg-gradient-to-bl dark:from-red-600 dark:to-chart-1 from-pink-400 to-gray-400 bg-clip-text text-transparent"
+                className="absolute left-6 flex items-center gap-2"
               >
-                Spark
-              </motion.span>
+                <img src="/spark.png" alt="Spark logo" className="w-6 h-6" />
+
+                <span className="text-2xl font-bold bg-gradient-to-bl dark:from-red-600 dark:to-chart-1 from-pink-400 to-gray-400 bg-clip-text text-transparent">
+                  Spark
+                </span>
+              </motion.div>
             )}
           </AnimatePresence>
 

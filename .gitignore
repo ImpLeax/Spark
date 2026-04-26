@@ -15,11 +15,16 @@ wheels/
 
 #static
 staticfiles/
-backend/test_data_db.json
 tests/
 docker-compose.backend.yml
 docker-compose.yml
+docker-compose.db.yml
 Dockerfile
+django.mo
+backend/.dockerignore
+backend/Dockerfile
+frontend/Dockerfile
+backend/media/users/user_481
 
 # Logs
 frontend/logs

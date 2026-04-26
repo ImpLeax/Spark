@@ -10,7 +10,7 @@ import { GlobalErrorFallback } from '@/components/GlobalErrorFallback';
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
-        <GoogleOAuthProvider clientId="74432426884-096ougegask5p8529sbk2ptfbnsj2u1k.apps.googleusercontent.com">
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
             <BrowserRouter>
                 <ErrorBoundary fallback={<GlobalErrorFallback />}>
                   <App />

@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/Card.jsx";
 import { useTranslation } from "react-i18next";
+import {useTitle} from "@/hooks/useTitle.js";
 
 const intentionKeyMap = {
   "Still figuring it out": "still_figuring",
@@ -30,6 +31,7 @@ const intentionKeyMap = {
 };
 
 const ProfilePage = () => {
+  useTitle("my_profile");
   const [profile, setProfile] = useState(null);
   const [gallery, setGallery] = useState([]);
   const [loading, setLoading] = useState(true);

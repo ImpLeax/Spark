@@ -75,3 +75,24 @@ msgstr "Por tu seguridad, este enlace caducará pronto."
 #: user/views.py:454
 msgid "Spark: Password Recovery"
 msgstr "Spark: Recuperación de contraseña"
+
+msgid "Confirm your new email address"
+msgstr "Confirma tu nueva dirección de correo electrónico"
+
+msgid "Hello"
+msgstr "Hola"
+
+msgid "We received a request to change the email address associated with your Spark account. To complete this process and verify your new email, please click the button below:"
+msgstr "Recibimos una solicitud para cambiar la dirección de correo electrónico asociada con tu cuenta de Spark. Para completar este proceso y verificar tu nuevo correo, haz clic en el botón de abajo:"
+
+msgid "Confirm New Email"
+msgstr "Confirmar nuevo correo"
+
+msgid "If the button above doesn't work, copy and paste this link into your browser:"
+msgstr "Si el botón de arriba no funciona, copia y pega este enlace en tu navegador:"
+
+msgid "If you did not request this change, you can safely ignore this email. Someone might have typed your address by mistake."
+msgstr "Si no solicitaste este cambio, puedes ignorar este correo electrónico de forma segura. Es posible que alguien haya escrito tu dirección por error."
+
+msgid "The Spark Team"
+msgstr "El equipo de Spark"

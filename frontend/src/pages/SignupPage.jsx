@@ -1,6 +1,8 @@
 import { SignupForm } from "@/components/index";
+import {useTitle} from "@/hooks/useTitle.js";
 
 function SignUp() {
+  useTitle("sign_up");
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col items-center justify-center py-5 px-4 sm:px-6 lg:px-8">
       <SignupForm />

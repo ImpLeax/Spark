@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from '@/components/index';
@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 export function SignupForm({ className, ...props }) {
+  const navigate = useNavigate();
   const location = useLocation();
   const googleData = location.state?.googleData;
 
@@ -250,7 +251,7 @@ export function SignupForm({ className, ...props }) {
       const response = await api.post("user/register/", formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
-      window.location.href = "/";
+      navigate('/success', { state: { email: email } });
     } catch (error) {
       console.error("Registration Error:", error.response?.data);
       if (turnstileRef.current) {

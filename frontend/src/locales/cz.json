@@ -1,0 +1,655 @@
+{
+  "activate_account": "Aktivovat účet",
+  "confirm_email_change": "Potvrdit změnu e-mailu",
+  "title_forgot_password": "Zapomenuté heslo",
+  "messages": "Zprávy",
+  "page_not_found": "Stránka nenalezena",
+  "my_profile": "Můj profil",
+  "profile": "Profil",
+  "settings": "Nastavení",
+  "team": "Tým",
+  "recommendations": "Doporučení",
+  "reset_password": "Obnovit heslo",
+  "sign_up": "Zaregistrovat se",
+  "landing": {
+    "hero": {
+      "title": "SEZNAMOVÁNÍ PRO VŠECHNY, SNADNO A RYCHLE"
+    },
+    "stats": {
+      "active_users": "Aktivní uživatelé",
+      "matches": "Úspěšné shody",
+      "couples": "Šťastné páry",
+      "support": "Živá podpora"
+    },
+    "why_choose": {
+      "title": "Proč si vybrat Spark?",
+      "subtitle": "Inovace se setkává se skutečným spojením.",
+      "f1": {
+        "title": "Chytré propojování",
+        "desc": "Náš chytrý algoritmus analyzuje vaše zájmy, aby našel ty nejkompatibilnější shody."
+      },
+      "f2": {
+        "title": "Bezpečné a soukromé",
+        "desc": "Vaše data jsou šifrována. Chatujte až po vzájemné shodě."
+      },
+      "f3": {
+        "title": "Chat v reálném čase",
+        "desc": "Okamžitá upozornění a plynulé zasílání zpráv."
+      },
+      "f4": {
+        "title": "Společné zájmy",
+        "desc": "Systém štítků vám pomůže najít lidi se stejnými koníčky."
+      },
+      "f5": {
+        "title": "Neustálé učení",
+        "desc": "Algoritmus se vyvíjí na základě vašich preferencí."
+      },
+      "f6": {
+        "title": "Kouzlo shody",
+        "desc": "Získejte okamžité upozornění, když s vámi někdo naváže spojení."
+      }
+    },
+    "how_it_works": {
+      "title": "Jak to funguje?",
+      "s1": {
+        "title": "Registrace",
+        "desc": "Vytvořte si účet během několika minut."
+      },
+      "s2": {
+        "title": "Profil",
+        "desc": "Přidejte fotky a podělte se o svůj příběh."
+      },
+      "s3": {
+        "title": "Objevujte",
+        "desc": "Dejte lajk profilům, které vás zaujmou."
+      },
+      "s4": {
+        "title": "Chatujte",
+        "desc": "Začněte si povídat po vzájemné shodě."
+      }
+    },
+    "footer": {
+      "desc": "Spojujeme srdce pomocí technologií. Najděte svou jiskru kdekoli a kdykoli.",
+      "company": {
+        "title": "Společnost",
+        "about": "O nás",
+        "team": "Tým",
+        "careers": "Kariéra"
+      },
+      "support": {
+        "title": "Podpora",
+        "help": "Centrum nápovědy",
+        "safety": "Bezpečnost",
+        "contact": "Kontakt"
+      },
+      "legal": {
+        "title": "Právní informace",
+        "terms": "Podmínky použití",
+        "privacy": "Zásady ochrany osobních údajů",
+        "cookie": "Zásady používání souborů cookie"
+      },
+      "copyright": "© 2026 Spark. Všechna práva vyhrazena."
+    }
+  },
+  "navbar": {
+    "signup": "Zaregistrovat se",
+    "login": "Přihlásit se",
+    "offers": "Co nabízíme",
+    "about": "O nás",
+    "language": "Jazyk"
+  },
+  "login_form": {
+    "title": "Přihlaste se ke svému účtu",
+    "description": "Zadejte své uživatelské jméno nebo e-mail níže pro přihlášení",
+    "username_label": "Uživatelské jméno nebo e-mail",
+    "username_placeholder": "uzivatelskejmeno nebo m@priklad.cz",
+    "password_label": "Heslo",
+    "forgot_password": "Zapomenuté heslo?",
+    "error_429": "Příliš mnoho pokusů, zkuste to znovu za minutu.",
+    "error_unauthorized": "Nesprávné uživatelské jméno nebo heslo.",
+    "error_server": "Došlo k chybě serveru.",
+    "error_google": "Ověření přes Google selhalo.",
+    "login_button": "Přihlásit se",
+    "google_button": "Přihlásit se pomocí Googlu",
+    "no_account": "Nemáte účet?",
+    "sign_up": "Zaregistrovat se"
+  },
+  "signup_form": {
+    "title": "Vytvořte si účet",
+    "subtitle": "Připojte se ke Sparku a najděte svou perfektní shodu ještě dnes.",
+    "sections": {
+      "personal": "Osobní údaje",
+      "dating": "Seznamovací profil",
+      "photos": "Fotky",
+      "photos_desc": "Přidejte 2 až 4 fotky, abyste vynikli."
+    },
+    "labels": {
+      "first_name": "Jméno",
+      "last_name": "Příjmení",
+      "surname": "Další jméno",
+      "dob": "Datum narození",
+      "username": "Uživatelské jméno",
+      "email": "E-mailová adresa",
+      "password": "Heslo",
+      "confirm_password": "Potvrdit heslo",
+      "gender": "Pohlaví",
+      "looking_for": "Hledám",
+      "intention": "Záměr",
+      "interests": "Zájmy",
+      "location": "Poloha"
+    },
+    "placeholders": {
+      "intention": "Vyberte svůj záměr...",
+      "interests": "Vyberte své zájmy...",
+      "selected": "vybráno",
+      "select_min_2": "Vyberte alespoň 2"
+    },
+    "location": {
+      "get": "Získat aktuální polohu",
+      "locating": "Zjišťování polohy...",
+      "saved": "Poloha uložena"
+    },
+    "errors": {
+      "captcha": "Projděte prosím ověřením proti botům.",
+      "captcha_error": "Při ověřování bota došlo k chybě. Obnovte prosím stránku.",
+      "photos": "Nahrajte alespoň 2 fotky do políček vpravo.",
+      "passwords_match": "Hesla se neshodují.",
+      "dob": "Vyberte prosím datum narození.",
+      "interests": "Vyberte prosím alespoň 2 zájmy.",
+      "location": "Nelze získat polohu. Povolte přístup v prohlížeči.",
+      "429": "Příliš mnoho pokusů, zkuste to znovu za minutu.",
+      "general": "Registrace selhala. Zkuste to prosím znovu."
+    },
+    "buttons": {
+      "create": "Vytvořit účet",
+      "creating": "Vytváření účtu..."
+    },
+    "links": {
+      "already_have": "Už máte účet?",
+      "login": "Přihlásit se",
+      "back": "Zpět na hlavní stránku"
+    },
+    "modals": {
+      "intention_title": "Co hledáte?",
+      "intention_desc": "Vyberte svůj vztahový záměr.",
+      "interests_title": "Co vás baví?",
+      "interests_desc": "Vyberte své zájmy pro lepší shody.",
+      "loading": "Načítání...",
+      "loading_interests": "Načítání zájmů...",
+      "done": "Hotovo"
+    }
+  },
+  "datepicker": {
+    "pick_a_date": "Vyberte datum",
+    "change_year": "Kliknutím změníte rok"
+  },
+  "cropper": {
+    "title": "Upravit fotku",
+    "zoom": "Přiblížit",
+    "cancel": "Zrušit",
+    "processing": "Zpracovává se...",
+    "apply": "Použít"
+  },
+  "klipy_picker": {
+    "search_placeholder": "Hledat GIF...",
+    "close": "Zavřít",
+    "loading": "Načítání...",
+    "nothing_found": "Nic nenalezeno 😕",
+    "api_online": "API je online",
+    "powered_by": "Poháněno KLIPY"
+  },
+  "sidebar": {
+    "discover": "Objevovat",
+    "messages": "Zprávy",
+    "my_profile": "Můj profil",
+    "settings": "Nastavení",
+    "logout": "Odhlásit se"
+  },
+  "sidebar_profile": {
+    "user": "Uživatel",
+    "na": "NA",
+    "not_available": "N/A",
+    "gender": "Pohlaví",
+    "seeking": "Hledá"
+  },
+  "global_error": {
+    "title": "Něco se pokazilo!",
+    "description": "Pracujeme na opravě tohoto problému.",
+    "button": "Přejít na domovskou stránku"
+  },
+  "activation_page": {
+    "initial_message": "Aktivace vašeho účtu...",
+    "success_message": "Váš účet byl úspěšně aktivován!",
+    "error_message": "Aktivační odkaz je neplatný nebo vypršel. Zkuste se prosím zaregistrovat znovu.",
+    "invalid_format": "Neplatný formát aktivačního odkazu.",
+    "title_loading": "Aktivace účtu",
+    "title_success": "Účet aktivován!",
+    "title_error": "Aktivace selhala",
+    "wait_message": "Počkejte prosím, než ověříme vaše údaje...",
+    "button_login": "Přejít na přihlášení",
+    "button_home": "Zpět na domovskou stránku"
+  },
+  "email_confirm_page": {
+    "initial_message": "Ověřování vaší nové e-mailové adresy...",
+    "success_message": "Vaše e-mailová adresa byla úspěšně aktualizována.",
+    "error_message": "Potvrzovací odkaz je neplatný nebo vypršel. Zkuste prosím zažádat o nový.",
+    "invalid_request": "Neplatný požadavek. V URL chybí token.",
+    "title_loading": "Potvrzování e-mailu",
+    "title_success": "E-mail aktualizován!",
+    "title_error": "Ověření selhalo",
+    "wait_message": "Počkejte prosím, než aktualizujeme váš účet...",
+    "button_settings": "Zpět do Nastavení",
+    "button_home": "Návrat na domovskou stránku"
+  },
+  "forgot_password": {
+    "title": "Zapomenuté heslo?",
+    "description": "Zadejte svou e-mailovou adresu a my vám zašleme odkaz na obnovení hesla.",
+    "email_label": "E-mailová adresa",
+    "email_placeholder": "jmeno@priklad.cz",
+    "button_send": "Odeslat odkaz na obnovení",
+    "button_return_login": "Návrat na přihlášení",
+    "back_to_login": "Zpět na přihlášení",
+    "error_fallback": "Odeslání odkazu na obnovení selhalo. Zkuste to prosím znovu."
+  },
+  "messages_page": {
+    "header": {
+      "title": "Zprávy",
+      "delete_chat_title": "Zrušit shodu a smazat chat"
+    },
+    "search": {
+      "placeholder": "Hledat shody..."
+    },
+    "empty": {
+      "no_messages": "Zatím žádné zprávy.",
+      "start_swiping": "Začněte swipovat a získejte shody!",
+      "no_results": "Pro váš dotaz nebyly nalezeny žádné výsledky",
+      "select_conversation": "Vyberte konverzaci a začněte chatovat.",
+      "your_messages": "Vaše zprávy"
+    },
+    "status": {
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "preview": {
+      "new_match": "Nová shoda! Řekněte ahoj 👋",
+      "gif": "GIF",
+      "media": "📎 Média"
+    },
+    "message": {
+      "edited": "(upraveno)"
+    },
+    "input": {
+      "placeholder": "Napište zprávu...",
+      "editing": "Úprava zprávy"
+    },
+    "context_menu": {
+      "edit": "Upravit",
+      "delete": "Smazat"
+    },
+    "toast": {
+      "new_messages": "Nové zprávy"
+    },
+    "attachment": {
+      "default_name": "Příloha"
+    },
+    "alerts": {
+      "delete_chat_confirm": "Opravdu chcete zrušit shodu a smazat chat s uživatelem {{name}}? Tuto akci nelze vrátit zpět.",
+      "delete_chat_error": "Smazání chatu selhalo. Zkuste to prosím znovu.",
+      "no_permission": "Nemáte oprávnění k prohlížení tohoto chatu.",
+      "delete_message_error": "Smazání zprávy selhalo.",
+      "edit_message_error": "Úprava zprávy selhala.",
+      "upload_error": "Chyba při nahrávání souboru. Zkontrolujte formát a velikost.",
+      "send_file_error": "Odeslání souboru selhalo: {{error}}"
+    }
+  },
+  "not_found": {
+    "title": "Jejda! Stránka nenalezena.",
+    "description": "Stránka, kterou hledáte, mohla být odstraněna, byl změněn její název nebo je dočasně nedostupná.",
+    "button": "Zpět na domovskou stránku"
+  },
+  "profile_page": {
+    "location": {
+      "loading": "Načítání polohy...",
+      "hidden": "Poloha skryta",
+      "unknown": "Neznámá poloha",
+      "unavailable": "Poloha nedostupná"
+    },
+    "no_photos": "Žádné fotky",
+    "edit_profile": "Upravit profil",
+    "about_me": "O mně",
+    "no_bio": "Tento uživatel o sobě zatím nic nenapsal.",
+    "labels": {
+      "intention": "Záměr",
+      "height": "Výška",
+      "weight": "Váha",
+      "education": "Vzdělání",
+      "joined": "Připojen/a"
+    },
+    "units": {
+      "cm": "cm",
+      "kg": "kg"
+    },
+    "interests_title": "Zájmy",
+    "looking_for_title": "Hledám",
+    "anyone": "Kohokoli",
+    "for": "pro",
+    "joined_date": "Duben 2026"
+  },
+  "public_profile": {
+    "location": {
+      "loading": "Načítání polohy...",
+      "hidden": "Poloha skryta",
+      "unknown": "Neznámá poloha",
+      "unavailable": "Poloha nedostupná"
+    },
+    "no_photos": "Žádné fotky",
+    "buttons": {
+      "back": "Zpět",
+      "liked": "Oblíbené",
+      "incompatible": "Nekompatibilní",
+      "like": "To se mi líbí"
+    },
+    "not_found": "Profil nenalezen.",
+    "about": "O mně",
+    "no_bio": "Tento uživatel o sobě zatím nic nenapsal.",
+    "labels": {
+      "intention": "Záměr",
+      "height": "Výška",
+      "weight": "Váha",
+      "education": "Vzdělání",
+      "joined": "Připojen/a"
+    },
+    "units": {
+      "cm": "cm",
+      "kg": "kg"
+    },
+    "interests": "Zájmy",
+    "looking_for": "Hledám",
+    "anyone": "Kohokoli",
+    "for": "pro",
+    "joined_date": "Duben 2026",
+    "match": {
+      "title": "To je shoda!",
+      "subtitle": "Vy a {{name}} se sobě navzájem líbíte.",
+      "say_hello": "Říct ahoj",
+      "close": "Zavřít"
+    }
+  },
+  "reset_password_page": {
+    "errors": {
+      "passwords_match": "Hesla se neshodují.",
+      "default_fail": "Obnovení hesla selhalo. Odkaz může být neplatný nebo mu vypršela platnost."
+    },
+    "success_message": "Heslo bylo úspěšně obnoveno!",
+    "invalid_link": {
+      "title": "Neplatný odkaz pro obnovení",
+      "desc": "V tomto odkazu chybí požadované parametry.",
+      "button": "Požádat o nový odkaz"
+    },
+    "form": {
+      "title": "Nastavit nové heslo",
+      "subtitle": "Níže zadejte své nové heslo.",
+      "redirecting": "Přesměrování na přihlášení...",
+      "new_password_label": "Nové heslo",
+      "new_password_placeholder": "Zadejte nové heslo",
+      "confirm_password_label": "Potvrďte nové heslo",
+      "confirm_password_placeholder": "Potvrďte nové heslo",
+      "button_submit": "Obnovit heslo"
+    }
+  },
+  "team_page": {
+    "title": {
+      "start": "Seznamte se s",
+      "highlight": "tvůrci",
+      "end": "za Sparkem"
+    },
+    "subtitle": "Jsme trojice nadšených inženýrů posedlých čistým kódem, škálovatelnou architekturou a budováním produktů, které spojují lidi.",
+    "members": {
+      "volodymyr": {
+        "name": "Volodymyr Bondarchuk",
+        "role": "Full-stack webový vývojář, ověřovací a profilové systémy",
+        "bio": "Specialista na bezpečnou infrastrukturu a uživatelskou identitu. Volodymyr navrhl základní autentizační systémy a dynamickou správu profilů ve Sparku. Se zaměřením na integritu dat zajišťuje, že cesta každého uživatele začíná bezpečně, robustně a bleskově rychle."
+      },
+      "maxim": {
+        "name": "Maxim Naiduik",
+        "role": "Full-stack webový vývojář, systém doporučení",
+        "bio": "Algoritmický mozek za logikou shod ve Sparku. Maxim se specializuje na vývoj komplexních doporučovacích enginů, které přeměňují uživatelské preference ve smysluplná spojení. Zajišťuje, aby naši uživatelé našli vysoce kompatibilní shody s maximální přesností."
+      },
+      "nazar": {
+        "name": "Nazar Kholonivets",
+        "role": "Full-stack webový vývojář, chaty a systémy v reálném čase",
+        "bio": "Odborník na komunikaci s nízkou latencí a interaktivitu v reálném čase. Nazar zkonstruoval chatovací architekturu s vysokou souběžností a systémy okamžitých oznámení pomocí pokročilé technologie WebSocket. Zajišťuje, aby každá interakce na platformě probíhala okamžitě a digitální spojení působila živě."
+      }
+    }
+  },
+  "recommendations_page": {
+    "profile_card": {
+      "no_photo": "Žádná fotka",
+      "km_away": "{{distance}} km daleko",
+      "match_percent": "Shoda {{score}} %",
+      "no_bio": "Žádný životopis.",
+      "looking_for": "Hledá: {{intention}}"
+    },
+    "feed": {
+      "subtitle_likes": "Lidé, kterým se už líbíte",
+      "subtitle_discover": "Objevte nové lidi ve svém okolí"
+    },
+    "empty_state": {
+      "title": "Nezbyly žádné profily",
+      "desc_likes": "Zatím jste nedostali žádné nové lajky. Swipujte dál!",
+      "desc_discover": "Už jste viděli všechny v okolí. Zkuste upravit nastavení vyhledávání nebo se vraťte později.",
+      "more_matches_title": "Chcete více shod?",
+      "more_matches_desc": "Zkuste rozšířit vzdálenost vyhledávání. Aktuálně hledáte v okruhu {{maxDistance}} km.",
+      "adjust_distance_btn": "Upravit vzdálenost"
+    },
+    "match_modal": {
+      "title": "To je shoda!",
+      "subtitle": "Vy a {{firstName}} se sobě navzájem líbíte.",
+      "say_hello_btn": "Říct ahoj",
+      "keep_swiping_btn": "Pokračovat ve swipování"
+    }
+  },
+  "settings_page": {
+    "header": {
+      "title": "Nastavení",
+      "subtitle": "Spravujte své preference a zabezpečení účtu."
+    },
+    "tabs": {
+      "profile": "Upravit profil",
+      "discovery": "Objevování",
+      "account": "Účet a zabezpečení"
+    },
+    "profile": {
+      "title": "Nastavení profilu",
+      "messages": {
+        "avatar_success": "Avatar byl úspěšně aktualizován!",
+        "avatar_fail": "Nahrání avatara selhalo.",
+        "gallery_success": "Fotka byla úspěšně přidána!",
+        "gallery_fail": "Nahrání fotky selhalo.",
+        "avatar_removed": "Avatar byl odstraněn.",
+        "avatar_remove_fail": "Odstranění avatara selhalo.",
+        "gallery_deleted": "Fotka byla smazána.",
+        "gallery_delete_fail": "Smazání fotky selhalo.",
+        "min_interests": "Vyberte prosím alespoň 2 zájmy.",
+        "info_success": "Informace o profilu byly úspěšně aktualizovány!",
+        "info_fail": "Aktualizace informací o profilu selhala.",
+        "location_success": "Nová poloha je připravena k uložení.",
+        "location_fail": "Nelze získat polohu. Zkontrolujte oprávnění prohlížeče."
+      },
+      "avatar": {
+        "title": "Profilový avatar",
+        "desc": "Toto je vaše hlavní fotka identity.",
+        "change_btn": "Změnit avatara",
+        "remove_btn": "Odstranit"
+      },
+      "gallery": {
+        "title": "Galerie fotek",
+        "desc": "Přidejte 2 až 4 fotky, kterými ukážete svou osobnost.",
+        "add_btn": "Přidat fotku",
+        "empty": "Žádné fotky v galerii."
+      },
+      "basic_info": {
+        "title": "Základní informace",
+        "first_name": "Jméno",
+        "last_name": "Příjmení",
+        "surname": "Další jméno (po otci)",
+        "bio": "O mně",
+        "bio_placeholder": "Řekněte nám něco o sobě...",
+        "intention": "Záměr",
+        "select_intention": "Vyberte záměr...",
+        "interests": "Zájmy",
+        "interests_selected": "{{count}} vybráno",
+        "select_interests": "Vyberte zájmy...",
+        "height": "Výška (cm)",
+        "weight": "Váha (kg)",
+        "location": "Poloha",
+        "locating": "Zjišťování polohy...",
+        "location_pinned": "Nová poloha označena",
+        "location_update": "Aktualizovat mou polohu",
+        "location_desc": "Aktualizujte to, pokud jste se přestěhovali, abyste našli lidi blíž k vám.",
+        "save_btn": "Uložit informace"
+      },
+      "modals": {
+        "intention_title": "Co hledáte?",
+        "intention_desc": "Vyberte svůj vztahový záměr.",
+        "loading": "Načítání...",
+        "done": "Hotovo",
+        "interests_title": "Co vás baví?",
+        "interests_desc": "Vyberte své zájmy pro lepší shody. ({{count}}/10)",
+        "loading_interests": "Načítání zájmů..."
+      }
+    },
+    "discovery": {
+      "title": "Předvolby objevování",
+      "messages": {
+        "success": "Nastavení objevování byla úspěšně aktualizována!",
+        "fail": "Aktualizace nastavení selhala. Zkuste to znovu."
+      },
+      "max_distance": "Maximální vzdálenost",
+      "distance_unit": "{{distance}} km",
+      "age_range": "Věkové rozpětí",
+      "age_unit": "{{min}} - {{max}} let",
+      "min_age": "Min. věk",
+      "max_age": "Max. věk",
+      "save_btn": "Uložit preference"
+    },
+    "account": {
+      "messages": {
+        "pwd_match_fail": "Nová hesla se neshodují.",
+        "pwd_success": "Heslo bylo úspěšně změněno. Přihlaste se prosím znovu.",
+        "pwd_fail": "Změna hesla selhala.",
+        "email_fail": "Žádost o změnu e-mailu selhala.",
+        "delete_fail": "Smazání účtu selhalo."
+      },
+      "details": {
+        "title": "Podrobnosti o účtu",
+        "username": "Uživatelské jméno",
+        "email": "E-mailová adresa"
+      },
+      "password": {
+        "title": "Změnit heslo",
+        "current": "Aktuální heslo",
+        "new": "Nové heslo",
+        "confirm": "Potvrdit nové heslo",
+        "update_btn": "Aktualizovat heslo"
+      },
+      "email": {
+        "title": "Změnit e-mail",
+        "desc": "Na novou adresu zašleme potvrzovací odkaz.",
+        "new": "Nová e-mailová adresa",
+        "confirm_pwd": "Aktuální heslo (pro potvrzení)",
+        "update_btn": "Požádat o změnu e-mailu"
+      },
+      "danger": {
+        "title": "Nebezpečná zóna",
+        "desc": "Jakmile svůj účet smažete, není cesty zpět. Všechny vaše shody, zprávy a fotky budou trvale smazány.",
+        "delete_btn": "Smazat účet",
+        "warning": "Tato akce je nevratná. Zadejte heslo pro potvrzení smazání.",
+        "cancel_btn": "Zrušit",
+        "confirm_btn": "Trvale smazat"
+      }
+    }
+  },
+  "feed_toggle": {
+    "discover": "Objevovat",
+    "likes": "Lajky"
+  },
+  "genders": {
+    "male": "Muž",
+    "female": "Žena"
+  },
+  "interests": {
+    "coffee": "Káva",
+    "fashion": "Móda",
+    "pets": "Domácí mazlíčci",
+    "technology": "Technologie",
+    "dancing": "Tanec",
+    "art": "Umění",
+    "hiking": "Pěší turistika",
+    "photography": "Fotografování",
+    "reading": "Čtení",
+    "cooking": "Vaření",
+    "gaming": "Hraní her",
+    "movies": "Filmy",
+    "music": "Hudba",
+    "fitness": "Fitness",
+    "travel": "Cestování"
+  },
+  "intentions": {
+    "still_figuring": "Zatím nevím",
+    "casual_dating": "Nezávazné randění",
+    "new_friends": "Noví přátelé",
+    "short_term": "Krátkodobý vztah",
+    "long_term": "Dlouhodobý vztah"
+  },
+  "backend_messages": {
+    "bot_verification_failed": "Ověření robota selhalo. Zkuste to prosím znovu.",
+    "age_under_18": "Registrace je omezena na osoby starší 18 let.",
+    "dob_in_future": "Datum narození nemůže být v budoucnosti.",
+    "interests_duplicates": "Seznam zájmů obsahuje duplicity.",
+    "interests_min": "Vyberte prosím alespoň 2 zájmy.",
+    "interests_max": "Vybrali jste maximální počet zájmů (100).",
+    "photos_min": "Nahrajte prosím alespoň 2 fotky.",
+    "photos_max": "Můžete nahrát až 4 fotky.",
+    "gallery_limit_reached": "Limit 4 fotek byl dosažen. Už jich máte dost.",
+    "old_password_incorrect": "Staré heslo bylo zadáno nesprávně.",
+    "passwords_mismatch": "Hesla se neshodují.",
+    "min_age_greater_than_max": "Minimální věk nemůže být vyšší než maximální věk.",
+    "incorrect_password": "Nesprávné heslo.",
+    "email_in_use": "Tato e-mailová adresa se již používá.",
+    "email_is_current": "Toto je vaše aktuální e-mailová adresa.",
+    "link_expired": "Odkaz je neplatný nebo vypršel.",
+    "interact_with_self": "Nemůžete komunikovat sami se sebou.",
+    "logout_success": "Úspěšné odhlášení.",
+    "account_deleted": "Váš účet a všechna přidružená data byla úspěšně smazána.",
+    "password_changed": "Vaše heslo bylo úspěšně změněno.",
+    "account_activated": "Váš účet byl úspěšně aktivován! Nyní se můžete přihlásit.",
+    "gallery_added": "Fotky byly úspěšně přidány do galerie.",
+    "photo_deleted": "Fotka byla úspěšně smazána.",
+    "min_photos_error": "Minimální počet fotek je 2. Nejprve nahrajte novou fotku a poté smažte starou.",
+    "avatar_updated": "Váš avatar byl úspěšně aktualizován.",
+    "avatar_deleted": "Avatar byl úspěšně smazán.",
+    "no_avatar": "Nemáte nastaveného avatara.",
+    "reset_link_sent": "Pokud je tato e-mailová adresa zaregistrována, zaslali jsme na ni pokyny k obnovení hesla.",
+    "email_confirm_sent": "E-mail obsahující potvrzovací odkaz byl odeslán na vaši novou adresu.",
+    "chat_not_found": "Chatovací místnost neexistuje.",
+    "chat_no_permission": "Nemáte oprávnění prohlížet nebo upravovat tento chat.",
+    "message_or_file_required": "Je vyžadována zpráva nebo soubor.",
+    "file_too_large": "Soubor je příliš velký. Maximální velikost je 10 MB.",
+    "file_format_unsupported": "Formát souboru není podporován.",
+    "message_updated": "Zpráva byla aktualizována.",
+    "message_deleted": "Zpráva byla smazána.",
+    "chat_deleted": "Chat byl úspěšně smazán."
+  },
+  "theme_toggle": {
+    "light_mode": "Světlý režim",
+    "dark_mode": "Tmavý režim"
+  },
+  "success_page": {
+  "title": "Zkontroluj si e-mail!",
+  "description": "Na tvou e-mailovou adresu jsme poslali ověřovací odkaz. Kliknutím na něj aktivuješ svůj účet.",
+  "spam_notice": "Pokud e-mail nevidíš v doručené poště, zkontroluj složku Spam nebo Promo akce.",
+  "open_mail_app": "Otevřít e-mailovou aplikaci",
+  "back_to_home": "Zpět na hlavní stránku"
+}
+}

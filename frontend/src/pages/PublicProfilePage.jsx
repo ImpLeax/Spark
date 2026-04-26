@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/Card.jsx";
 import { useTranslation } from "react-i18next";
+import {useTitle} from "@/hooks/useTitle.js";
 
 const playMatchSound = () => {
   const audio = new Audio('/sounds/match.mp3');
@@ -38,9 +39,14 @@ const intentionKeyMap = {
 };
 
 const PublicProfilePage = () => {
+  const [TitleName, setTitleName] = useState("");
   const { userId } = useParams();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
+
+  useEffect(() => {
+    document.title = `Spark - ${TitleName} ${t("profile")}`;
+  }, [TitleName, t, i18n.language]);
 
   const [profile, setProfile] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
@@ -62,6 +68,7 @@ const PublicProfilePage = () => {
           api.get("user/profile/").catch(() => ({ data: null }))
         ]);
 
+        setTitleName(profileRes.data.first_name);
         setProfile(profileRes.data);
         setGallery(galleryRes.data);
         setCurrentUser(currentUserRes.data);

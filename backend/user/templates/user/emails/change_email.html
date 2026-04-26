@@ -1,0 +1,41 @@
+{% extends "user/emails/base_email.html" %}
+{% load i18n %}
+
+{% block content %}
+<h2 style="margin: 0 0 20px; font-size: 22px; font-weight: 700; color: #18181b; text-align: center;">
+    {% trans "Confirm your new email address" %}
+</h2>
+
+<p style="margin: 0 0 15px; font-size: 16px; line-height: 1.5;">
+    {% trans "Hello" %}, {{ user.first_name|default:user.username }}!
+</p>
+
+<p style="margin: 0 0 20px; font-size: 16px; line-height: 1.5;">
+    {% trans "We received a request to change the email address associated with your Spark account. To complete this process and verify your new email, please click the button below:" %}
+</p>
+
+<table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td align="center" style="padding: 20px 0;">
+            <a href="{{ confirmation_url }}" style="background-color: #ec4899; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(236, 72, 153, 0.3);">
+                {% trans "Confirm New Email" %}
+            </a>
+        </td>
+    </tr>
+</table>
+
+<p style="margin: 25px 0 15px; font-size: 14px; line-height: 1.5; color: #71717a;">
+    {% trans "If the button above doesn't work, copy and paste this link into your browser:" %}<br>
+    <a href="{{ confirmation_url }}" style="color: #ec4899; word-break: break-all;">{{ confirmation_url }}</a>
+</p>
+
+<hr style="border: 0; border-top: 1px solid #e4e4e7; margin: 30px 0;">
+
+<p style="margin: 0; font-size: 13px; line-height: 1.5; color: #a1a1aa; text-align: center;">
+    {% trans "If you did not request this change, you can safely ignore this email. Someone might have typed your address by mistake." %}
+</p>
+
+<p style="margin: 15px 0 0; font-size: 14px; font-weight: 600; text-align: center; color: #18181b;">
+    {% trans "The Spark Team" %}
+</p>
+{% endblock %}

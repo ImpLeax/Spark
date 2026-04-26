@@ -1,4 +1,16 @@
 {
+  "activate_account": "Konto aktivieren",
+  "confirm_email_change": "E-Mail-Änderung bestätigen",
+  "title_forgot_password": "Passwort vergessen",
+  "messages": "Nachrichten",
+  "page_not_found": "Seite nicht gefunden",
+  "my_profile": "Mein Profil",
+  "profile": "Profil",
+  "settings": "Einstellungen",
+  "team": "Team",
+  "recommendations": "Empfehlungen",
+  "reset_password": "Passwort zurücksetzen",
+  "sign_up": "Registrieren",
   "landing": {
     "hero": {
       "title": "DATING FÜR ALLE, EINFACH UND SCHNELL"
@@ -83,7 +95,8 @@
     "signup": "Registrieren",
     "login": "Anmelden",
     "offers": "Was wir bieten",
-    "about": "Über uns"
+    "about": "Über uns",
+    "language": "Sprache"
   },
   "login_form": {
     "title": "Melde dich bei deinem Konto an",
@@ -631,5 +644,12 @@
   "theme_toggle": {
     "light_mode": "Heller Modus",
     "dark_mode": "Dunkler Modus"
-  }
+  },
+  "success_page": {
+  "title": "Überprüfe deine E-Mails!",
+  "description": "Wir haben einen Bestätigungslink an deine E-Mail-Adresse gesendet. Bitte klicke darauf, um dein Konto zu aktivieren.",
+  "spam_notice": "Wenn du die E-Mail nicht im Posteingang findest, überprüfe bitte deinen Spam- oder Werbeordner.",
+  "open_mail_app": "E-Mail-App öffnen",
+  "back_to_home": "Zurück zur Startseite"
+}
 }

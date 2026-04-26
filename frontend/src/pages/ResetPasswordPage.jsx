@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import api from "@/services/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {useTitle} from "@/hooks/useTitle.js";
 
 const getErrorMessage = (error, defaultMessageKey) => {
   const data = error.response?.data;
@@ -21,6 +22,7 @@ const getErrorMessage = (error, defaultMessageKey) => {
 };
 
 const ResetPasswordPage = () => {
+  useTitle("reset_password");
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();

@@ -9,6 +9,7 @@ import { usePresence } from "@/context/PresenceContext";
 import KlipyPicker from "@/components/ui/KlipyPicker";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import {useTitle} from "@/hooks/useTitle.js";
 
 const getAvatarUrl = (avatarPath, firstName) => {
   if (!avatarPath) return `https://ui-avatars.com/api/?name=${firstName}&background=random&color=fff`;
@@ -48,6 +49,7 @@ const sortChats = (chatsArray) => {
 };
 
 const MessagesPage = () => {
+  useTitle("messages");
   const { t } = useTranslation();
 
   const {

@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/Card.jsx";
 import { cn } from "@/lib/utils";
+import {useTitle} from "@/hooks/useTitle.js";
 
 const intentionKeyMap = {
   "Still figuring it out": "still_figuring",
@@ -69,6 +70,7 @@ const FormMessage = ({ msg }) => (
 );
 
 const SettingsPage = () => {
+  useTitle("settings");
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("profile");
 

@@ -25,24 +25,50 @@ load_dotenv(BASE_DIR.parent / '.env')
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = getenv('SECRET_KEY')
+SECRET_KEY = os.environ["SECRET_KEY"]
 TURNSTILE_SECRET_KEY = getenv('TURNSTILE_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ['*']
+if DEBUG:
+    ALLOWED_HOSTS = ["*"]
+else:
+    ALLOWED_HOSTS = [h for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h]
 
-INTERNAL_IPS = ["127.0.0.1"]
+if DEBUG:
+    INTERNAL_IPS = ["127.0.0.1", "172.17.0.1"]
 
-FRONTEND_URL = os.environ.get('FRONTEND_URL', getenv("FRONTEND_URL"))
+FRONTEND_URL = os.getenv("FRONTEND_URL")
 RESET_PASSWORD_PATH = os.environ.get('RESET_PASSWORD_PATH', getenv("RESET_PASSWORD_PATH"))
 CHANGE_EMAIL_PATH = os.environ.get('CHANGE_EMAIL_PATH', getenv("CHANGE_EMAIL_PATH"))
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-]
+if DEBUG:
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
+else:
+    CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+
 CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    o for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o
+]
+
+if DEBUG:
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+else:
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = "DENY"
+    SECURE_SSL_REDIRECT = True
 
 # Application definition
 
@@ -109,7 +135,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [(os.environ.get('REDIS_HOST', '127.0.0.1'), 6379)],
         },
     },
 }
@@ -117,7 +143,7 @@ CHANNEL_LAYERS = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": f"redis://{os.environ.get('REDIS_HOST', '127.0.0.1')}:6379/1",
     }
 }
 

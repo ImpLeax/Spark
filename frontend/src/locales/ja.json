@@ -1,4 +1,16 @@
 {
+  "activate_account": "アカウントを有効化する",
+  "confirm_email_change": "メール変更を確認する",
+  "title_forgot_password": "パスワードをお忘れですか？",
+  "messages": "メッセージ",
+  "page_not_found": "ページが見つかりません",
+  "my_profile": "マイプロフィール",
+  "profile": "プロフィール",
+  "settings": "設定",
+  "team": "チーム",
+  "recommendations": "おすすめ",
+  "reset_password": "パスワードをリセット",
+  "sign_up": "新規登録",
   "landing": {
     "hero": {
       "title": "誰もが簡単・スピーディーに出会える"
@@ -83,7 +95,8 @@
     "signup": "登録",
     "login": "ログイン",
     "offers": "提供するサービス",
-    "about": "概要"
+    "about": "概要",
+    "language": "言語"
   },
   "login_form": {
     "title": "アカウントにログイン",
@@ -631,5 +644,12 @@
   "theme_toggle": {
     "light_mode": "ライトモード",
     "dark_mode": "ダークモード"
-  }
+  },
+  "success_page": {
+  "title": "メールを確認してください！",
+  "description": "入力されたメールアドレスに確認リンクを送信しました。リンクをクリックしてアカウントを有効にしてください。",
+  "spam_notice": "受信トレイにメールが見当たらない場合は、迷惑メールやプロモーションのフォルダを確認してください。",
+  "open_mail_app": "メールアプリを開く",
+  "back_to_home": "ホームに戻る"
+}
 }

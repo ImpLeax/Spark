@@ -18,6 +18,7 @@ import PublicProfilePage from "@/pages/PublicProfilePage.jsx";
 import MessagesPage from "@/pages/MessagesPage.jsx";
 import TeamPage from "@/pages/TeamPage.jsx";
 import NotFoundPage from "@/pages/NotFoundPage.jsx";
+import SuccessRegistrationPage from "@/pages/SuccessRegistrationPage.jsx";
 
 const AppContent = () => {
   const { isAuthenticated } = useAuth();
@@ -63,6 +64,7 @@ const AppContent = () => {
             <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
             <Route path="/team" element={<PublicRoute><TeamPage /></PublicRoute>} />
             <Route path="/signup" element={<PublicRoute><SignupPage /></PublicRoute>} />
+            <Route path="/success" element={<RegistrationSuccessRoute><SuccessRegistrationPage /></RegistrationSuccessRoute>}/>
             <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordPage /></PublicRoute>} />
             <Route path="/reset-password" element={<PublicRoute><ResetPasswordPage /></PublicRoute>} />
             <Route path="/activate/:uid/:token" element={<PublicRoute><ActivationPage /></PublicRoute>} />
@@ -88,6 +90,21 @@ const PublicRoute = ({ children }) => {
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? children : <Navigate to="/" replace />;
+};
+
+const RegistrationSuccessRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  if (isAuthenticated) {
+    return <Navigate to="/recommendations" replace />;
+  }
+
+  if (!location.state?.email) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 };
 
 function App() {

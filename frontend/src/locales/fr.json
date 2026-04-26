@@ -1,4 +1,16 @@
 {
+"activate_account": "Activer le compte",
+  "confirm_email_change": "Confirmer le changement d'e-mail",
+  "title_forgot_password": "Mot de passe oublié",
+  "messages": "Messages",
+  "page_not_found": "Page non trouvée",
+  "my_profile": "Mon profil",
+  "profile": "Profil",
+  "settings": "Paramètres",
+  "team": "Équipe",
+  "recommendations": "Recommandations",
+  "reset_password": "Réinitialiser le mot de passe",
+  "sign_up": "S'inscrire",
   "landing": {
     "hero": {
       "title": "RENCONTRES POUR TOUS, FACILES ET RAPIDES"
@@ -83,7 +95,8 @@
     "signup": "S'inscrire",
     "login": "Connexion",
     "offers": "Nos offres",
-    "about": "À propos"
+    "about": "À propos",
+    "language": "Langue"
   },
   "login_form": {
     "title": "Connexion à votre compte",
@@ -631,5 +644,12 @@
   "theme_toggle": {
     "light_mode": "Mode Clair",
     "dark_mode": "Mode Sombre"
-  }
+  },
+  "success_page": {
+  "title": "Vérifie tes e-mails !",
+  "description": "Nous avons envoyé un lien de vérification à ton adresse e-mail. Clique dessus pour activer ton compte.",
+  "spam_notice": "Si tu ne vois pas l'e-mail dans ta boîte de réception, vérifie tes dossiers Spam ou Promotions.",
+  "open_mail_app": "Ouvrir l'application de messagerie",
+  "back_to_home": "Retour à l'accueil"
+}
 }

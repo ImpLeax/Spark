@@ -9,6 +9,7 @@ import de from './locales/de.json';
 import fr from './locales/fr.json';
 import es from './locales/es.json';
 import ja from './locales/ja.json';
+import cz from './locales/cz.json';
 
 i18n
   .use(LanguageDetector)
@@ -21,9 +22,13 @@ i18n
       fr: { translation: fr },
       es: { translation: es },
       ja: { translation: ja },
-      ga: { translation: ga }
+      ga: { translation: ga },
+      cz: { translation: cz }
     },
     fallbackLng: 'en',
+    supportedLngs: ['en', 'uk', 'ga', 'de', 'fr', 'es', 'ja', 'cz'],
+
+    nonExplicitSupportedLngs: true,
     interpolation: {
       escapeValue: false
     }

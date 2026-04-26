@@ -44,10 +44,6 @@ msgstr ""
 "Falls die Schaltfläche nicht funktioniert, kopiere diesen Link und füge ihn "
 "in deinen Browser ein:"
 
-#: user/templates/user/emails/base_email.html:29
-msgid "Connecting hearts through technology."
-msgstr "Herzen verbinden durch Technologie."
-
 #: user/templates/user/emails/base_email.html:32
 msgid "All rights reserved."
 msgstr "Alle Rechte vorbehalten."
@@ -76,3 +72,27 @@ msgstr "Dieser Link läuft zu deiner Sicherheit bald ab."
 #: user/views.py:454
 msgid "Spark: Password Recovery"
 msgstr "Spark: Passwort-Wiederherstellung"
+
+msgid "Confirm your new email address"
+msgstr "Bestätigen Sie Ihre neue E-Mail-Adresse"
+
+msgid "Hello"
+msgstr "Hallo"
+
+msgid "We received a request to change the email address associated with your Spark account. To complete this process and verify your new email, please click the button below:"
+msgstr "Wir haben eine Anfrage zur Änderung der mit Ihrem Spark-Konto verknüpften E-Mail-Adresse erhalten. Um diesen Vorgang abzuschließen und Ihre neue E-Mail zu verifizieren, klicken Sie bitte auf die Schaltfläche unten:"
+
+msgid "Confirm New Email"
+msgstr "Neue E-Mail bestätigen"
+
+msgid "If the button above doesn't work, copy and paste this link into your browser:"
+msgstr "Wenn die Schaltfläche oben nicht funktioniert, kopieren Sie diesen Link und fügen Sie ihn in Ihren Browser ein:"
+
+msgid "If you did not request this change, you can safely ignore this email. Someone might have typed your address by mistake."
+msgstr "Wenn Sie diese Änderung nicht angefordert haben, können Sie diese E-Mail ignorieren. Möglicherweise hat jemand Ihre Adresse versehentlich eingegeben."
+
+msgid "The Spark Team"
+msgstr "Das Spark-Team"
+
+msgid "Connecting hearts through technology."
+msgstr "Herzen verbinden durch Technologie."

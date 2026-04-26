@@ -1,4 +1,16 @@
 {
+  "activate_account": "Activar cuenta",
+  "confirm_email_change": "Confirmar cambio de correo",
+  "title_forgot_password": "¿Olvidaste tu contraseña?",
+  "messages": "Mensajes",
+  "page_not_found": "Página no encontrada",
+  "my_profile": "Mi perfil",
+  "profile": "Perfil",
+  "settings": "Ajustes",
+  "team": "Equipo",
+  "recommendations": "Recomendaciones",
+  "reset_password": "Restablecer contraseña",
+  "sign_up": "Registrarse",
   "landing": {
     "hero": {
       "title": "CITAS PARA TODOS FÁCIL Y RÁPIDO"
@@ -83,7 +95,8 @@
     "signup": "Registrarse",
     "login": "Iniciar sesión",
     "offers": "Qué ofrecemos",
-    "about": "Acerca de"
+    "about": "Acerca de",
+    "language": "Idioma"
   },
   "login_form": {
     "title": "Inicia sesión en tu cuenta",
@@ -631,5 +644,12 @@
   "theme_toggle": {
     "light_mode": "Modo Claro",
     "dark_mode": "Modo Oscuro"
-  }
+  },
+  "success_page": {
+  "title": "¡Revisa tu correo!",
+  "description": "Hemos enviado un enlace de verificación a tu dirección de correo electrónico. Haz clic en él para activar tu cuenta.",
+  "spam_notice": "Si no ves el correo en tu bandeja de entrada, revisa tu carpeta de Spam o Promociones.",
+  "open_mail_app": "Abrir la aplicación de correo",
+  "back_to_home": "Volver al inicio"
+}
 }

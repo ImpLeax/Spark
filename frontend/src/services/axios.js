@@ -11,10 +11,10 @@ export const getAccessToken = () => {
   return inMemoryAccessToken;
 };
 
-export const API_BASE_URL = 'http://localhost:8000';
+export const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const api = axios.create({
-    baseURL: `${API_BASE_URL}/api/v1/`, // Використовуємо змінну тут
+    baseURL: `${API_BASE_URL}/api/v1/`,
     withCredentials: true,
 })
 
@@ -46,7 +46,6 @@ api.interceptors.response.use(
 
       try {
         const response = await axios.post(
-          'http://localhost:8000/api/v1/user/token/refresh/',
           {},
           { withCredentials: true }
         );

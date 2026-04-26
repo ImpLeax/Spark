@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { FeedToggle } from "@/components/ui/FeedToggle";
 import { cn } from "@/lib/utils";
 import { usePresence } from "@/context/PresenceContext";
+import {useTitle} from "@/hooks/useTitle.js";
 
 const playMatchSound = () => {
   const audio = new Audio('/sounds/match.mp3');
@@ -192,6 +193,7 @@ const ProfileCard = ({ profile, isTop, exitX, zIndex, onNavigate }) => {
 };
 
 const RecommendationsPage = () => {
+  useTitle("recommendations");
   const { t } = useTranslation();
   const [isLikesView, setIsLikesView] = useState(false);
   const [profiles, setProfiles] = useState([]);

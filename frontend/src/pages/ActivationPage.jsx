@@ -4,8 +4,10 @@ import api from "@/services/axios";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import {useTitle} from "@/hooks/useTitle.js";
 
 const ActivationPage = () => {
+  useTitle("activate_account");
   const { uid, token } = useParams();
   const { t } = useTranslation();
 

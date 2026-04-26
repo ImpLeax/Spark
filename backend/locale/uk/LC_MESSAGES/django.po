@@ -45,10 +45,6 @@ msgid "If the button doesn't work, copy and paste this link into your browser:"
 msgstr ""
 "Якщо кнопка не працює, скопіюйте та вставте це посилання у ваш браузер:"
 
-#: user/templates/user/emails/base_email.html:29
-msgid "Connecting hearts through technology."
-msgstr "Поєднуємо серця за допомогою технологій."
-
 #: user/templates/user/emails/base_email.html:32
 msgid "All rights reserved."
 msgstr "Усі права захищені."
@@ -76,3 +72,27 @@ msgstr "З міркувань безпеки термін дії цього по
 #: user/views.py:454
 msgid "Spark: Password Recovery"
 msgstr "Spark: Відновлення пароля"
+
+msgid "Confirm your new email address"
+msgstr "Підтвердьте вашу нову електронну адресу"
+
+msgid "Hello"
+msgstr "Вітаємо"
+
+msgid "We received a request to change the email address associated with your Spark account. To complete this process and verify your new email, please click the button below:"
+msgstr "Ми отримали запит на зміну електронної адреси вашого акаунту Spark. Щоб завершити цей процес і підтвердити нову адресу, натисніть кнопку нижче:"
+
+msgid "Confirm New Email"
+msgstr "Підтвердити нову пошту"
+
+msgid "If the button above doesn't work, copy and paste this link into your browser:"
+msgstr "Якщо кнопка вище не працює, скопіюйте та вставте це посилання у ваш браузер:"
+
+msgid "If you did not request this change, you can safely ignore this email. Someone might have typed your address by mistake."
+msgstr "Якщо ви не робили цього запиту, можете просто ігнорувати цей лист. Хтось міг помилитися при введенні адреси."
+
+msgid "The Spark Team"
+msgstr "Команда Spark"
+
+msgid "Connecting hearts through technology."
+msgstr "З’єднуємо серця за допомогою технологій."

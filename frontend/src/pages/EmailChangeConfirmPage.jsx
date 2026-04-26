@@ -4,8 +4,10 @@ import api from "@/services/axios";
 import { Loader2, CheckCircle2, XCircle, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import {useTitle} from "@/hooks/useTitle.js";
 
 const EmailChangeConfirmPage = () => {
+  useTitle("confirm_email_change");
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
 

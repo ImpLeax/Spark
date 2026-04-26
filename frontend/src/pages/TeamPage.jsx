@@ -2,6 +2,9 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Code2, Server, Cpu } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import {useTitle} from "@/hooks/useTitle.js";
+import {BubbleBackground} from "@/components/index.js";
+import {useTheme} from "next-themes";
 
 const teamMembersConfig = [
   {
@@ -45,6 +48,7 @@ const itemVariants = {
 };
 
 const TeamPage = () => {
+  useTitle("team");
   const { t } = useTranslation();
 
   return (
