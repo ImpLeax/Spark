@@ -202,7 +202,7 @@ const ProfileSettings = () => {
         setIntention(data.intention?.id ? data.intention.id.toString() : "");
         setSelectedInterests(data.interests?.map(i => i.id) || []);
 
-        setAvatar(data.avatar);
+        setAvatar(data.avatar ? `${data.avatar}?t=${new Date().getTime()}` : null);
         setGallery(galleryRes.data);
       } catch (error) {
         console.error("Failed to load profile", error);
@@ -260,7 +260,7 @@ const handleAvatarUpload = (e) => {
       try {
         await api.put("user/profile/avatar/", formData, { headers: { "Content-Type": "multipart/form-data" } });
         const res = await api.get("user/profile/");
-        setAvatar(res.data.avatar);
+        setAvatar(res.data.avatar ? `${res.data.avatar}?t=${new Date().getTime()}` : null);
         showMessage("success", t("settings_page.profile.messages.avatar_success"));
       } catch (error) {
         showMessage("error", t(getErrorMessage(error, "settings_page.profile.messages.avatar_fail")));

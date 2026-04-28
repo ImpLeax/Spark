@@ -15,6 +15,7 @@ def get_user_from_token(token):
         user = User.objects.get(id=access_token['user_id'])
         return user
     except Exception as e:
+        print(f"\n❌ ПОМИЛКА JWT у WebSocket: {e}\n")
         return AnonymousUser()
 
 

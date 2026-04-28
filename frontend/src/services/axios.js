@@ -11,7 +11,9 @@ export const getAccessToken = () => {
   return inMemoryAccessToken;
 };
 
-export const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+const rawBaseUrl = import.meta.env.VITE_BACKEND_URL || '';
+
+export const API_BASE_URL = rawBaseUrl.replace(/\/+$/, '');
 
 const api = axios.create({
     baseURL: `${API_BASE_URL}/api/v1/`,
@@ -46,6 +48,7 @@ api.interceptors.response.use(
 
       try {
         const response = await axios.post(
+          `${API_BASE_URL}/api/v1/user/token/refresh/`,
           {},
           { withCredentials: true }
         );

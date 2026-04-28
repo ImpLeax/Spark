@@ -12,18 +12,11 @@ wheels/
 
 #env
 .env
+.env.prod
 
 #static
 staticfiles/
-tests/
-docker-compose.backend.yml
-docker-compose.yml
-docker-compose.db.yml
-Dockerfile
 django.mo
-backend/.dockerignore
-backend/Dockerfile
-frontend/Dockerfile
 backend/media/users/user_481
 
 # Logs
@@ -38,6 +31,7 @@ lerna-debug.log*
 frontend/node_modules
 frontend/dist
 frontend/dist-ssr
+frontend/.env
 *.local
 
 # Editor directories and files

@@ -67,8 +67,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 key='refresh_token',
                 value=refresh_token,
                 httponly=True,
-                samesite='Lax',
-                secure=False,
+                samesite="Lax" if settings.DEBUG else 'None',
+                secure=(not settings.DEBUG),
                 max_age=60 * 60 * 24 * 7 * 2
             )
 
@@ -105,8 +105,8 @@ class CustomTokenRefreshView(TokenRefreshView):
                 key='refresh_token',
                 value=serializer.validated_data['refresh'],
                 httponly=True,
-                samesite='Lax',
-                secure=False,
+                samesite="Lax" if settings.DEBUG else 'None',
+                secure=(not settings.DEBUG),
                 max_age=60 * 60 * 24 * 7 * 2
             )
             del response.data['refresh']
@@ -145,7 +145,10 @@ class LogoutAPIView(APIView):
                 status=status.HTTP_205_RESET_CONTENT
             )
 
-            response.delete_cookie('refresh_token')
+            response.delete_cookie(
+                'refresh_token',
+                samesite="Lax" if settings.DEBUG else 'None',
+            )
             return response
 
         except Exception as e:
@@ -625,8 +628,8 @@ class GoogleAuthView(generics.GenericAPIView):
                 key='refresh_token',
                 value=str(refresh),
                 httponly=True,
-                secure=settings.SIMPLE_JWT.get('AUTH_COOKIE_SECURE', False),
-                samesite='Lax',
+                samesite="Lax" if settings.DEBUG else 'None',
+                secure=(not settings.DEBUG),
                 max_age=settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'].total_seconds()
             )
 

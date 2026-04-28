@@ -91,6 +91,7 @@ const MessagesPage = () => {
   const unreadMessageRef = useRef(null);
   const fileInputRef = useRef(null);
   const processedNotifications = useRef(new Set());
+  const pressTimer = useRef(null);
 
   const pendingReadIdsRef = useRef(new Set());
   const markAsReadTimerRef = useRef(null);
@@ -535,6 +536,31 @@ const MessagesPage = () => {
       });
   };
 
+  const handleTouchStart = (e, msg) => {
+      if (!msg.is_mine) return;
+
+      const touch = e.touches[0];
+      const pageX = touch.pageX;
+      const pageY = touch.pageY;
+
+      pressTimer.current = setTimeout(() => {
+          const x = Math.min(pageX, window.innerWidth - 150);
+          const y = Math.min(pageY, window.innerHeight - 100);
+          setContextMenu({ visible: true, x, y, msg });
+
+          if (window.navigator && window.navigator.vibrate) {
+              window.navigator.vibrate(50);
+          }
+      }, 500);
+  };
+
+  const clearPressTimer = () => {
+      if (pressTimer.current) {
+          clearTimeout(pressTimer.current);
+          pressTimer.current = null;
+      }
+  };
+
   const startEditing = (msg) => {
       setEditingMessage(msg);
       setInput(msg.text || "");
@@ -960,14 +986,19 @@ const MessagesPage = () => {
                               </div>
                           )}
 
-                          <div
+                        <div
                             data-id={msg.id}
                             className={cn(
                                 "flex items-end gap-2 relative",
+                                "select-none touch-manipulation",
                                 msg.is_mine ? "justify-end" : "justify-start",
                                 isUnreadPartnerMessage ? "unread-message" : ""
                             )}
                             onContextMenu={(e) => handleContextMenu(e, msg)}
+                            onTouchStart={(e) => handleTouchStart(e, msg)}
+                            onTouchEnd={clearPressTimer}
+                            onTouchMove={clearPressTimer}
+                            onTouchCancel={clearPressTimer}
                           >
                             {!msg.is_mine && (
                               <div className="w-7 h-7 shrink-0 mb-1">

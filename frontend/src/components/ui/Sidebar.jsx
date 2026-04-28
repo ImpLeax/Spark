@@ -177,7 +177,13 @@ const Sidebar = ({ render, isCollapsed, setIsCollapsed }) => {
       const loadData = async () => {
         try {
           const response = await api.get("user/profile/");
-          setProfile(response.data);
+          const data = response.data;
+
+          if (data.avatar) {
+            data.avatar = `${data.avatar}?t=${new Date().getTime()}`;
+          }
+
+          setProfile(data);
         } catch (error) {
           console.error("Failed to load profile data", error);
         } finally {

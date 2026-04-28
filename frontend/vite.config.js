@@ -7,12 +7,15 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
+    allowedHosts: [
+      'spark-app.duckdns.org',
+      '31.42.179.251'
+    ],
   },
   plugins: [
     react(),
     tailwindcss(),
   ],
-  envDir: '../',
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
