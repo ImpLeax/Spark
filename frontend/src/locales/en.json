@@ -284,7 +284,8 @@
     },
     "context_menu": {
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "copy": "Copy"
     },
     "toast": {
       "new_messages": "New messages"

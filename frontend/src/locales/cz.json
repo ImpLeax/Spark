@@ -284,7 +284,8 @@
     },
     "context_menu": {
       "edit": "Upravit",
-      "delete": "Smazat"
+      "delete": "Smazat",
+      "copy": "Kopírovat"
     },
     "toast": {
       "new_messages": "Nové zprávy"

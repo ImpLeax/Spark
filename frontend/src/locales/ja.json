@@ -284,7 +284,8 @@
     },
     "context_menu": {
       "edit": "編集",
-      "delete": "削除"
+      "delete": "削除",
+      "copy": "コピー"
     },
     "toast": {
       "new_messages": "新着メッセージ"

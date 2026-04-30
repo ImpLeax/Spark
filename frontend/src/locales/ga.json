@@ -284,7 +284,8 @@
     },
     "context_menu": {
       "edit": "Змінити",
-      "delete": "Стерти"
+      "delete": "Стерти",
+      "copy": "Скопіювати"
     },
     "toast": {
       "new_messages": "Нові листи"

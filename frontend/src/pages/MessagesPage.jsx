@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, ArrowLeft, Loader2, Search, MessageCircle, Check, CheckCheck, ChevronDown, Paperclip, X, Trash2, Edit2, Ban } from "lucide-react";
+import { Send, ArrowLeft, Loader2, Search, MessageCircle, Check, CheckCheck, ChevronDown, Paperclip, X, Trash2, Edit2, Ban, Copy } from "lucide-react";
 import { format } from "date-fns";
 import api from "@/services/axios";
 import { cn } from "@/lib/utils";
@@ -9,7 +9,7 @@ import { usePresence } from "@/context/PresenceContext";
 import KlipyPicker from "@/components/ui/KlipyPicker";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import {useTitle} from "@/hooks/useTitle.js";
+import { useTitle } from "@/hooks/useTitle.js";
 
 const getAvatarUrl = (avatarPath, firstName) => {
   if (!avatarPath) return `https://ui-avatars.com/api/?name=${firstName}&background=random&color=fff`;
@@ -90,6 +90,7 @@ const MessagesPage = () => {
   const previousScrollHeight = useRef(0);
   const unreadMessageRef = useRef(null);
   const fileInputRef = useRef(null);
+  const textareaRef = useRef(null);
   const processedNotifications = useRef(new Set());
   const pressTimer = useRef(null);
 
@@ -349,6 +350,9 @@ const MessagesPage = () => {
     setShowScrollBottomBtn(false);
     setSelectedFiles([]);
     setEditingMessage(null);
+    if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+    }
 
     const roomId = activeChat.id;
     const token = getAccessToken();
@@ -521,12 +525,10 @@ const MessagesPage = () => {
   };
 
   const handleContextMenu = (e, msg) => {
-      if (!msg.is_mine) return;
-
       e.preventDefault();
 
-      const x = Math.min(e.pageX, window.innerWidth - 150);
-      const y = Math.min(e.pageY, window.innerHeight - 100);
+      const x = Math.min(e.pageX, window.innerWidth - 180);
+      const y = Math.min(e.pageY, window.innerHeight - 150);
 
       setContextMenu({
           visible: true,
@@ -537,15 +539,13 @@ const MessagesPage = () => {
   };
 
   const handleTouchStart = (e, msg) => {
-      if (!msg.is_mine) return;
-
       const touch = e.touches[0];
       const pageX = touch.pageX;
       const pageY = touch.pageY;
 
       pressTimer.current = setTimeout(() => {
-          const x = Math.min(pageX, window.innerWidth - 150);
-          const y = Math.min(pageY, window.innerHeight - 100);
+          const x = Math.min(pageX, window.innerWidth - 180);
+          const y = Math.min(pageY, window.innerHeight - 150);
           setContextMenu({ visible: true, x, y, msg });
 
           if (window.navigator && window.navigator.vibrate) {
@@ -561,15 +561,36 @@ const MessagesPage = () => {
       }
   };
 
+  const handleCopyMessage = async () => {
+    if (contextMenu?.msg?.text) {
+        try {
+            await navigator.clipboard.writeText(contextMenu.msg.text);
+            setContextMenu(null);
+        } catch (error) {
+            console.error("Copy failed", error);
+        }
+    }
+  };
+
   const startEditing = (msg) => {
       setEditingMessage(msg);
       setInput(msg.text || "");
       setSelectedFiles([]);
+      setTimeout(() => {
+          if (textareaRef.current) {
+              textareaRef.current.style.height = "auto";
+              textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 150)}px`;
+              textareaRef.current.focus();
+          }
+      }, 0);
   };
 
   const cancelEditing = () => {
       setEditingMessage(null);
       setInput("");
+      if (textareaRef.current) {
+          textareaRef.current.style.height = "auto";
+      }
   };
 
   const handleMessageDelete = async (msgId) => {
@@ -592,7 +613,7 @@ const MessagesPage = () => {
   };
 
   const sendMessage = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!activeChat) return;
     if (!input.trim() && selectedFiles.length === 0) return;
 
@@ -634,6 +655,7 @@ const MessagesPage = () => {
 
             setInput("");
             setSelectedFiles([]);
+            if (textareaRef.current) textareaRef.current.style.height = "auto";
         } catch (error) {
             console.error("File upload error: ", error);
             const errorMessage = error.response?.data?.error
@@ -650,7 +672,23 @@ const MessagesPage = () => {
             message: input.trim()
         }));
         setInput("");
+        if (textareaRef.current) textareaRef.current.style.height = "auto";
     }
+  };
+
+  const handleInputText = (e) => {
+    setInput(e.target.value);
+    if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 150)}px`;
+    }
+  };
+
+  const handleKeyDown = (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+      }
   };
 
   const isGifMessage = (text) => {
@@ -816,7 +854,7 @@ const MessagesPage = () => {
                 key={chat.id}
                 onClick={() => setActiveChat(chat)}
                 className={cn(
-                  "w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left group",
+                  "w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left group min-w-0",
                   activeChat?.id === chat.id
                     ? "bg-primary text-primary-foreground shadow-md"
                     : "hover:bg-muted/60 text-foreground"
@@ -842,16 +880,16 @@ const MessagesPage = () => {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline mb-0.5">
-                    <h3 className="font-semibold truncate">{chat.partner.first_name}</h3>
+                    <h3 className="font-semibold truncate max-w-[140px] sm:max-w-[180px]">{chat.partner.first_name}</h3>
                     <span className={cn(
-                      "text-[10px] whitespace-nowrap ml-2 font-medium",
+                      "text-[10px] whitespace-nowrap ml-2 font-medium shrink-0",
                       activeChat?.id === chat.id ? "text-primary-foreground/80" : "text-muted-foreground"
                     )}>
                       {chat.last_message ? format(new Date(chat.last_message.created_at), "HH:mm") : ""}
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 min-w-0">
                       {chat.last_message?.is_mine && (
                           <div className={cn(
                               "shrink-0",
@@ -865,7 +903,7 @@ const MessagesPage = () => {
                           </div>
                       )}
                       <p className={cn(
-                        "text-[13px] truncate leading-tight flex-1",
+                        "text-[13px] truncate leading-tight flex-1 min-w-0",
                         activeChat?.id === chat.id ? "text-primary-foreground/90" : "text-muted-foreground",
                         chat.unread_count > 0 && activeChat?.id !== chat.id && "text-foreground font-semibold"
                       )}>
@@ -888,11 +926,11 @@ const MessagesPage = () => {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", bounce: 0, duration: 0.35 }}
-            className="absolute md:relative inset-0 md:inset-auto z-50 md:z-auto flex-1 flex flex-col bg-background w-full h-[100dvh] md:h-auto shadow-2xl md:shadow-none"
+            className="absolute md:relative inset-0 md:inset-auto z-50 md:z-auto flex-1 flex flex-col bg-background w-full h-[100dvh] md:h-auto shadow-2xl md:shadow-none min-w-0"
           >
-            <div className="h-[65px] border-b border-border bg-card/80 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-10 shadow-sm">
-              <div className="flex items-center gap-3">
-                <button onClick={() => setActiveChat(null)} className="md:hidden p-2 -ml-2 mr-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted">
+            <div className="h-[65px] border-b border-border bg-card/80 backdrop-blur-md flex items-center justify-between px-4 shrink-0 z-10 shadow-sm min-w-0">
+              <div className="flex items-center gap-3 min-w-0">
+                <button onClick={() => setActiveChat(null)} className="md:hidden p-2 -ml-2 mr-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted shrink-0">
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div className="relative w-9 h-9 shrink-0">
@@ -905,11 +943,11 @@ const MessagesPage = () => {
                       <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-card rounded-full z-10"></span>
                   )}
                 </div>
-                <div className="flex flex-col">
-                  <Link to={`/profile/${chatToDisplay.partner.id}`} className="flex items-center gap-3 group">
-                    <h3 className="font-semibold text-[15px] leading-tight group-hover:underline decoration-primary underline-offset-2 transition-all">{chatToDisplay.partner.first_name}</h3>
+                <div className="flex flex-col min-w-0">
+                  <Link to={`/profile/${chatToDisplay.partner.id}`} className="flex items-center gap-3 group min-w-0">
+                    <h3 className="font-semibold text-[15px] leading-tight truncate max-w-[150px] md:max-w-[250px] group-hover:underline decoration-primary underline-offset-2 transition-all">{chatToDisplay.partner.first_name}</h3>
                   </Link>
-                  <span className="text-[11px] text-muted-foreground font-medium">
+                  <span className="text-[11px] text-muted-foreground font-medium shrink-0">
                       {isOnline(chatToDisplay.partner.id, chatToDisplay.partner.is_online) ? t('messages_page.status.online') : t('messages_page.status.offline')}
                   </span>
                 </div>
@@ -976,7 +1014,7 @@ const MessagesPage = () => {
                               originX: msg.is_mine ? 1 : 0,
                               transition: { duration: 0.2 }
                           }}
-                          className="w-full flex flex-col"
+                          className="w-full flex flex-col min-w-0"
                         >
                           {isFirstUnread && (
                               <div
@@ -1017,7 +1055,7 @@ const MessagesPage = () => {
                               msg.is_mine
                                 ? "bg-primary text-primary-foreground rounded-br-sm"
                                 : "bg-card border border-border text-foreground rounded-bl-sm",
-                              isGifOnly ? "p-0 max-w-[250px] sm:max-w-[300px]" : "px-4 py-2 max-w-[70%]"
+                              isGifOnly ? "p-0 max-w-[250px] sm:max-w-[300px]" : "px-4 py-2 max-w-[75%]"
                             )}>
 
                               {fileUrl && (
@@ -1048,7 +1086,7 @@ const MessagesPage = () => {
                                             <img src={msg.text} alt="GIF" className="w-full h-auto object-contain" />
                                         </div>
                                     ) : (
-                                        <p className="text-[14px] leading-relaxed break-words">{msg.text}</p>
+                                        <p className="text-[14px] leading-relaxed break-words whitespace-pre-wrap min-w-0 max-w-full overflow-hidden">{msg.text}</p>
                                     )
                               )}
 
@@ -1057,19 +1095,19 @@ const MessagesPage = () => {
                                   isGifOnly ? "px-3 pb-1.5 pt-1.5" : "mt-0.5",
                                   msg.is_mine ? "text-primary-foreground/70" : "text-muted-foreground"
                               )}>
-                                  <span className="text-[10px] font-medium">
+                                  <span className="text-[10px] font-medium shrink-0">
                                     {format(new Date(msg.created_at), "HH:mm")}
                                   </span>
 
                                   {msg.is_edited && (
-                                      <span className="text-[10px] font-medium opacity-80">{t('messages_page.message.edited')}</span>
+                                      <span className="text-[10px] font-medium opacity-80 shrink-0">{t('messages_page.message.edited')}</span>
                                   )}
 
                                   {msg.is_mine && (
                                       msg.is_read ? (
-                                          <CheckCheck className="w-3.5 h-3.5" />
+                                          <CheckCheck className="w-3.5 h-3.5 shrink-0" />
                                       ) : (
-                                          <Check className="w-3.5 h-3.5 opacity-70" />
+                                          <Check className="w-3.5 h-3.5 opacity-70 shrink-0" />
                                       )
                                   )}
                               </div>
@@ -1148,7 +1186,7 @@ const MessagesPage = () => {
               )}
             </AnimatePresence>
 
-            <form onSubmit={sendMessage} className="p-4 bg-background border-t border-border shrink-0 flex flex-col relative">
+            <form onSubmit={sendMessage} className="p-4 bg-background border-t border-border shrink-0 flex flex-col relative min-w-0">
 
                 <AnimatePresence>
                     {editingMessage && (
@@ -1169,57 +1207,62 @@ const MessagesPage = () => {
                     )}
                 </AnimatePresence>
 
-                <div className="flex gap-2 items-center pt-2">
+                <div className="flex gap-2 items-end pt-2 min-w-0">
                     <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    className="hidden"
-                    multiple
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        multiple
                     />
 
                     {!editingMessage && (
                         <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-colors shrink-0 cursor-pointer"
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="w-10 h-10 mb-1 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-colors shrink-0 cursor-pointer"
                         >
-                        <Paperclip className="w-5 h-5" />
+                            <Paperclip className="w-5 h-5" />
                         </button>
                     )}
 
                     {!editingMessage && (
                         <button
-                        type="button"
-                        onClick={() => setShowGifPicker(!showGifPicker)}
-                        className={cn(
-                            "w-10 h-10 flex items-center justify-center rounded-full transition-colors shrink-0 cursor-pointer",
-                            showGifPicker ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                        )}
+                            type="button"
+                            onClick={() => setShowGifPicker(!showGifPicker)}
+                            className={cn(
+                                "w-10 h-10 mb-1 flex items-center justify-center rounded-full transition-colors shrink-0 cursor-pointer",
+                                showGifPicker ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                            )}
                         >
-                        <span className="font-bold text-[11px] border-2 border-current rounded-[4px] px-1 tracking-wider leading-none py-0.5">
-                            GIF
-                        </span>
+                            <span className="font-bold text-[11px] border-2 border-current rounded-[4px] px-1 tracking-wider leading-none py-0.5">
+                                GIF
+                            </span>
                         </button>
                     )}
 
-                    <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder={t('messages_page.input.placeholder')}
-                    className={cn(
-                        "flex-1 bg-muted/50 px-4 py-3 rounded-full text-[14px] outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-transparent focus:border-border",
-                        editingMessage && "rounded-tl-none border-primary/30 bg-primary/5"
-                    )}
-                    />
+                    <div className="flex-1 min-w-0 relative">
+                        <textarea
+                            ref={textareaRef}
+                            value={input}
+                            onChange={handleInputText}
+                            onKeyDown={handleKeyDown}
+                            placeholder={t('messages_page.input.placeholder')}
+                            rows={1}
+                            className={cn(
+                                "w-full bg-muted/50 px-4 py-3 rounded-2xl text-[14px] outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-transparent focus:border-border resize-none overflow-y-auto block min-w-0",
+                                editingMessage && "rounded-tl-none border-primary/30 bg-primary/5"
+                            )}
+                            style={{ minHeight: '44px', maxHeight: '150px' }}
+                        />
+                    </div>
 
                     <button
-                    type="submit"
-                    disabled={!input.trim() && selectedFiles.length === 0}
-                    className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0 shadow-md active:scale-95 cursor-pointer"
+                        type="submit"
+                        disabled={!input.trim() && selectedFiles.length === 0}
+                        className="w-12 h-12 mb-0.5 bg-primary text-primary-foreground rounded-full flex items-center justify-center hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0 shadow-md active:scale-95 cursor-pointer"
                     >
-                    <Send className="w-5 h-5 ml-0.5" />
+                        <Send className="w-5 h-5 ml-0.5" />
                     </button>
                 </div>
             </form>
@@ -1232,9 +1275,18 @@ const MessagesPage = () => {
                         exit={{ opacity: 0, scale: 0.9 }}
                         transition={{ duration: 0.1 }}
                         style={{ top: contextMenu.y, left: contextMenu.x }}
-                        className="fixed z-[200] w-40 bg-card border border-border shadow-xl rounded-xl overflow-hidden py-1"
+                        className="fixed z-[200] w-44 bg-card border border-border shadow-xl rounded-xl overflow-hidden py-1"
                     >
-                        {(!contextMenu.msg.file_url && !isGifMessage(contextMenu.msg.text)) && (
+                        {contextMenu.msg.text && !isGifMessage(contextMenu.msg.text) && (
+                            <button
+                                onClick={handleCopyMessage}
+                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors text-left"
+                            >
+                                <Copy className="w-4 h-4 text-muted-foreground" />
+                                {t('messages_page.context_menu.copy', { defaultValue: 'Copy' })}
+                            </button>
+                        )}
+                        {contextMenu.msg.is_mine && (!contextMenu.msg.file_url && !isGifMessage(contextMenu.msg.text)) && (
                             <button
                                 onClick={() => startEditing(contextMenu.msg)}
                                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors text-left"
@@ -1243,13 +1295,15 @@ const MessagesPage = () => {
                                 {t('messages_page.context_menu.edit')}
                             </button>
                         )}
-                        <button
-                            onClick={() => handleMessageDelete(contextMenu.msg.id)}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-destructive/10 text-destructive transition-colors text-left"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                            {t('messages_page.context_menu.delete')}
-                        </button>
+                        {contextMenu.msg.is_mine && (
+                            <button
+                                onClick={() => handleMessageDelete(contextMenu.msg.id)}
+                                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-destructive/10 text-destructive transition-colors text-left"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                {t('messages_page.context_menu.delete')}
+                            </button>
+                        )}
                     </motion.div>
                 )}
             </AnimatePresence>

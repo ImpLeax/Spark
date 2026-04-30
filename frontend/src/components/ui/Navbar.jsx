@@ -86,7 +86,7 @@ const Navbar = ({ onLoginClick }) => {
     { code: 'fr', label: 'Français' },
     { code: 'es', label: 'Español' },
     { code: 'ja', label: '日本語' },
-    { code: 'cz', label: 'Česká' }
+    { code: 'cz', label: 'Čeština' }
   ];
 
   const changeLang = (code) => {

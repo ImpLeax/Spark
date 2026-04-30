@@ -24,7 +24,7 @@ const SidebarLangSwitcher = ({ isCollapsed }) => {
     { code: 'fr', label: 'Français', short: 'FR' },
     { code: 'es', label: 'Español', short: 'ES' },
     { code: 'ja', label: '日本語', short: 'JA' },
-    { code: 'cz', label: 'Česká', short: 'CZ' }
+    { code: 'cz', label: 'Čeština', short: 'CZ' }
   ];
 
   useEffect(() => {
