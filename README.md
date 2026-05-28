@@ -1,7 +1,14 @@
 # Spark - Dating Application 💖
 
-<img width="1902" height="948" alt="image" src="https://github.com/user-attachments/assets/d2e3992e-7c9d-4283-8e62-9f512bb95ac2" />
+> <img width="1902" height="948" alt="image" src="https://github.com/user-attachments/assets/d2e3992e-7c9d-4283-8e62-9f512bb95ac2" />
 
+> <img width="1005" height="885" alt="image" src="https://github.com/user-attachments/assets/b43889ca-fbc4-4a23-85e2-0a54135cea28" />
+
+> <img width="1159" height="681" alt="image" src="https://github.com/user-attachments/assets/b8fe06ce-e3be-4d50-843e-54f4a94c5ccb" />
+
+> <img width="633" height="935" alt="image" src="https://github.com/user-attachments/assets/23d787e3-4b07-49eb-815e-05516afa7133" />
+
+> <img width="1079" height="782" alt="image" src="https://github.com/user-attachments/assets/cd3b2f7e-cbba-40be-9c39-117b5f0c79cb" />
 
 ## 📌 About the Project
 Spark is a modern web-based dating application designed to connect people. This project was developed as a coursework assignment. It focuses on providing a secure, real-time interactive experience for users, utilizing a modern microservices-inspired architecture.
